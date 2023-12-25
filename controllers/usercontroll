@@ -1,0 +1,269 @@
+const { log } = require('console')
+const User=require('../models/usermodel')
+const bcrypt=require('bcrypt')
+const Otp=require('../models/otp')
+const OTPgenerator=require('otp-generator')
+const nodemailer=require('nodemailer')
+const SendmailTransport = require('nodemailer/lib/sendmail-transport')
+
+
+
+//home---------------------------------------------------------------------
+const home=async(req,res)=>{
+    try{
+        res.render('home')
+
+    }
+    catch(error){
+        console.log(error.message)
+
+    }
+    
+}
+//password hashing------------------------------------------------------
+
+
+const passwordhash=async(password)=>{
+
+
+    const hashed=await bcrypt.hash(password,10)
+    return hashed
+}
+  
+//loadlogin----------------------------------------------------------------------
+
+const loadlogin=async(req,res)=>{
+
+    try {
+    
+        console.log('reached login');
+        res.render('login')
+      
+    } catch (error) {
+        console.log(error.message)
+
+    }
+}
+
+
+//loadregister--------------------------------------------------------------------------
+
+const loadregister=async(req,res)=>{
+    try {
+        res.render('register')
+    } catch (error) {
+        console.log(error.message);
+        
+    }
+}
+
+//register--------------------------------------------------------------------------------
+
+const register=async(req,res)=>{
+    
+
+    const mail=req.body.email
+    const userexist=await  User.findOne({email:mail})
+    let id
+
+    if(userexist){
+        let flag=true
+
+        let message="user exist"
+        console.log(message);
+        res.render('register',{message})
+    }
+    else{
+        try {
+            let message
+            const hashed=await passwordhash(req.body.password)
+    
+            const user=new User({
+                name:req.body.name,
+                email:req.body.email,
+                password:hashed
+                
+            })
+
+           const userdata= await user.save();
+
+           id=userdata._id
+          
+           console.log(id);
+           //res.redirect('otp')
+          res.redirect(`/otp?id=${id}&mail=${mail}`);
+       
+
+            
+            
+    
+    
+    
+       
+        } catch (error) {
+            console.log(error.message);
+            
+        }
+    
+
+    }
+    
+
+
+    
+}
+//loadotp-------------------------------------------------------------
+
+
+const loadotp=async(req,res)=>{
+    try {
+const id=req.query.id
+const mail=req.query.mail
+        res.render('otp',{id})
+       
+        const otp = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
+        const hashedotp = await bcrypt.hash(String(otp), 10);
+       
+        const otpsetup=await new Otp({
+            userid:id,
+            otp:hashedotp,
+            createdAt:Date.now(),
+            expireAt:Date.now()+66000
+
+        })
+        const otpsave=await otpsetup.save()
+        console.log(otpsetup);
+
+
+        const transporter=nodemailer.createTransport({
+            service:'gmail',
+            auth:{
+                user:"deepakvkn1252@gmail.com",
+                pass:'ursi lsmy iwpb sgcs'
+            }
+        })
+      const mailoptions={
+            from:"deepakvkn1252@gmail.com",
+            to:mail,
+            subject:"testmail",
+            text:`your otp for registration is ${otp}`
+        }
+       await transporter.sendMail(mailoptions, (error, info) => {
+            if (error) {
+                console.log(error.message);
+            } else {
+                console.log(`Email sent: ${info.response}`);
+            }
+        });
+
+    
+
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+
+
+//otp generator----------------------------------------------------------------------------------------------
+const ootp=async(req,res)=>{
+    try {
+       
+        
+            const randomNumber = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
+    
+        
+        console.log('Generated Random 4-Digit OTP:', randomNumber);
+        
+    } catch (error) {
+        console.log(error.message);
+        
+    }
+    
+    
+}
+
+
+//verify otp------------------------------------------------------------------------
+
+const verifyotp=async(req,res)=>{
+    const otp=req.body.otp
+    const id=req.body.id
+    
+    try {
+        if(!otp){
+
+            Otp.deleteMany({userid:id})
+            User.deleteMany({_id:id})
+            console.log("no otp enterd");
+            res.render('otp')
+        }
+    
+        else{
+    
+            const data=await Otp.findOne({userid:id})
+            expire= data.expireAt
+            console.log(expire);
+            if(expire<Date.now())
+            {
+                Otp.deleteMany({userid:id})
+                User.deleteMany({_id:id})
+                console.log('expired');
+                res.render('otp')
+            }
+            else{
+                        // console.log(otp);
+        // console.log(id);
+        // console.log("halofrm verify");
+        const verify=await Otp.findOne({userid:id})
+        const dbotp=await verify.otp;
+        const finalcheck= await bcrypt.compare(otp,dbotp)
+            
+
+        if(finalcheck){
+            console.log("user regster success");
+            res.render('otp')
+        }
+        else{
+            const ur=await Otp.deleteMany({userid:id})
+            const vr=await User.deleteMany({_id:id})
+            console.log(ur);
+           
+            console.log("invalid creadentials");
+            res.render('otp')
+        }
+    
+            }
+        }
+      
+        
+
+
+            
+        
+    } 
+    catch (error) {
+        console.log(error.message);
+        
+    }
+
+   
+}
+
+
+
+
+module.exports={
+    home,
+    loadlogin,
+    loadregister,
+    register,
+    loadotp,
+    verifyotp
+    
+    
+
+
+}

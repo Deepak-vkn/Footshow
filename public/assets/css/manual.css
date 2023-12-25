@@ -1,0 +1,20 @@
+#alert{
+    color:red;
+    text-align:center;
+    
+}
+
+#box{
+
+    margin-top: 10px;
+    padding-left: 10px;
+    width: 32px;
+    height: 32px;
+}
+#otppp{
+
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 30px;
+    color: black;
+}
