@@ -3,11 +3,12 @@ const express=require('express')
 const app=express();
 const userroute=require('./routes/userroute')
 const mongoose=require('mongoose')
+const nocache=require('nocache')
 
 const port=12;
 
 
-
+app.use(nocache())
 mongoose.connect('mongodb://localhost:27017/footshow')
 app.use('/',userroute)
 

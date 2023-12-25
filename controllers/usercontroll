@@ -191,65 +191,111 @@ const ootp=async(req,res)=>{
 const verifyotp=async(req,res)=>{
     const otp=req.body.otp
     const id=req.body.id
+    const data=await Otp.findOne({userid:id})
+    
+    expire= data.expireAt
     
     try {
-        if(!otp){
-
-            Otp.deleteMany({userid:id})
-            User.deleteMany({_id:id})
-            console.log("no otp enterd");
-            res.render('otp')
-        }
+        
     
-        else{
-    
-            const data=await Otp.findOne({userid:id})
-            expire= data.expireAt
-            console.log(expire);
             if(expire<Date.now())
             {
-                Otp.deleteMany({userid:id})
-                User.deleteMany({_id:id})
+                await Otp.deleteMany({userid:id})
+                await  User.deleteMany({_id:id})
+                let message='Your otp has been expired'
                 console.log('expired');
-                res.render('otp')
+                res.render('otp',{message})
             }
             else{
-                        // console.log(otp);
-        // console.log(id);
-        // console.log("halofrm verify");
-        const verify=await Otp.findOne({userid:id})
-        const dbotp=await verify.otp;
-        const finalcheck= await bcrypt.compare(otp,dbotp)
+                        
+                const verify=await Otp.findOne({userid:id})
+                const dbotp=await verify.otp;
+                const finalcheck= await bcrypt.compare(otp,dbotp)
             
 
-        if(finalcheck){
-            console.log("user regster success");
-            res.render('otp')
-        }
-        else{
-            const ur=await Otp.deleteMany({userid:id})
-            const vr=await User.deleteMany({_id:id})
-            console.log(ur);
-           
-            console.log("invalid creadentials");
-            res.render('otp')
-        }
+                if(finalcheck){
+                await Otp.deleteMany({userid:id})
+                let message='User succesfully registerd'
+                await User.updateOne({_id:id},{ $set: { verified: true } })
+
+                console.log("user regster success");
+                res.render('login',{message})
+                }
+                else{
+                await Otp.deleteMany({userid:id})
+                await User.deleteMany({_id:id})
+                let message='Otp incorrect'
+    
+                console.log("invalid creadentials");
+                res.render('otp',{message})
+                }
     
             }
         }
       
-        
-
-
-            
-        
-    } 
+ 
     catch (error) {
         console.log(error.message);
         
     }
 
    
+}
+//login verify=========================================================================
+const verifylogin=async(req,res)=>{
+
+    try {
+       const mail=req.body.email
+       const password=req.body.password
+      
+
+    const userdata=await User.findOne({email:mail})
+
+    if(userdata){
+        const pass= await userdata.password
+
+        console.log(pass);
+        const passwordcheck=await  bcrypt.compare(password,pass)
+        console.log(passwordcheck);
+
+
+        if(passwordcheck){
+
+            const verifycheck=await userdata.verified
+            console.log(verifycheck);
+
+            if(verifycheck){
+                res.render('home')
+                
+
+                //console.log('login sucess');
+
+            }
+            else{
+                let message='invalid username or password'
+                res.render('login',{message})
+                //console.log('login failed1');
+            }
+        }
+        else{
+            let message='invalid username or password'
+            res.render('login',{message})
+            // console.log('login failed2');
+        }
+
+
+    }
+    else{
+        let message='invalid username or password'
+        res.render('login',{message})
+        //console.log('login failed3');
+
+    }
+
+
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 
 
@@ -261,7 +307,8 @@ module.exports={
     loadregister,
     register,
     loadotp,
-    verifyotp
+    verifyotp,
+    verifylogin
     
     
 
