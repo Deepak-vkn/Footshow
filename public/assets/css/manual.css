@@ -7,9 +7,9 @@
 #box{
 
     margin-top: 10px;
-    padding-left: 10px;
-    width: 32px;
-    height: 32px;
+    padding-left: 21px;
+    width: 44px;
+    height: 36px;
 }
 #otppp{
 
@@ -17,4 +17,27 @@
     font-family: Arial, Helvetica, sans-serif;
     font-size: 30px;
     color: black;
+}
+
+#txt{
+    color:white
+}
+.dropdown-toggle {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -18px;
+    transform: translateY(-50%);
+    border: 5px solid transparent; /* Reduce size */
+    border-top-color:white; /* Change color as needed */
+}
+.dropdown-logout a.btn {
+    background-color: #fff; /* Set background color to white */
+    color: #000; /* Set text color to black */
+    font-size: 14px; /* Adjust font size as needed */
+    padding: 8px 16px; /* Adjust padding as needed */
 }

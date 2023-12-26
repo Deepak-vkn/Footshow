@@ -8,10 +8,20 @@ const SendmailTransport = require('nodemailer/lib/sendmail-transport')
 
 
 
-//home---------------------------------------------------------------------
+//home-----------------------------------------------------------------------------
 const home=async(req,res)=>{
     try{
-        res.render('home')
+        let track
+        if(req.session.userid){
+            track=true
+            res.render('home',{track})
+        }
+        else{
+            track=false
+            res.render('home',{track})
+        }
+       
+
 
     }
     catch(error){
@@ -36,7 +46,7 @@ const loadlogin=async(req,res)=>{
 
     try {
     
-        console.log('reached login');
+        
         res.render('login')
       
     } catch (error) {
@@ -89,7 +99,7 @@ const register=async(req,res)=>{
 
            id=userdata._id
           
-           console.log(id);
+         
            //res.redirect('otp')
           res.redirect(`/otp?id=${id}&mail=${mail}`);
        
@@ -132,7 +142,7 @@ const mail=req.query.mail
 
         })
         const otpsave=await otpsetup.save()
-        console.log(otpsetup);
+    
 
 
         const transporter=nodemailer.createTransport({
@@ -175,7 +185,6 @@ const ootp=async(req,res)=>{
             const randomNumber = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
     
         
-        console.log('Generated Random 4-Digit OTP:', randomNumber);
         
     } catch (error) {
         console.log(error.message);
@@ -203,7 +212,7 @@ const verifyotp=async(req,res)=>{
                 await Otp.deleteMany({userid:id})
                 await  User.deleteMany({_id:id})
                 let message='Your otp has been expired'
-                console.log('expired');
+              
                 res.render('otp',{message})
             }
             else{
@@ -218,7 +227,7 @@ const verifyotp=async(req,res)=>{
                 let message='User succesfully registerd'
                 await User.updateOne({_id:id},{ $set: { verified: true } })
 
-                console.log("user regster success");
+                //console.log("user regster success");
                 res.render('login',{message})
                 }
                 else{
@@ -226,7 +235,7 @@ const verifyotp=async(req,res)=>{
                 await User.deleteMany({_id:id})
                 let message='Otp incorrect'
     
-                console.log("invalid creadentials");
+                //console.log("invalid creadentials");
                 res.render('otp',{message})
                 }
     
@@ -254,18 +263,23 @@ const verifylogin=async(req,res)=>{
     if(userdata){
         const pass= await userdata.password
 
-        console.log(pass);
+  
         const passwordcheck=await  bcrypt.compare(password,pass)
-        console.log(passwordcheck);
+        
 
 
         if(passwordcheck){
 
-            const verifycheck=await userdata.verified
-            console.log(verifycheck);
+            const verifycheck= await userdata.verified
 
             if(verifycheck){
-                res.render('home')
+                
+                req.session.userid=userdata.email
+                //console.log(req.session.userdata);
+                const track=req.session.userid
+         
+                res.redirect('/')
+
                 
 
                 //console.log('login sucess');
@@ -299,6 +313,22 @@ const verifylogin=async(req,res)=>{
 }
 
 
+const logout = async (req, res) => {
+    try {
+        
+         req.session.destroy()
+        //console.log("destroy");
+        
+        
+        res.redirect('/')
+        
+
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
 
 
 module.exports={
@@ -308,7 +338,8 @@ module.exports={
     register,
     loadotp,
     verifyotp,
-    verifylogin
+    verifylogin,
+    logout
     
     
 

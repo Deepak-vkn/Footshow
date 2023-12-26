@@ -130,9 +130,29 @@
                             </a>
                         </div> -->
                         <div id="box">
-                            <a href="/login">
-                                <img src="/path/to/your/profile-image.jpg" alt="Profile Image">
-                            </a>
+                            <% if (locals.track) { %>
+                                <div class="dropdown">
+                                    <!-- Dropdown button/link -->
+                                    <a href="#" class="dropdown-toggle" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <!-- You can use an icon or any other element here -->
+                                        <img src="assets/images/icons/sample-profile.png" alt="Profile">
+                                    </a>
+                                
+                                    <!-- Dropdown menu -->
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                        <!-- Only login link -->
+                                        <div class="dropdown-logout">
+                                            <a href="/logout" class="btn btn-primary">Logout</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            <% } else { %>
+                                <a id="txt" href="/login">
+                                    LOGIN
+                                </a>
+                            <% } %>
+                            
                         </div>
                         
                     </div><!-- End .header-right -->
