@@ -46,7 +46,6 @@ const loadlogin=async(req,res)=>{
 
     try {
     
-        
         res.render('login')
       
     } catch (error) {
@@ -68,60 +67,55 @@ const loadregister=async(req,res)=>{
 }
 
 //register--------------------------------------------------------------------------------
+const register = async (req, res) => {
+    try {
+        const mail = req.body.email;
+        const userExist = await User.findOne({ email: mail });
 
-const register=async(req,res)=>{
-    
+        if (userExist) {
+            const verify = userExist.verified;
 
-    const mail=req.body.email
-    const userexist=await  User.findOne({email:mail})
-    let id
+            if (verify === 'true') {
+                const message = "User exists";
+                console.log(message);
+                return res.render('register', { message });
+            } else {
+                // Common code for user registration
+                const hashed = await passwordhash(req.body.password);
+                const user = new User({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: hashed
+                });
 
-    if(userexist){
-        let flag=true
+                const userData = await user.save();
+                const id = userData._id;
 
-        let message="user exist"
-        console.log(message);
-        res.render('register',{message})
-    }
-    else{
-        try {
-            let message
-            const hashed=await passwordhash(req.body.password)
-    
-            const user=new User({
-                name:req.body.name,
-                email:req.body.email,
-                password:hashed
-                
-            })
+                // Redirect to OTP page
+                return res.redirect(`/otp?id=${id}&mail=${mail}`);
+            }
+        } else {
+            // Common code for user registration
+            const hashed = await passwordhash(req.body.password);
+            const user = new User({
+                name: req.body.name,
+                email: req.body.email,
+                password: hashed
+            });
 
-           const userdata= await user.save();
+            const userData = await user.save();
+            const id = userData._id;
 
-           id=userdata._id
-          
-         
-           //res.redirect('otp')
-          res.redirect(`/otp?id=${id}&mail=${mail}`);
-       
-
-            
-            
-    
-    
-    
-       
-        } catch (error) {
-            console.log(error.message);
-            
+            // Redirect to OTP page
+            return res.redirect(`/otp?id=${id}&mail=${mail}`);
         }
-    
-
+    } catch (error) {
+        console.log(error.message);
+        const message = "An error occurred during registration";
+        return res.render('register', { message });
     }
-    
+};
 
-
-    
-}
 //loadotp-------------------------------------------------------------
 
 
@@ -273,28 +267,37 @@ const verifylogin=async(req,res)=>{
             const verifycheck= await userdata.verified
 
             if(verifycheck){
-                
+
+            const status= await userdata.status
+
+            if(status==='Active'){
                 req.session.userid=userdata.email
                 //console.log(req.session.userdata);
                 const track=req.session.userid
          
                 res.redirect('/')
 
-                
 
-                //console.log('login sucess');
+            }
+            else{
+                let message='Access Denied'
+                res.render('login',{message})
+                console.log('login failed1');
+
+            }
+
 
             }
             else{
                 let message='invalid username or password'
                 res.render('login',{message})
-                //console.log('login failed1');
+                console.log('login failed1');
             }
         }
         else{
             let message='invalid username or password'
             res.render('login',{message})
-            // console.log('login failed2');
+            console.log('login failed2');
         }
 
 
@@ -302,7 +305,7 @@ const verifylogin=async(req,res)=>{
     else{
         let message='invalid username or password'
         res.render('login',{message})
-        //console.log('login failed3');
+        console.log('login failed3');
 
     }
 
@@ -312,7 +315,7 @@ const verifylogin=async(req,res)=>{
     }
 }
 
-
+//logout------------------------------------
 const logout = async (req, res) => {
     try {
         

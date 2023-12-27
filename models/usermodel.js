@@ -16,6 +16,10 @@ const userschema=new mongoose.Schema({
     verified:{
         type:Boolean,
         default:false
+    },
+    status:{
+        type:String,
+        default:'Active'
     }
 
 })

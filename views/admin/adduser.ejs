@@ -1,0 +1,40 @@
+<%- include('../layout2/header') -%>
+<section class="content-main mt-80 mb-80">
+    <div class="card mx-auto card-login">
+        <div class="card-body">
+            <h4 class="card-title mb-4" style="text-align: center">Add a new User</h4>
+            <form action="/admin/adduser" method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input class="form-control" placeholder="Your name" type="text" name="name">
+                </div> <!-- form-group// -->
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" placeholder="Your email" type="text" name="email">
+                </div> <!-- form-group// -->
+              
+                <div class="mb-3">
+                    <label class="form-label" >Create password</label>
+                    <input class="form-control" placeholder="Password" type="password" name="password">
+                </div> <!-- form-group// -->
+                <% if (locals.message) { %>
+                    <p id="alert"><%= message %></p>
+                <% } %>
+                <div class="mb-3">
+                    <p class="small text-center text-muted">Enter the detailes to add a new user</p>
+                </div> <!-- form-group  .// -->
+                <div class="mb-4">
+                    <button type="submit" class="btn btn-primary w-100"> Login </button>
+                </div> <!-- form-group// -->
+                 <!-- form-group// -->
+            </form>
+            <div class="mb-4">
+                <a href="/admin/users" class="btn btn-secondary w-100">Cancel</a>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+
+<%- include('../layout2/footer') -%>

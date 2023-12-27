@@ -2,6 +2,7 @@ const { log } = require('console');
 const express=require('express')
 const app=express();
 const userroute=require('./routes/userroute')
+const adminroute=require('./routes/adminroute')
 const mongoose=require('mongoose')
 const nocache=require('nocache')
 
@@ -12,6 +13,9 @@ app.use(nocache())
 mongoose.connect('mongodb://localhost:27017/footshow')
 app.use('/',userroute)
 
+app.use('/admin',adminroute)
+
+
 
 
 
@@ -20,5 +24,5 @@ app.use('/',userroute)
 
 
 app.listen(port,()=>{
-    console.log("http://localhost:12/");
+    console.log("http://localhost:12/admin");
 })

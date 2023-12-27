@@ -1,3 +1,5 @@
+const { findOne } = require("../models/adminmodels");
+
 const islogin=async(req,res,next)=>{
     try {
         
@@ -33,7 +35,10 @@ const islogout=async(req,res,next)=>{
     }
 }
 
+
+
 module.exports={
     islogin,
-    islogout
+    islogout,
+    isblock
 }
