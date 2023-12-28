@@ -26,6 +26,7 @@ route.post('/register',usercontroll.register)
 route.get('/otp',usercontroll.loadotp)
 route.post('/otp',usercontroll.verifyotp)
 route.get('/logout',usercontroll.logout)
+
                       
 
 

@@ -2,7 +2,9 @@ const { logout } = require("./usercontroll")
 
 const Admin=require('../models/adminmodels')
 const User=require('../models/usermodel')
+const Category=require('../models/category')
 const bcrypt=require('bcrypt')
+const { checkout } = require("../routes/adminroute")
 
 //load login------------------------------------------
 
@@ -78,7 +80,7 @@ const laoddashbaord=async(re,res)=>{
 const loaduser=async(req,res)=>{
     try {
 
-        const data=await User.find({})
+        const data=await User.find({verified:true})
        
         res.render('users',{user:data})
     } catch (error) {
@@ -184,7 +186,235 @@ const unblockuser=async(req,res)=>{
         console.log(error.message);
     }
 }
+
+//load  category--------------------------------------------------------------------
+
+const loadcategory=async(req,res)=>{
+    try {
+        const category= await Category.find({})
+        res.render('category',{category})
+    } catch (error) {
+        console.log(error.message);
+    }
+
+}
   
+// add category--------------------------------------------------------------------
+
+const addcategory=async(req,res)=>{
+
+    try {
+
+        const iid= req.body.name
+        const check = await Category.find({  Category: { 
+            $regex: new RegExp("^" + iid.trim() + "$", "i") 
+          }  });
+
+        console.log();
+        if(check.length>0){
+            console.log('category exist');
+            let message='Category already exist'
+            const category= await Category.find({})
+            res.render('category',{category,message})
+
+        }
+        else{
+            const category= await new Category({
+                Category:req.body.name,
+                Status:req.body.status,
+                Description:req.body.Description
+                })
+        
+                if(category){
+                    console.log("raeched save");
+        
+                    await category.save()
+                    res.redirect('/admin/category')
+                }
+                else{
+                    let message="Category already exist"
+                    res.render()
+                    console.log("adding failed");
+                }
+
+        }
+        
+        
+    } catch (error) {
+        console.log(error.message);
+        
+    }
+}
+
+
+// laoad add catagery================================
+
+const loaddcata=async(req,res)=>{
+    try {
+        const id=req.query.id
+
+        const cata= await Category.findOne({_id:id})
+        
+        const category= await Category.find({})
+
+        res.render('category',{cata,category})
+
+
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+//update category=======================================
+
+
+const updatecata=async(req,res)=>{
+
+    try {
+        
+        const id=req.body.id
+        const cata=req.body.category
+        const newid= await Category.find({_id:id})
+        
+        
+        
+
+        const check = await Category.findOne({ 
+            Category: { 
+              $regex: new RegExp("^" + cata.trim() + "$", "i") 
+            } 
+          });
+          
+       
+        if(check){
+            const newq= check.id
+            if(newq!==id){
+                console.log('category exist');
+                let message='Category already exist'
+                const category= await Category.find({})
+                res.render('category',{category,message})
+
+
+            }
+            else{
+                console.log('updated by 1st else');
+                const edited= await Category.updateOne({_id:id},{$set:{
+                    Category:req.body.category,
+                    Status:req.body.status,
+                    Description:req.body.Description
+                }})
+                if(edited){
+                  console.log(edited);
+                    res.redirect('/admin/category')
+        
+                }
+                else{
+                    console.log('eror in eidt');
+                }
+            }
+            
+        }
+
+        else{
+            const edited= await Category.updateOne({_id:id},{$set:{
+                Category:req.body.category,
+                Status:req.body.status,
+                Description:req.body.Description
+            
+            }})
+            console.log('updated by second else');
+            if(edited){
+              console.log(edited);
+                res.redirect('/admin/category')
+    
+            }
+            else{
+                console.log('eror in eidt');
+            }
+
+        }
+
+        
+       
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+
+}
+
+
+
+//cataegory block----------------------------------------------------------------------------------------
+
+
+const catablock=async(req,res)=>{
+
+    try {
+        const id= req.query.id
+        const user=await Category.findOne({_id:id})
+        console.log(id);
+        console.log(`user ${user}`);
+
+        if(user){
+        
+
+            await Category.updateOne({_id:id},{$set:{Status:'Blocked'}})
+            const category= await Category.find({})
+            res.render('category',{category})
+            console.log('blocked');
+
+        }
+        else{
+            const category= await Category.find({})
+            res.render('category',{category})
+            console.log('block failed');
+        }
+
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+
+}
+
+
+// category unblock=============================================
+
+
+const cataunblock=async(req,res)=>{
+
+    try {
+        const id= req.query.id
+        const user=await Category.findOne({_id:id})
+      
+
+        if(user){
+        
+
+            await Category.updateOne({_id:id},{$set:{Status:'Active'}})
+            const category= await Category.find({})
+            res.render('category',{category})
+            console.log('unblocked');
+
+        }
+        else{
+            const category= await Category.find({})
+            res.render('category',{category})
+            console.log('unblock failed');
+        }
+
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+
+}
+
+
+
+
 module.exports={
     loadlogin,
     loginverify,
@@ -193,5 +423,11 @@ module.exports={
     loadadduser,
     adduser,
     blockuser,
-    unblockuser
+    unblockuser,
+    loadcategory,
+    addcategory,
+    loaddcata,
+    updatecata,
+    catablock,
+    cataunblock
 }

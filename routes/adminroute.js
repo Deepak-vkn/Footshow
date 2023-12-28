@@ -20,6 +20,12 @@ route.get('/adduser',admincontroll.loadadduser)
 route.post('/adduser',admincontroll.adduser)
 route.get('/block',admincontroll.blockuser)
 route.get('/unblock',admincontroll.unblockuser)
+route.get('/category',admincontroll.loadcategory)
+route.post('/category',admincontroll.addcategory)
+route.get('/addcata',admincontroll.loaddcata)
+route.post('/updatecata',admincontroll.updatecata)
+route.get('/catablock',admincontroll.catablock)
+route.get('/cataunblock',admincontroll.cataunblock)
 
 
 module.exports=route
