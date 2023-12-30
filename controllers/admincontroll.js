@@ -2,9 +2,10 @@ const { logout } = require("./usercontroll")
 
 const Admin=require('../models/adminmodels')
 const User=require('../models/usermodel')
+const Product=require('../models/product')
 const Category=require('../models/category')
 const bcrypt=require('bcrypt')
-const { checkout } = require("../routes/adminroute")
+const { checkout, render } = require("../routes/adminroute")
 
 //load login------------------------------------------
 
@@ -354,8 +355,7 @@ const catablock=async(req,res)=>{
     try {
         const id= req.query.id
         const user=await Category.findOne({_id:id})
-        console.log(id);
-        console.log(`user ${user}`);
+        
 
         if(user){
         
@@ -413,8 +413,6 @@ const cataunblock=async(req,res)=>{
 }
 
 
-
-
 module.exports={
     loadlogin,
     loginverify,
@@ -429,5 +427,6 @@ module.exports={
     loaddcata,
     updatecata,
     catablock,
-    cataunblock
+    cataunblock,
+
 }
