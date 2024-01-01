@@ -310,7 +310,8 @@ const updatecata=async(req,res)=>{
                     res.redirect('/admin/category')
         
                 }
-                else{
+                else
+                {
                     console.log('eror in eidt');
                 }
             }

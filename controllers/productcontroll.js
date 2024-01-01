@@ -7,6 +7,8 @@ const Product=require('../models/product')
 const Category=require('../models/category')
 const bcrypt=require('bcrypt')
 const { checkout, render } = require("../routes/adminroute")
+const fs = require('fs');
+const path = require('path');
 
 
 
@@ -20,7 +22,7 @@ const loadproduct= async(req,res)=>{
     
         // const prod= await Product.find({})
         const prod = await Product.find().populate('category').lean();
-        console.log(prod);
+        
         res.render('productlist',{prod})
     } catch (error) {
         console.log(error.message);
@@ -145,9 +147,16 @@ const loadeditproduct=async(req,res)=>{
 
     try {
 
-        const product=await Product.find({})
 
-        res.render('editproduct',{product})
+        const id=req.query.id
+        
+        const product = await Product.find({_id:id}).populate('category').lean();
+        console.log(`product is ${product}`);
+        const categories = await Category.find();
+
+        
+
+        res.render('editproduct',{product,categories})
 
     
         
@@ -156,7 +165,142 @@ const loadeditproduct=async(req,res)=>{
     }
 
 }
+// edit product----------------------------------------------------------------
+// const editproduct =async(req,res)=>{
+//     try {
 
+//         const id= req.body.id
+//         const name=req.body.name
+//         const prod = await Product.findOne({_id :id});
+       
+//         const category = await Category.findOne({ Category: req.body.category });
+      
+//         const updatedProduct=await Product.updateOne({_id:id},{$set:{
+//             name:req.body.name,
+//             gender:req.body.gender,
+//             price:req.body.price,
+//             size:req.body.size,
+//             description:req.body.description,
+//             brand:req.body.brand,
+//             color:req.body.color,
+//             status:req.body.status,
+//             category:req.body.category
+            
+            
+//         }})
+
+//         // if(eidtedprod){
+//         //     res.redirect('/admin/productlist')
+//         // }
+//         // else{
+//         //     console.log('not edited');
+//         // }
+//         if (req.files && req.files.length > 0) {
+//             // Assuming the input field for images is named 'newImages'
+//             const newImages = req.files.map(file => file.filename);
+//             updatedProduct.image = prod.image.concat(newImages);
+//         }
+
+//         // Update the product
+//         const updatedProd = await Product.updateOne({ _id: id }, { $set: updatedProduct });
+
+//         if (updatedProd) {
+//             res.redirect('/admin/productlist');
+//         } else {
+//             console.log('Product not updated');
+//         }
+//     } catch (error) {
+//         console.log(error.message);
+//         res.status(500).send('Internal server error');
+//     }
+// };
+const editproduct = async (req, res) => {
+    try {
+        const id = req.body.id;
+        const name = req.body.name;
+        const prod = await Product.findOne({ _id: id });
+        const category = await Category.findOne({ Category: req.body.category });
+
+        const updatedProduct = {
+            name: req.body.name,
+            gender: req.body.gender,
+            price: req.body.price,
+            size: req.body.size,
+            description: req.body.description,
+            brand: req.body.brand,
+            color: req.body.color,
+            status: req.body.status,
+            category: req.body.category,
+        };
+
+        const newImages = req.files['newImages'];
+        const replaceImages = req.files['replaceImages'];
+
+        // Handle replacement images
+        if (replaceImages && replaceImages.length > 0) {
+            updatedProduct.image = replaceImages.map(file => file.filename);
+        } else {
+            // No replacement images, append new images to the existing ones
+            updatedProduct.image = prod.image.concat(newImages.map(file => file.filename));
+        }
+
+        // Update the product
+        const updatedProd = await Product.updateOne({ _id: id }, { $set: updatedProduct });
+
+        if (updatedProd) {
+            res.redirect('/admin/productlist');
+        } else {
+            console.log('Product not updated');
+        }
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send('Internal server error');
+    }
+};
+
+
+//delete image------------------------------------------------
+
+
+
+const deleteimage = async (req, res) => {
+    try {
+        const index = req.query.index;
+
+        // Assuming you have a product object with an 'image' property
+        const product = await Product.findOne({ _id: req.query.id });
+
+        // Check if the product is found
+        if (!product) {
+            return res.status(404).send('Product not found');
+        }
+
+        // Check if the index is valid
+        if (index >= 0 && index < product.image.length) {
+            // Get the filename of the image at the specified index
+            const filenameToDelete = product.image[index];
+
+            // Construct the file path
+            const filePath = path.join(__dirname, '../public/images', filenameToDelete);
+
+            // Delete the file
+            fs.unlinkSync(filePath);
+
+            // Update the database to remove the image reference
+            await Product.findByIdAndUpdate(product._id, { $pull: { image: filenameToDelete } });
+
+            // Send a success response
+            res.redirect(`/admin/editproduct?id=${req.query.id}`);
+            
+        } else {
+            // Send an error response if the index is out of bounds
+            res.status(400).send('Invalid index');
+        }
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send('Internal Server Error');
+    }
+};
 
 
 module.exports={
@@ -165,6 +309,9 @@ module.exports={
     addproduct,
     blockproduct,
     productunblock,
-   loadeditproduct
+    loadeditproduct,
+    editproduct,
+    deleteimage
+    
 
 }

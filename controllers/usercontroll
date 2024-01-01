@@ -30,7 +30,7 @@ const home=async(req,res)=>{
     }
     
 }
-//password hashing------------------------------------------------------
+//password hashing---------------------------------------------------------------
 
 
 const passwordhash=async(password)=>{

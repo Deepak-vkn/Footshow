@@ -66,5 +66,10 @@ route.post('/addproduct', upload.array('image', 5), productcontroll.addproduct);
 route.get('/productblock',productcontroll.blockproduct)
 route.get('/productunblock',productcontroll.productunblock)
 route.get('/editproduct',productcontroll.loadeditproduct)
+//route.post('/editproduct',upload.array( 'replaceImages', 5),productcontroll.editproduct)
+route.post('/editproduct', upload.fields([{ name: 'newImages', maxCount: 5 }, { name: 'replaceImages', maxCount: 5 }]), productcontroll.editproduct);
+route.get('/deleteimage',productcontroll.deleteimage)
+
+
 
 module.exports=route

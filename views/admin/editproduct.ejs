@@ -172,105 +172,144 @@
             </ul>
         </div>
     </header>
-    <form  action="/admin/addproduct" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+    <form  action="/admin/editproduct" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
     <section class="content-main">
         <div class="row">
             <div class="col-9">
                 <div class="content-header">
-                    <h2 class="content-title">Add New Product</h2>
+                    <h2 class="content-title">Edit  Product</h2>
                     <div>
-                        <button class="btn btn-md rounded font-sm hover-up">Publish Product</button>
+                        
+                        <button class="btn btn-md rounded font-sm hover-up">Update Product</button>
                     </div>
                 </div>
             </div>
+           
             <div class="col-lg-6">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <div class="mb-4">
-                            <label for="product_title" class="form-label">Product Name</label>
-                            <input type="text" placeholder="Type here" class="form-control" id="product_title" name="name" required>
-                        </div>
-                        <div class="row gx-3">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label" name="gender"required>Gender</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="gender" value="male" id="genderMale">
-                                            <label class="form-check-label" for="genderMale">Male</label>
+                        <% product.forEach((item)=>{ %>
+                            
+                            <div class="mb-4">
+                                <label for="product_title" class="form-label">Product Name</label>
+                                <input type="text"  class="form-control" id="product_title" name="name" value='<%= item.name %>' required>
+                            </div>
+                            
+                            <div class="row gx-3">
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Gender</label>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-check">
+                                                
+                                                <input class="form-check-input" type="radio" name="gender" value="male" id="genderMale" <%= item.gender === 'male' ? 'checked' : '' %>>
+                                                <label class="form-check-label" for="genderMale">Male</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="gender" value="female" id="genderFemale">
-                                            <label class="form-check-label" for="genderFemale">Female</label>
+                                        
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gender" value="female" id="genderFemale" <%= item.gender === 'female' ? 'checked' : '' %>>
+                                                <label class="form-check-label" for="genderFemale">Female</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <input type="hidden" name="id" value="<%= item._id %>">
+                                <div class="col-md-4  mb-3">
+                                    <label for="product_color" class="form-label">Color</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="color" name="color" value='<%= item.color %>' required>
+                                </div>
+                                <div class="col-md-4  mb-3">
+                                    <label for="product_size" class="form-label">Size</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="size"name="size"  value='<%= item.size %>' required>
+                                </div>
                             </div>
-                            
-                            <div class="col-md-4  mb-3">
-                                <label for="product_color" class="form-label">Color</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="product_color" name="color" required>
-                            </div>
-                            <div class="col-md-4  mb-3">
-                                <label for="product_size" class="form-label">Size</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="product_size"name="size" required>
+                            <div class="mb-4">
+                                <label for="product_brand" class="form-label">Brand</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_brand" name="brand"  value='<%= item.brand %>'required>
                             </div>
                         </div>
-                        <div class="mb-4">
-                            <label for="product_brand" class="form-label">Brand</label>
-                            <input type="text" placeholder="Type here" class="form-control" id="product_brand" name="brand"required>
+                    </div> <!-- card end// -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div>
+                                <label class="form-label">Description</label>
+                                <textarea placeholder="Type here" class="form-control" rows="4"name="description"  required><%= item.description %></textarea>
+                            </div>
                         </div>
-                    </div>
-                </div> <!-- card end// -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div>
-                            <label class="form-label">Description</label>
-                            <textarea placeholder="Type here" class="form-control" rows="4"name="description" required></textarea>
+                    </div> <!-- card end// -->
+                    <!-- <div class="card mb-4">
+                        <div class="card-body">
+                            <div>
+                                <label class="form-label">Images</label>
+                                
+                                <input type="file" class="form-control" name="image" accept="image/*" required multiple >
+                            </div>
                         </div>
-                    </div>
-                </div> <!-- card end// -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div>
-                            <label class="form-label">Images</label>
-                            <!-- <input class="form-control" type="file" name="image" required> -->
-                            <!-- <input class="form-control" type="file" name="image"  required multiple> -->
-                            <input type="file" class="form-control" name="image" accept="image/*" required multiple>
-                        </div>
-                    </div>
-                </div> <!-- card end// -->
+                    </div>  -->
+
+               
+
+                        <!-- card end// -->
             </div>
             <div class="col-lg-3">
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="mb-4">
                             <label class="form-label">Price</label>
-                            <input type="text" placeholder="Type here" class="form-control" name="price" required >
+                            <input type="text" placeholder="Type here" class="form-control" name="price"  value='<%= item.price %>' required >
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Status</label>
-                            <select class="form-select">
-                                <option selected>Active</option>
-                                <option>Blocked</option>
+                            <select class="form-select" name="status">
+                            <option value="active" <%= item.status === 'Active' ? 'selected' : '' %>>Active</option>
+                            <option value="blocked" <%= item.status === 'Blocked' ? 'selected' : '' %>>Blocked</option>
                             </select>
+
                         </div>
                         <h5 class="mb-3">Categories</h5>
-                        <div class="mb-3">
-                            <select class="form-select" id="product-cat" name="category">
-
-                                <option value='<% category._id %>' disabled selected>Select Category</option>
-                                <% category.forEach((cata)=>{ %>
-
-                                    <option ><%= cata.Category %></option>
-                                <% }) %>
-                               
-                                
-                            </select>
+                        <select class="form-select" id="product-cat" name="category">
+                            <option value='' disabled>Select Category</option>
+                            <% categories.forEach((cata) => { %>
+                                <option value='<%= cata._id %>' 
+                                    <% if (product.category && product.category._id.toString() === cata._id.toString()) { %>
+                                        selected
+                                    <% } %>
+                                >
+                                    <%= cata.Category %>
+                                </option>
+                            <% }) %>
+                        </select>
+                       <!-- Inside your EJS template -->
+                       <% if (item.image.length < 4) { %>
+                        <div class="mb-4">
+                            <label class="form-label">New Image</label>
+                            <input type="file" class="form-control" name="newImages" accept="image/*" multiple>
                         </div>
+                    <% } %>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Replace All Images</label>
+                        <input type="file" class="form-control" name="replaceImages" accept="image/*" multiple>
                     </div>
+                    <div class="mb-4">
+                        <label class="form-label">All Images</label>
+                        <% item.image.forEach((image, index) => { %>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <img src="/images/<%= image %>" alt="Product Image" style="width: 30px; height: 30px; margin-right: 5px;">
+                                <a href="/admin/deleteimage?index=<%= index %>&amp;id=<%=item._id %>" class="text-danger" >Delete</a>
+                            </div>
+                        <% }) %>
+                    </div>
+
+
+                        </div>
+
+                    </div>
+                    <% }) %> 
                 </div> <!-- card end// -->
             </div>
         </div>
@@ -309,5 +348,6 @@
         }
         return true; // Allow form submission
     }
-    </script>
+
+</script>
 <%- include('../layout2/footer') -%>
