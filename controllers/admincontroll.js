@@ -1,4 +1,4 @@
-const { logout } = require("./usercontroll")
+
 
 const Admin=require('../models/adminmodels')
 const User=require('../models/usermodel')
@@ -45,6 +45,9 @@ const loginverify=async(req,res)=>{
             const passwordcomapre=await bcrypt.compare(password,adminpass)
 
             if(passwordcomapre){
+
+                req.session.admintrack=mail
+                console.log(req.session.admintrack);
                 
                 res.redirect('/admin/dashboard')
             }
@@ -291,7 +294,7 @@ const updatecata=async(req,res)=>{
         if(check){
             const newq= check.id
             if(newq!==id){
-                console.log('category exist');
+              
                 let message='Category already exist'
                 const category= await Category.find({})
                 res.render('category',{category,message})
@@ -299,14 +302,14 @@ const updatecata=async(req,res)=>{
 
             }
             else{
-                console.log('updated by 1st else');
+              
                 const edited= await Category.updateOne({_id:id},{$set:{
                     Category:req.body.category,
                     Status:req.body.status,
                     Description:req.body.Description
                 }})
                 if(edited){
-                  console.log(edited);
+                  
                     res.redirect('/admin/category')
         
                 }
@@ -325,9 +328,9 @@ const updatecata=async(req,res)=>{
                 Description:req.body.Description
             
             }})
-            console.log('updated by second else');
+            
             if(edited){
-              console.log(edited);
+             
                 res.redirect('/admin/category')
     
             }
@@ -364,13 +367,13 @@ const catablock=async(req,res)=>{
             await Category.updateOne({_id:id},{$set:{Status:'Blocked'}})
             const category= await Category.find({})
             res.render('category',{category})
-            console.log('blocked');
+           
 
         }
         else{
             const category= await Category.find({})
             res.render('category',{category})
-            console.log('block failed');
+           
         }
 
         
@@ -413,6 +416,27 @@ const cataunblock=async(req,res)=>{
 
 }
 
+//admin logout ============================================
+
+const logout =async(req,res)=>{
+
+    try {
+        // console.log(req.session.admintrack);
+        req.session.destroy()
+        res.redirect('/admin')
+
+        
+    } catch (error) {
+        console.logerror.message();
+        
+    }
+
+
+
+}
+
+
+
 
 module.exports={
     loadlogin,
@@ -429,5 +453,6 @@ module.exports={
     updatecata,
     catablock,
     cataunblock,
+    logout
 
 }

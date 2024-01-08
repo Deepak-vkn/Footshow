@@ -41,3 +41,11 @@
     font-size: 14px; /* Adjust font size as needed */
     padding: 8px 16px; /* Adjust padding as needed */
 }
+
+  #home-image{
+    height: 377px;
+    width: 277px; /* adjust as needed */
+  }
+ /* #shop-image {
+    max-width: 100%;
+    height: auto; /* This ensures that the image maintains its aspect ratio */

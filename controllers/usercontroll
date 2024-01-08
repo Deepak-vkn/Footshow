@@ -1,8 +1,10 @@
 const { log } = require('console')
 const User=require('../models/usermodel')
+const Product=require('../models/product')
 const bcrypt=require('bcrypt')
 const Otp=require('../models/otp')
 const OTPgenerator=require('otp-generator')
+const Category=require('../models/category')
 const nodemailer=require('nodemailer')
 const SendmailTransport = require('nodemailer/lib/sendmail-transport')
 
@@ -12,13 +14,15 @@ const SendmailTransport = require('nodemailer/lib/sendmail-transport')
 const home=async(req,res)=>{
     try{
         let track
+        const product = await Product.find({status:'Active'}).populate('category').lean();
         if(req.session.userid){
             track=true
-            res.render('home',{track})
+           
+            res.render('home',{track,product})
         }
         else{
             track=false
-            res.render('home',{track})
+            res.render('home',{track,product})
         }
        
 
@@ -332,8 +336,39 @@ const logout = async (req, res) => {
     }
 };
 
+//load shop-------------------------------------------------------------------------------------------
 
 
+const loadshop=async(req,res)=>{
+
+    try {
+
+        const product = await Product.find({status:'Active'}).populate('category').lean();
+        const category = await Category.find({})
+       
+        //console.log(category);
+        res.render('shop',{product,category})
+        
+    } catch (error) {
+        console.log(error.message);    }
+}
+
+
+// load single product --------------------------------------------------------------------------------
+
+const loadsingleproduct=async(req,res)=>{
+
+    try {
+    
+        const product = await Product.findOne({_id:req.query.id}).populate('category').lean();
+        //console.log(product); 
+        res.render('singleproduct',{product})
+        
+    } catch (error) {
+        console.log(error.message);
+        
+    }
+}
 module.exports={
     home,
     loadlogin,
@@ -342,7 +377,9 @@ module.exports={
     loadotp,
     verifyotp,
     verifylogin,
-    logout
+    logout,
+    loadshop,
+    loadsingleproduct
     
     
 

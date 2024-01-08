@@ -26,7 +26,8 @@ route.post('/register',usercontroll.register)
 route.get('/otp',usercontroll.loadotp)
 route.post('/otp',usercontroll.verifyotp)
 route.get('/logout',usercontroll.logout)
-
+route.get('/shop',usercontroll.loadshop)
+route.get('/singleproduct',usercontroll.loadsingleproduct)
                       
 
 

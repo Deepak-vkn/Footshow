@@ -25,6 +25,7 @@ const loadproduct= async(req,res)=>{
         
         res.render('productlist',{prod})
     } catch (error) {
+        res.status(400).send('load product falied');
         console.log(error.message);
     }
 }
@@ -41,6 +42,7 @@ const loadaddproduct=async(req,res)=>{
         res.render('addproduct',{category})
     } catch (error) {
         console.log(error.message);
+        res.status(400).send('Load add product falied');
     }
 }
 
@@ -49,8 +51,18 @@ const loadaddproduct=async(req,res)=>{
 
 const addproduct=async(req,res)=>{
     try {
+        console.log(req.body.category);
+        const category = await Category.findOne({
+            Category: {
+                $regex: new RegExp("^" + req.body.category + "$", "i"),
+            },
+        });
       
-        const category = await Category.findOne({ Category: req.body.category });
+        // const category = await Category.findOne({ Category: req.body.category });
+        if (!category) {
+            // Handle the case where the category is not found
+            return res.status(404).send('Category not found');
+        }
                  
            const images = req.files.map(file => file.filename);
             
@@ -74,13 +86,15 @@ const addproduct=async(req,res)=>{
             res.redirect('/admin/productlist')
         }
         else{
-            console.log('not saves');
+            res.status(400).send('Creating new product falied');
+           
         }
         
 
 
     } 
     catch (error) {
+        res.status(400).send('Creating new product falied');
         console.log(error.message);
     }
 }
@@ -103,12 +117,13 @@ const blockproduct=async(req,res)=>{
         }
         else{
             
-            console.log('block failed');
+            
             res.redirect('/admin/productlist')
         }
 
         
     } catch (error) {
+        res.status(400).send('Block product falied');
         console.log(error.message);
     }
 }
@@ -131,12 +146,14 @@ const productunblock=async(req,res)=>{
 
         }
         else{
+            res.status(400).send('Unblock product falied');
             
-            console.log('unblock failed');
+            
             res.redirect('/admin/productlist')
         }
 
     } catch (error) {
+        res.status(400).send('Unblock product falied');
         console.log(error.message);
     }
 }
@@ -151,7 +168,7 @@ const loadeditproduct=async(req,res)=>{
         const id=req.query.id
         
         const product = await Product.find({_id:id}).populate('category').lean();
-        console.log(`product is ${product}`);
+      
         const categories = await Category.find();
 
         
@@ -161,6 +178,7 @@ const loadeditproduct=async(req,res)=>{
     
         
     } catch (error) {
+        res.status(400).send('load edit product falied');
         console.log(error.message);
     }
 
@@ -217,7 +235,6 @@ const loadeditproduct=async(req,res)=>{
 const editproduct = async (req, res) => {
     try {
         const id = req.body.id;
-        const name = req.body.name;
         const prod = await Product.findOne({ _id: id });
         const category = await Category.findOne({ Category: req.body.category });
 
@@ -233,23 +250,32 @@ const editproduct = async (req, res) => {
             category: req.body.category,
         };
 
-        const newImages = req.files['newImages'];
-        const replaceImages = req.files['replaceImages'];
+       
 
-        // Handle replacement images
-        if (replaceImages && replaceImages.length > 0) {
-            updatedProduct.image = replaceImages.map(file => file.filename);
-        } else {
-            // No replacement images, append new images to the existing ones
-            updatedProduct.image = prod.image.concat(newImages.map(file => file.filename));
+        // Check if 'newImages' and 'replaceImages' are present in req.files
+        if (req.files) {
+            const newImages = req.files['newImages'];
+            const replaceImages = req.files['replaceImages'];
+
+            // Handle replacement images
+            if (replaceImages && replaceImages.length > 0) {
+                updatedProduct.image = replaceImages.map(file => file.filename);
+            } else {
+                // No replacement images, check if newImages is present
+                updatedProduct.image = (newImages && newImages.length > 0)
+                    ? prod.image.concat(newImages.map(file => file.filename))
+                    : prod.image;
+            }
         }
 
         // Update the product
         const updatedProd = await Product.updateOne({ _id: id }, { $set: updatedProduct });
+        
 
         if (updatedProd) {
             res.redirect('/admin/productlist');
         } else {
+            res.status(500).send('PRODUCT NOT UPDATED');
             console.log('Product not updated');
         }
     } catch (error) {

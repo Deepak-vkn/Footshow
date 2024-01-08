@@ -12,21 +12,25 @@
     </div>
     <nav>
         <ul class="menu-aside">
-            <li class="menu-item">
-                <a class="menu-link" href="index.html"> <i class="icon material-icons md-home"></i>
+            <li class="menu-item ">
+                <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
                     <span class="text">Dashboard</span>
                 </a>
             </li>
-            <li class="menu-item has-submenu">
-                <a class="menu-link" href="page-products-list.html"> <i class="icon material-icons md-shopping_bag"></i>
+            <li class="menu-item">
+                <a class="menu-link" href="/admin/users"> <i class="icon material-icons md-stars"></i>
+                    <span class="text">Users</span> </a>
+            </li>
+            <li class="menu-item">
+                <a class="menu-link" href="/admin/category"> <i class="icon material-icons md-stars"></i>
+                    <span class="text">Categories</span> </a>
+            </li>
+            <li class="menu-item active ">
+               
+                <a class="menu-link" href="/admin/productlist"> <i class="icon material-icons md-shopping_bag"></i>
                     <span class="text">Products</span>
                 </a>
-                <div class="submenu">
-                    <a href="page-products-list.html">Product List</a>
-                    <a href="page-products-grid.html">Product grid</a>
-                    <a href="page-products-grid-2.html">Product grid 2</a>
-                    <a href="page-categories.html">Categories</a>
-                </div>
+                
             </li>
             <li class="menu-item has-submenu">
                 <a class="menu-link" href="page-orders-1.html"> <i class="icon material-icons md-shopping_cart"></i>
@@ -166,7 +170,7 @@
                         <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
                         <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                        <a class="dropdown-item text-danger" href="/admin/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
                     </div>
                 </li>
             </ul>
@@ -220,12 +224,23 @@
                                 <input type="hidden" name="id" value="<%= item._id %>">
                                 <div class="col-md-4  mb-3">
                                     <label for="product_color" class="form-label">Color</label>
-                                    <input type="text" placeholder="Type here" class="form-control" id="color" name="color" value='<%= item.color %>' required>
+                                    <input type="text" placeholder="Type here" class="form-control" id="color" name="color" value='<%= item.color %>'required pattern="[A-Za-z\s]+" title="Only letters are allowed">
                                 </div>
-                                <div class="col-md-4  mb-3">
+                                <!-- <div class="col-md-4  mb-3">
                                     <label for="product_size" class="form-label">Size</label>
                                     <input type="text" placeholder="Type here" class="form-control" id="size"name="size"  value='<%= item.size %>' required>
+                                </div> -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="product_size" class="form-label">Size</label>
+                                    
+                                    <!-- Display dropdown for editing existing size -->
+                                    <select class="form-control" id="product_size" name="size" required>
+                                        <% for (var i = 4; i <= 10; i++) { %>
+                                            <option value="<%= i %>" <%= item.size == i ? 'selected' : '' %>><%= i %></option>
+                                        <% } %>
+                                    </select>
                                 </div>
+                                
                             </div>
                             <div class="mb-4">
                                 <label for="product_brand" class="form-label">Brand</label>
@@ -260,13 +275,13 @@
                     <div class="card-body">
                         <div class="mb-4">
                             <label class="form-label">Price</label>
-                            <input type="text" placeholder="Type here" class="form-control" name="price"  value='<%= item.price %>' required >
+                            <input type="text" placeholder="Type here" class="form-control" name="price"  value='<%= item.price %>' pattern="[0-9\s]+" title="Only numbers and spaces are allowed" required >
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Status</label>
                             <select class="form-select" name="status">
-                            <option value="active" <%= item.status === 'Active' ? 'selected' : '' %>>Active</option>
-                            <option value="blocked" <%= item.status === 'Blocked' ? 'selected' : '' %>>Blocked</option>
+                            <option value="Active" <%= item.status === 'Active' ? 'selected' : '' %>>Active</option>
+                            <option value="Blocked" <%= item.status === 'Blocked' ? 'selected' : '' %>>Blocked</option>
                             </select>
 
                         </div>
@@ -340,13 +355,74 @@
 
 
 <script>
-    function validateForm() {
-        var fileInput = document.querySelector('input[type="file"]');
-        if (fileInput.files.length > 5) {
-            alert("Please select a maximum of 5 images.");
-            return false; // Prevent form submission
+   function validateForm() {
+        var productName = document.getElementById('product_title').value;
+        var gender = document.querySelector('input[name="gender"]:checked');
+        var color = document.getElementById('product_color').value;
+        var size = document.getElementById('product_size').value;
+        var brand = document.getElementById('product_brand').value;
+        var description = document.getElementsByName('description')[0].value;
+        var price = document.getElementsByName('price')[0].value;
+        var status = document.querySelector('.form-select').value;
+       
+        var images = document.getElementsByName('image')[0].files;
+
+        // Basic name validation
+        if (productName.trim() === '') {
+            alert('Product Name cannot be empty');
+            return false;
         }
-        return true; // Allow form submission
+
+        // Gender validation
+        if (!gender) {
+            alert('Please select a gender');
+            return false;
+        }
+
+        // Basic color validation
+        if (color.trim() === '') {
+            alert('Color cannot be empty');
+            return false;
+        }
+
+        // Basic size validation
+        if (size.trim() === '') {
+            alert('Size cannot be empty');
+            return false;
+        }
+
+        // Basic brand validation
+        if (brand.trim() === '') {
+            alert('Brand cannot be empty');
+            return false;
+        }
+
+        // Basic description validation
+        if (description.trim() === '') {
+            alert('Description cannot be empty');
+            return false;
+        }
+
+        // Price validation - Check if it is a valid number
+        if (isNaN(parseFloat(price)) || !isFinite(price)) {
+            alert('Please enter a valid price');
+            return false;
+        }
+
+        // Basic status validation
+        if (status.trim() === '') {
+            alert('Please select a status');
+            return false;
+        }
+
+       
+
+        // Images validation - Check if at least one image is selected
+        if (images.length === 0) {
+            alert('Please select at least one image');
+            return false;
+        }
+        
     }
 
 </script>

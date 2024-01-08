@@ -4,15 +4,23 @@ const admincontroll=require('../controllers/admincontroll')
 const productcontroll=require('../controllers/productcontroll')
 const bodyparser=require('body-parser')
 const path = require('path')
+const adminmiddle=require('../middleware/adminmiddle')
+const confi=require("../configuration/confi")
 route.use(express.static('public'))
 route.use(bodyparser.json())
 route.use(bodyparser.urlencoded({extended:true}))
 const multer = require('multer');
-
+const session=require('express-session')
 route.set('view engine','ejs')
 route.set('views','views/admin')
 
-
+route.use(
+  session({
+      secret:confi.confi,
+      resave: false,
+      saveUninitialized: false
+  })
+);
 
 // const storage = multer.diskStorage({
 //     destination: function (req, file, cb) {
@@ -46,29 +54,31 @@ const upload = multer({ storage: storage });
 
 
 
-route.get('/',admincontroll.loadlogin)
+route.get('/',adminmiddle.islogout,admincontroll.loadlogin)
 route.post('/',admincontroll.loginverify)
-route.get('/dashboard',admincontroll.laoddashbaord)
-route.get('/users',admincontroll.loaduser)
-route.get('/adduser',admincontroll.loadadduser)
+route.get('/dashboard',adminmiddle.islogin,admincontroll.laoddashbaord)
+route.get('/users',adminmiddle.islogin,admincontroll.loaduser)
+route.get('/adduser',adminmiddle.islogin,admincontroll.loadadduser)
 route.post('/adduser',admincontroll.adduser)
-route.get('/block',admincontroll.blockuser)
-route.get('/unblock',admincontroll.unblockuser)
-route.get('/category',admincontroll.loadcategory)
+route.get('/block',adminmiddle.islogin,admincontroll.blockuser)
+route.get('/unblock',adminmiddle.islogin,admincontroll.unblockuser)
+route.get('/category',adminmiddle.islogin,admincontroll.loadcategory)
 route.post('/category',admincontroll.addcategory)
-route.get('/addcata',admincontroll.loaddcata)
+route.get('/addcata',adminmiddle.islogin,admincontroll.loaddcata)
 route.post('/updatecata',admincontroll.updatecata)
-route.get('/catablock',admincontroll.catablock)
-route.get('/cataunblock',admincontroll.cataunblock)
-route.get('/productlist',productcontroll.loadproduct)
-route.get('/addproduct',productcontroll.loadaddproduct)
+route.get('/catablock',adminmiddle.islogin,admincontroll.catablock)
+route.get('/cataunblock',adminmiddle.islogin,admincontroll.cataunblock)
+route.get('/productlist',adminmiddle.islogin,productcontroll.loadproduct)
+route.get('/addproduct',adminmiddle.islogin,productcontroll.loadaddproduct)
 route.post('/addproduct', upload.array('image', 5), productcontroll.addproduct);
-route.get('/productblock',productcontroll.blockproduct)
-route.get('/productunblock',productcontroll.productunblock)
-route.get('/editproduct',productcontroll.loadeditproduct)
+route.get('/productblock',adminmiddle.islogin,productcontroll.blockproduct)
+route.get('/productunblock',adminmiddle.islogin,productcontroll.productunblock)
+route.get('/editproduct',adminmiddle.islogin,productcontroll.loadeditproduct)
 //route.post('/editproduct',upload.array( 'replaceImages', 5),productcontroll.editproduct)
 route.post('/editproduct', upload.fields([{ name: 'newImages', maxCount: 5 }, { name: 'replaceImages', maxCount: 5 }]), productcontroll.editproduct);
-route.get('/deleteimage',productcontroll.deleteimage)
+route.get('/deleteimage',adminmiddle.islogin,productcontroll.deleteimage)
+route.get('/logout',admincontroll.logout)
+
 
 
 

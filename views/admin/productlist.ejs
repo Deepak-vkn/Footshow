@@ -13,21 +13,24 @@
         </div>
         <nav>
             <ul class="menu-aside">
-                <li class="menu-item">
-                    <a class="menu-link" href="index.html"> <i class="icon material-icons md-home"></i>
+                <li class="menu-item ">
+                    <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
-                <li class="menu-item has-submenu active">
-                    <a class="menu-link" href="page-products-list.html"> <i class="icon material-icons md-shopping_bag"></i>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/users"> <i class="icon material-icons md-stars"></i>
+                        <span class="text">Users</span> </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/admin/category"> <i class="icon material-icons md-stars"></i>
+                        <span class="text">Categories</span> </a>
+                </li>
+                <li class="menu-item active">
+                    <a class="menu-link" href="/admin/productlist"> <i class="icon material-icons md-shopping_bag"></i>
                         <span class="text">Products</span>
                     </a>
-                    <div class="submenu">
-                        <a href="page-products-list.html" class="active">Product List</a>
-                        <a href="page-products-grid.html">Product grid</a>
-                        <a href="page-products-grid-2.html">Product grid 2</a>
-                        <a href="page-categories.html">Categories</a>
-                    </div>
+                    
                 </li>
                 <li class="menu-item has-submenu ">
                     <a class="menu-link" href="page-orders-1.html"> <i class="icon material-icons md-shopping_cart"></i>
@@ -51,17 +54,7 @@
                         <a href="page-seller-detail.html">Seller profile</a>
                     </div>
                 </li>
-                <li class="menu-item has-submenu">
-                    <a class="menu-link" href="page-form-product-1.html"> <i class="icon material-icons md-add_box"></i>
-                        <span class="text">Add product</span>
-                    </a>
-                    <div class="submenu">
-                        <a href="page-form-product-1.html">Add product 1</a>
-                        <a href="page-form-product-2.html">Add product 2</a>
-                        <a href="page-form-product-3.html">Add product 3</a>
-                        <a href="page-form-product-4.html">Add product 4</a>
-                    </div>
-                </li>
+                
                 <li class="menu-item has-submenu">
                     <a class="menu-link" href="page-transactions-1.html"> <i class="icon material-icons md-monetization_on"></i>
                         <span class="text">Transactions</span>
@@ -167,7 +160,7 @@
                             <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
                             <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                            <a class="dropdown-item text-danger" href="/admin/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
                         </div>
                     </li>
                 </ul>
@@ -177,7 +170,7 @@
             <div class="content-header">
                 <div>
                     <h2 class="content-title card-title">Products List</h2>
-                    <p>Lorem ipsum dolor sit amet.</p>
+                   
                 </div>
                 <div>
                     
@@ -235,8 +228,8 @@
                                     <% prod.forEach((product) => { %>
                                         <tr>
                                             <td><%= product.name %></td>
-                                            <td><%= product.category.Category %></td>
-                                            <td><%= product.price %></td>
+                                            <td><%= product.category ? product.category.Category : 'N/A' %></td>
+                                            <td><%= product.price  %></td>
                                             <td><%= product.gender %></td>
                                             <td><%= product.brand %></td>
                                             <td>
