@@ -54,12 +54,11 @@ const upload = multer({ storage: storage });
 
 
 
+
 route.get('/',adminmiddle.islogout,admincontroll.loadlogin)
 route.post('/',admincontroll.loginverify)
 route.get('/dashboard',adminmiddle.islogin,admincontroll.laoddashbaord)
 route.get('/users',adminmiddle.islogin,admincontroll.loaduser)
-route.get('/adduser',adminmiddle.islogin,admincontroll.loadadduser)
-route.post('/adduser',admincontroll.adduser)
 route.get('/block',adminmiddle.islogin,admincontroll.blockuser)
 route.get('/unblock',adminmiddle.islogin,admincontroll.unblockuser)
 route.get('/category',adminmiddle.islogin,admincontroll.loadcategory)
@@ -70,12 +69,13 @@ route.get('/catablock',adminmiddle.islogin,admincontroll.catablock)
 route.get('/cataunblock',adminmiddle.islogin,admincontroll.cataunblock)
 route.get('/productlist',adminmiddle.islogin,productcontroll.loadproduct)
 route.get('/addproduct',adminmiddle.islogin,productcontroll.loadaddproduct)
-route.post('/addproduct', upload.array('image', 5), productcontroll.addproduct);
+route.post('/addproduct', upload.array('image', 10), productcontroll.addproduct);
 route.get('/productblock',adminmiddle.islogin,productcontroll.blockproduct)
 route.get('/productunblock',adminmiddle.islogin,productcontroll.productunblock)
 route.get('/editproduct',adminmiddle.islogin,productcontroll.loadeditproduct)
 //route.post('/editproduct',upload.array( 'replaceImages', 5),productcontroll.editproduct)
-route.post('/editproduct', upload.fields([{ name: 'newImages', maxCount: 5 }, { name: 'replaceImages', maxCount: 5 }]), productcontroll.editproduct);
+route.post('/editproduct', upload.fields([{ name: 'newImages', maxCount: 4 }, { name: 'replaceImages', maxCount: 4 }]), productcontroll.editproduct);
+// route.post('/editproduct', upload.fields([{ name: 'replaceImages', maxCount: 10 }]), productcontroll.editproduct);
 route.get('/deleteimage',adminmiddle.islogin,productcontroll.deleteimage)
 route.get('/logout',admincontroll.logout)
 

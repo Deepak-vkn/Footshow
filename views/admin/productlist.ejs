@@ -5,7 +5,7 @@
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
             <a href="index.html" class="brand-wrap">
-                <img src="assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
+                <img src="/admin/assets/imgs/card-brands/croped.png" alt="Evara Dashboard" style="width: 180px; padding-left: 40px;padding-top: 10px;">
             </a>
             <div>
                 <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
@@ -32,7 +32,7 @@
                     </a>
                     
                 </li>
-                <li class="menu-item has-submenu ">
+                <li class="menu-item has-submenu">
                     <a class="menu-link" href="page-orders-1.html"> <i class="icon material-icons md-shopping_cart"></i>
                         <span class="text">Orders</span>
                     </a>
@@ -54,7 +54,17 @@
                         <a href="page-seller-detail.html">Seller profile</a>
                     </div>
                 </li>
-                
+                <li class="menu-item has-submenu">
+                    <a class="menu-link" href="page-form-product-1.html"> <i class="icon material-icons md-add_box"></i>
+                        <span class="text">Add product</span>
+                    </a>
+                    <div class="submenu">
+                        <a href="page-form-product-1.html">Add product 1</a>
+                        <a href="page-form-product-2.html">Add product 2</a>
+                        <a href="page-form-product-3.html">Add product 3</a>
+                        <a href="page-form-product-4.html">Add product 4</a>
+                    </div>
+                </li>
                 <li class="menu-item has-submenu">
                     <a class="menu-link" href="page-transactions-1.html"> <i class="icon material-icons md-monetization_on"></i>
                         <span class="text">Transactions</span>
@@ -116,7 +126,8 @@
             <div class="col-search">
                 <form class="searchform">
                     <div class="input-group">
-                        <input list="search_terms" type="text" class="form-control" placeholder="Search term">
+                        <!-- Correct the ID here -->
+                        <input id="searchInput" list="search_terms" type="text" class="form-control" placeholder="Search term">
                         <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
                     </div>
                     <datalist id="search_terms">
@@ -174,28 +185,24 @@
                 </div>
                 <div>
                     
-                    <a href="/admin/addproduct" class="btn btn-primary btn-sm rounded">Create new</a>
+                    <a href="/admin/addproduct?tc=123" class="btn btn-primary btn-sm rounded">Create new</a>
                 </div>
             </div>
             <div class="card mb-4">
                 <header class="card-header">
                     <div class="row align-items-center">
-                        <div class="col col-check flex-grow-0">
-                            <div class="form-check ms-2">
-                                <input class="form-check-input" type="checkbox" value="">
-                            </div>
-                        </div>
+                        
                         <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
                             <select class="form-select">
                                 <option selected>All category</option>
-                                <option>Electronics</option>
-                                <option>Clothes</option>
-                                <option>Automobile</option>
+                                <% cata.forEach((n)=>{ %>
+                                    <option><%= n.Category %></option>
+                              <%  }) %>
                             </select>
                         </div>
-                        <div class="col-md-2 col-6">
+                        <!-- <div class="col-md-2 col-6">
                             <input type="date" value="02.05.2022" class="form-control">
-                        </div>
+                        </div> -->
                         <div class="col-md-2 col-6">
                             <select class="form-select">
                                 <option selected>Status</option>
@@ -246,9 +253,7 @@
                                                 <a href="/admin/editproduct?id=<%= product._id %>" class="btn btn-sm font-sm btn-dark rounded">
                                                     <i class="material-icons"></i> Edit
                                                 </a>
-                                                <a href="/admin/addcata?id=<%= product._id %>" class="btn btn-sm font-sm btn-info rounded">
-                                                    <i class="material-icons"></i> Details
-                                                </a>
+                                               
                                                 <% if (product.status === 'Active') { %>
                                                     <a href="/admin/productblock?id=<%= product._id %>" class="btn btn-sm font-sm btn-warning rounded">
                                                         <i class="material-icons"></i> Block
@@ -263,7 +268,7 @@
                                     <% }) %>
                                 <% } %>
                                 
-                            </tbody> -->
+                            </tbody> 
                         </table>
                     </div>
                 </div>
@@ -292,5 +297,19 @@
     <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
     <!-- Main Script -->
     <script src="assets/js/main.js" type="text/javascript"></script>
+    <script>
+        // Correct the ID here as well
+        const searchInput = document.getElementById('searchInput');
+        const tableRows = document.querySelectorAll('tbody tr');
+    
+        searchInput.addEventListener('input', function () {
+            const searchTerm = searchInput.value.toLowerCase();
+    
+            tableRows.forEach(row => {
+                const userName = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                row.style.display = userName.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    </script>
 
 <%- include('../layout2/header') -%>

@@ -64,7 +64,7 @@
 
 
 							    <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
-							    	<form action="/register" method="POST">
+							    	<form action="/register" method="POST" id="myForm">
                                         <div class="form-group">
 							    			<label for="register-email-2">Your Name *</label>
 							    			<input type="name" class="form-control" id="register-name-2" name="name" required>
@@ -82,10 +82,14 @@
                                         <% if (locals.message) { %>
                                             <p id="alert"><%= message %></p>
                                         <% } %>
+                                        <p id="err" style="color:red">
+
+                                        </p>
+                                
                                         
 
 							    		<div class="form-footer">
-							    			<button type="submit" class="btn btn-outline-primary-2">
+							    			<button type="submit" class="btn btn-outline-primary-2" id="submitbtn">
 			                					<span>SIGN UP</span>
 			            						<i class="icon-long-arrow-right"></i>
 			                				</button>
@@ -346,7 +350,10 @@
                             <li><a href="elements-typography.html">Typography</a></li>
                             <li><a href="elements-titles.html">Titles</a></li>
                             <li><a href="elements-banners.html">Banners</a></li>
-                            <li><a href="elements-product-category.html">Product Category</a></li>
+                            <li><a href="elements-product-category.html">Product Category</a></li><p id="err">
+
+        </p>
+
                             <li><a href="elements-video-banners.html">Video Banners</a></li>
                             <li><a href="elements-buttons.html">Buttons</a></li>
                             <li><a href="elements-accordions.html">Accordions</a></li>
@@ -445,9 +452,12 @@
                                             <label for="register-password">Password *</label>
                                             <input type="password" class="form-control" id="register-password" name="register-password" required>
                                         </div><!-- End .form-group -->
+                                        <p id="err">
+
+                                        </p>
 
                                         <div class="form-footer">
-                                            <button type="submit" class="btn btn-outline-primary-2">
+                                            <button type="submit" class="btn btn-outline-primary-2" id="submitbtn">
                                                 <span>SIGN UP</span>
                                                 <i class="icon-long-arrow-right"></i>
                                             </button>
@@ -493,4 +503,42 @@
     <script src="assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
+
+    <script>
+        document.getElementById("submitbtn").addEventListener("click", function (event) {
+    event.preventDefault();
+
+    const name = document.getElementById('register-name-2').value.trim();
+    const email = document.getElementById('register-email-2').value.trim();
+    const password = document.getElementById('register-password-2').value.trim();
+
+    const errElement = document.getElementById('err');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const allowedProviders = ['gmail.com', 'yahoo.com', 'example.com'];
+
+    // Password should be at least 8 characters long
+    const minPasswordLength = 8;
+
+    errElement.innerHTML = "";
+
+    if (name === "") {
+        errElement.innerHTML = "Please enter your name";
+    } else if (email === "") {
+        errElement.innerHTML = "Please enter an email address";
+    } else if (!emailRegex.test(email)) {
+        errElement.innerHTML = "Please enter a valid email address";
+    } else {
+        const domain = email.split('@')[1];
+        if (!allowedProviders.includes(domain)) {
+            errElement.innerHTML = "Please use a valid mail provider";
+        } else if (password.length < minPasswordLength) {
+            errElement.innerHTML = "Password should be at least 8 characters long";
+        } else {
+            document.getElementById("myForm").submit();
+        }
+    }
+});
+
+    </script>
     <%- include('../layout/footer') -%>

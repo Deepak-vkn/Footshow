@@ -104,44 +104,7 @@ const loadadduser= async(req,res)=>{
     }
 }
 
-//add new user-------------------------------------
-
-
-const adduser =async(req,res)=>{
-    try {
-        const name=req.body.name
-       const  mail=req.body.email
-       const  password=req.body.password
-       const hashed= await passwordhash(password)
-          
-       const check=await User.findOne({email:mail})
-
-       if(check){
-        let message='User already exist'
-        res.render('adduser',{message})
-
-       }
-       else{
-        const user=await new User({
-            name:req.body.name,
-            email:req.body.email,
-            password:hashed,
-            verified:true
-           })
-           
-           await user.save()
-           res.redirect('/admin/users')
-
-       }
-       
-      
-
-    } catch (error) {
-        console.log(error.message);
-    }
-}
-
-//bloackuser------------------------------------------
+//blockuser------------------------------------------
 const blockuser=async(req,res)=>{
     try {
         const id= req.query.id
@@ -151,6 +114,10 @@ const blockuser=async(req,res)=>{
         
 
             await User.updateOne({_id:id},{$set:{status:'Blocked'}})
+            if(req.session.userid){
+                req.session.userid=null
+        
+            }
             res.redirect('/admin/users')
 
         }
@@ -209,7 +176,7 @@ const addcategory=async(req,res)=>{
 
     try {
 
-        const iid= req.body.name
+        const iid = req.body.name.trim()
         const check = await Category.find({  Category: { 
             $regex: new RegExp("^" + iid.trim() + "$", "i") 
           }  });
@@ -224,7 +191,7 @@ const addcategory=async(req,res)=>{
         }
         else{
             const category= await new Category({
-                Category:req.body.name,
+                Category:iid,
                 Status:req.body.status,
                 Description:req.body.Description
                 })
@@ -278,7 +245,7 @@ const updatecata=async(req,res)=>{
     try {
         
         const id=req.body.id
-        const cata=req.body.category
+        const cata = req.body.category.trim()
         const newid= await Category.find({_id:id})
         
         
@@ -304,7 +271,7 @@ const updatecata=async(req,res)=>{
             else{
               
                 const edited= await Category.updateOne({_id:id},{$set:{
-                    Category:req.body.category,
+                    Category:cata,
                     Status:req.body.status,
                     Description:req.body.Description
                 }})
@@ -322,6 +289,7 @@ const updatecata=async(req,res)=>{
         }
 
         else{
+            console.log(`status is ${req.body.status}`)
             const edited= await Category.updateOne({_id:id},{$set:{
                 Category:req.body.category,
                 Status:req.body.status,
@@ -444,7 +412,6 @@ module.exports={
     laoddashbaord,
     loaduser,
     loadadduser,
-    adduser,
     blockuser,
     unblockuser,
     loadcategory,

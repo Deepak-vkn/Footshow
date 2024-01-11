@@ -14,15 +14,18 @@ const SendmailTransport = require('nodemailer/lib/sendmail-transport')
 const home=async(req,res)=>{
     try{
         let track
+        let user
         const product = await Product.find({status:'Active'}).populate('category').lean();
         if(req.session.userid){
             track=true
+            const mail=req.session.userid
+            user=await User.findOne({email:mail})
            
-            res.render('home',{track,product})
+            res.render('home',{track,product,user})
         }
         else{
             track=false
-            res.render('home',{track,product})
+            res.render('home',{track,product,user})
         }
        
 
@@ -49,8 +52,9 @@ const passwordhash=async(password)=>{
 const loadlogin=async(req,res)=>{
 
     try {
-    
-        res.render('login')
+        const message = req.flash('success');
+        res.render('login',{message})
+        console.log(`conslefalsh is ${message}`)
       
     } catch (error) {
         console.log(error.message)
@@ -63,7 +67,8 @@ const loadlogin=async(req,res)=>{
 
 const loadregister=async(req,res)=>{
     try {
-        res.render('register')
+        let message
+        res.render('register',{message})
     } catch (error) {
         console.log(error.message);
         
@@ -75,14 +80,16 @@ const register = async (req, res) => {
     try {
         const mail = req.body.email;
         const userExist = await User.findOne({ email: mail });
+        // console.log(`user ${userExist}`)
 
         if (userExist) {
             const verify = userExist.verified;
+           //console.log(`verify ${verify}`)
 
-            if (verify === 'true') {
-                const message = "User exists";
-                console.log(message);
-                return res.render('register', { message });
+            if (verify === true) {
+               // const message = "User exists";
+                req.flash('failed','User Already Exist')
+                return res.render('register', { message :req.flash('failed')});
             } else {
                 // Common code for user registration
                 const hashed = await passwordhash(req.body.password);
@@ -115,6 +122,7 @@ const register = async (req, res) => {
         }
     } catch (error) {
         console.log(error.message);
+        
         const message = "An error occurred during registration";
         return res.render('register', { message });
     }
@@ -153,8 +161,8 @@ const mail=req.query.mail
       const mailoptions={
             from:"deepakvkn1252@gmail.com",
             to:mail,
-            subject:"testmail",
-            text:`your otp for registration is ${otp}`
+            subject:"Footshow verification",
+            text:`Welcome to Footshow, your verification otp is ${otp}`
         }
        await transporter.sendMail(mailoptions, (error, info) => {
             if (error) {
@@ -284,7 +292,9 @@ const verifylogin=async(req,res)=>{
 
             }
             else{
-                let message='Access Denied'
+                req.flash('success','Access Denied')
+                //let message='Access Denied'
+                const message=req.flash('success')
                 res.render('login',{message})
                 console.log('login failed1');
 
@@ -293,14 +303,20 @@ const verifylogin=async(req,res)=>{
 
             }
             else{
-                let message='invalid username or password'
+                
+                req.flash('failed','Incorrect Userid or Password')
+               
+                const message=req.flash('failed')
                 res.render('login',{message})
                 console.log('login failed1');
             }
         }
         else{
-            let message='invalid username or password'
-            res.render('login',{message})
+            
+            req.flash('failed','Incorrect Userid or Password')
+          
+            
+            res.render('login', { message: req.flash('failed') });
             console.log('login failed2');
         }
 
@@ -342,12 +358,30 @@ const logout = async (req, res) => {
 const loadshop=async(req,res)=>{
 
     try {
+let track
+let user
+        if(req.session.userid){
+            track=true
+            const mail=req.session.userid
+            user=await User.findOne({email:mail})
+           
+            const product = await Product.find({status:'Active'}).populate('category').lean();
+            const category = await Category.find({})
+           
+         
+            res.render('shop',{product,category,user,track})
+        }
+        else{
 
-        const product = await Product.find({status:'Active'}).populate('category').lean();
-        const category = await Category.find({})
-       
-        //console.log(category);
-        res.render('shop',{product,category})
+            track=false
+            const product = await Product.find({status:'Active'}).populate('category').lean();
+            const category = await Category.find({})
+            res.render('shop',{product,category,user,track})
+           
+            
+        }
+
+      
         
     } catch (error) {
         console.log(error.message);    }
@@ -359,16 +393,94 @@ const loadshop=async(req,res)=>{
 const loadsingleproduct=async(req,res)=>{
 
     try {
-    
-        const product = await Product.findOne({_id:req.query.id}).populate('category').lean();
-        //console.log(product); 
-        res.render('singleproduct',{product})
+        const id=req.query.id
+        
+        //console.log(`id product is ${id} `);
+        const product = await Product.findOne({_id:id}).populate('category').lean();
+
+        
+       res.render('singleproduct',{product})
         
     } catch (error) {
         console.log(error.message);
         
     }
 }
+
+
+//Load Men--------------------------------------------------------------------------------------
+
+const loadmen=async(req,res)=>{
+
+    try {
+      
+          let track
+          let user
+        if(req.session.userid){
+            track=true
+            const mail=req.session.userid
+            user=await User.findOne({email:mail})
+           
+            const product = await Product.find({status:'Active'}).populate('category').lean();
+            const category = await Category.find({})
+           
+         
+            res.render('men',{product,category,user,track})
+        }
+        else{
+
+            track=false
+            const product = await Product.find({status:'Active'}).populate('category').lean();
+            const category = await Category.find({})
+            res.render('men',{product,category,user,track})
+           
+            
+        }
+        
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+//Load Women-------------------------------------------------------
+
+const loadwomen=async(req,res)=>{
+
+    try {
+        let track
+        let user
+      if(req.session.userid){
+          track=true
+          const mail=req.session.userid
+          user=await User.findOne({email:mail})
+         
+          const product = await Product.find({status:'Active'}).populate('category').lean();
+          const category = await Category.find({})
+         
+       
+          res.render('women',{product,category,user,track})
+      }
+      else{
+
+          track=false
+          const product = await Product.find({status:'Active'}).populate('category').lean();
+          const category = await Category.find({})
+          res.render('women',{product,category,user,track})
+         
+          
+      }
+        
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+
+
 module.exports={
     home,
     loadlogin,
@@ -379,7 +491,9 @@ module.exports={
     verifylogin,
     logout,
     loadshop,
-    loadsingleproduct
+    loadsingleproduct,
+    loadmen,
+    loadwomen
     
     
 

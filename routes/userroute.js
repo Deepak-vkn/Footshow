@@ -28,6 +28,8 @@ route.post('/otp',usercontroll.verifyotp)
 route.get('/logout',usercontroll.logout)
 route.get('/shop',usercontroll.loadshop)
 route.get('/singleproduct',usercontroll.loadsingleproduct)
+route.get('/men',usercontroll.loadmen)
+route.get('/women',usercontroll.loadwomen)
                       
 
 

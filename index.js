@@ -5,7 +5,9 @@ const userroute=require('./routes/userroute')
 const adminroute=require('./routes/adminroute')
 const mongoose=require('mongoose')
 const nocache=require('nocache')
+const flash = require('express-flash');
 
+app.use(flash());
 const port=12;
 
 

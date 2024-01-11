@@ -34,6 +34,7 @@ const islogout=async(req,res,next)=>{
         console.log(error.message);
     }
 }
+
 const isblock=async(req,res,next)=>{
     if(req.session.userid){
      

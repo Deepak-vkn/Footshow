@@ -27,7 +27,9 @@
 							    			<label for="singin-password-2">Password *</label>
 							    			<input type="password" class="form-control" id="singin-password-2" name="password" required>
 							    		</div><!-- End .form-group -->
-
+                                        <% if (locals.message) { %>
+                                            <p id="alert"><%= message %></p>
+                                        <% } %>
 							    		<div class="form-footer">
 							    			<button type="submit" class="btn btn-outline-primary-2">
 			                					<span>LOG IN</span>
@@ -79,9 +81,7 @@
 							    			<input type="password" class="form-control" id="register-password-2" name="password" required>
 							    		</div><!-- End .form-group -->
                                         
-                                        <% if (locals.message) { %>
-                                            <p id="alert"><%= message %></p>
-                                        <% } %>
+                                       
 
 							    		<div class="form-footer">
 							    			<button type="submit" class="btn btn-outline-primary-2">
