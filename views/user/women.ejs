@@ -17,8 +17,8 @@
 
                     <nav class="main-nav">
                         <ul class="menu sf-arrows">
-                            <li class="megamenu-container active">
-                                <a href="index.html" class="sf-with-ul">HOME</a>
+                            <li class="megamenu-container ">
+                                <a href="/" >HOME</a>
 
                             </li>
                             <li>
@@ -29,7 +29,7 @@
                                 <a href="/men" >MEN</a>
 
                             </li>
-                            <li>
+                            <li class="active">
                                 <a href="/women" >WOMEN</a>
 
                             </li>
@@ -295,7 +295,7 @@
                         </div><!-- End .products -->
 
 
-                        <nav aria-label="Page navigation">
+                        <!-- <nav aria-label="Page navigation">
                             <ul class="pagination justify-content-center">
                                 <li class="page-item disabled">
                                     <a class="page-link page-link-prev" href="#" aria-label="Previous" tabindex="-1" aria-disabled="true">
@@ -312,7 +312,46 @@
                                     </a>
                                 </li>
                             </ul>
+                        </nav> -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <% if (currentPage > 1) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="/women?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                <% } else { %>
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                                    </li>
+                                <% } %>
+                        
+                                <% for (let page = 1; page <= totalPages; page++) { %>
+                                    <li class="page-item <%= currentPage === page ? 'active' : '' %>">
+                                        <a class="page-link" href="/woemen?page=<%= page %>"><%= page %></a>
+                                    </li>
+                                <% } %>
+                        
+                                <li class="page-item-total">of <%= totalPages %></li>
+                        
+                                <% if (currentPage < totalPages) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="/women?page=<%= currentPage + 1 %>" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                <% } else { %>
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                                    </li>
+                                <% } %>
+                            </ul>
                         </nav>
+                        
+                        
                     </div><!-- End .col-lg-9 -->
                     <aside class="col-lg-3 order-lg-first">
                         <div class="sidebar sidebar-shop">
