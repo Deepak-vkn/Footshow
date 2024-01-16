@@ -20,6 +20,10 @@ const userschema=new mongoose.Schema({
     status:{
         type:String,
         default:'Active'
+    },
+    mobile:{
+        type:Number,
+        required:true
     }
 
 })

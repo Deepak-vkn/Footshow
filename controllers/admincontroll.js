@@ -162,7 +162,7 @@ const unblockuser=async(req,res)=>{
 
 const loadcategory=async(req,res)=>{
     try {
-        const category= await Category.find({})
+        const category= await Category.find({is_delete:false})
         res.render('category',{category})
     } catch (error) {
         console.log(error.message);
@@ -368,7 +368,7 @@ const cataunblock=async(req,res)=>{
             await Category.updateOne({_id:id},{$set:{Status:'Active'}})
             const category= await Category.find({})
             res.render('category',{category})
-            console.log('unblocked');
+            
 
         }
         else{
@@ -383,6 +383,26 @@ const cataunblock=async(req,res)=>{
     }
 
 }
+
+
+//cataegory soft delete===========================================
+
+const catadelete= async(req,res)=>{
+    try {
+    
+        const id=req.query.id
+        const cata=await Category.updateOne({_id:id},{$set:{is_delete:true}})
+        res.redirect('/admin/category')
+        //console.log(cata)
+
+     
+    } catch (error) {
+        console.log(eror.message);
+    }
+}
+
+
+
 
 //admin logout ============================================
 
@@ -420,6 +440,7 @@ module.exports={
     updatecata,
     catablock,
     cataunblock,
+    catadelete,
     logout
 
 }

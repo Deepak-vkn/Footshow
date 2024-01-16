@@ -43,6 +43,10 @@ const productschema= new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category', 
         required: true
+    },
+    is_delete:{
+        type:Boolean,
+        default:false
     }
 })
  

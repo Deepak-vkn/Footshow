@@ -18,6 +18,10 @@ const categories= mongoose.Schema({
         type:String,
         default:'Active'
 
+    },
+    is_delete:{
+        type:Boolean,
+        default:false
     }
 
 

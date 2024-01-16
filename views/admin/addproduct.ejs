@@ -244,13 +244,13 @@
                     <div class="card-body">
                         <div>
                             <label class="form-label">Images</label>
-                            <!-- <input class="form-control" type="file" name="image" required> -->
-                            <!-- <input class="form-control" type="file" name="image"  required multiple> -->
                             <input type="file" class="form-control" name="image" accept="image/*" required multiple id="addimage">
                         </div>
                     </div>
                 </div> <!-- card end// -->
+                <div id="image-preview"></div>
             </div>
+            
             <div class="col-lg-3">
                 <div class="card mb-4">
                     <div class="card-body">
@@ -305,6 +305,8 @@
 <script src="assets/js/vendors/perfect-scrollbar.js"></script>
 <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
 <!-- Main Script -->
 <script src="assets/js/main.js" type="text/javascript"></script>
 
@@ -394,6 +396,8 @@ if (category.trim() === '' || category === '<%= category[0]._id %>') {
         return true; // Form will be submitted if all validations pass
     }
    
+
+    //previe
     document.getElementById('addimage').addEventListener('change', function () {
         var maxImages = 4;
         var selectedImages = this.files.length;
@@ -409,6 +413,51 @@ if (category.trim() === '' || category === '<%= category[0]._id %>') {
 
             this.value = '';
         }
+        else {
+        // If within the limit, call the preview function
+        previewImages();
+    }
     });
+
+    //sweet alert 
+function previewImages() {
+    const inputFile = document.getElementById('addimage');
+    const imagePreview = document.getElementById('image-preview');
+    
+    imagePreview.innerHTML = ''; // Clear previous previews
+
+    for (const file of inputFile.files) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const imgContainer = document.createElement('div');
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '100px'; // Set a desired width for the preview
+            img.style.height = '100px'; // Set a desired height for the preview
+
+            // Attach click event to open SweetAlert when clicking on the previewed image
+            imgContainer.addEventListener('click', () => {
+                openSweetAlert(img.src);
+            });
+
+            imgContainer.appendChild(img);
+            imagePreview.appendChild(imgContainer);
+        };
+
+        reader.readAsDataURL(file);
+    }
+}
+
+function openSweetAlert(imageSrc) {
+    Swal.fire({
+        title: 'Image Preview',
+        imageUrl: imageSrc,
+        imageAlt: 'Preview',
+        confirmButtonText: 'Close',
+    });
+}
+
+    
 </script>
 <%- include('../layout2/footer') -%>

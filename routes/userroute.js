@@ -30,8 +30,12 @@ route.get('/shop',usercontroll.loadshop)
 route.get('/singleproduct',usercontroll.loadsingleproduct)
 route.get('/men',usercontroll.loadmen)
 route.get('/women',usercontroll.loadwomen)
-                      
-
+route.get('/forgetpassword',usercontroll.forgetpassword)
+route.post('/forgetpassword',usercontroll.forgetpasswordmailsend)
+route.get('/resetpassword',usercontroll.resetpasswordload) 
+route.post('/resetpassword',usercontroll.resetpassword)   
+route.get('/profile',usercontroll.profileload)
+route.post('/profile',usercontroll.profileedit)
 
 
 

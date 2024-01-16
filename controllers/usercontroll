@@ -80,6 +80,7 @@ const register = async (req, res) => {
     try {
         const mail = req.body.email;
         const confirmpass= req.body.password2
+        console.log(req.body.password)
         const userExist = await User.findOne({ email: mail });
         // console.log(`user ${userExist}`)
 
@@ -106,6 +107,7 @@ const register = async (req, res) => {
                     const user = new User({
                         name: req.body.name,
                         email: req.body.email,
+                        mobile:req.body.mobile,
                         password: hashed
                     });
     
@@ -117,6 +119,7 @@ const register = async (req, res) => {
                 }
             }
         }
+
          else {
 
             if(confirmpass!==req.body.password){
@@ -132,6 +135,7 @@ const register = async (req, res) => {
                 const user = new User({
                     name: req.body.name,
                     email: req.body.email,
+                    mobile:req.body.mobile,
                     password: hashed
                 });
 
@@ -144,6 +148,7 @@ const register = async (req, res) => {
             
         }
     } 
+
     catch (error) {
         console.log(error.message);
         
@@ -157,9 +162,16 @@ const register = async (req, res) => {
 
 const loadotp=async(req,res)=>{
     try {
-const id=req.query.id
-const mail=req.query.mail
-        res.render('otp',{id})
+    const id=req.query.id
+
+    const mail=req.query.mail
+    
+    const test=await Otp.find({userid:id})
+    if(test){
+        console.log(test)
+        await Otp.deleteMany({userid:id})
+    }
+        res.render('otp',{id,mail})
        
         const otp = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
         const hashedotp = await bcrypt.hash(String(otp), 10);
@@ -197,7 +209,10 @@ const mail=req.query.mail
         });
 
     
-
+        setTimeout(async () => {
+            await Otp.deleteMany({ userid: id });
+            console.log('OTP deleted after timeout');
+        }, 44000);
         
     } catch (error) {
         console.log(error.message);
@@ -230,21 +245,31 @@ const ootp=async(req,res)=>{
 const verifyotp=async(req,res)=>{
     const otp=req.body.otp
     const id=req.body.id
+    const mail=req.body.mail
     const data=await Otp.findOne({userid:id})
     
-    expire= data.expireAt
+    
     
     try {
-        
-    
+        if(!data){
+             // await Otp.deleteMany({userid:id})
+             await User.deleteMany({_id:id})
+             let message='Otp expierd'
+              const c=true
+             //console.log("invalid creadentials");
+             res.render('otp',{message,c,id,mail})
+        }
+        else{
+            expire= data.expireAt
             if(expire<Date.now())
             {
-                await Otp.deleteMany({userid:id})
+               // await Otp.deleteMany({userid:id})
                 await  User.deleteMany({_id:id})
                 let message='Your otp has been expired'
-              
-                res.render('otp',{message})
+                
+                res.render('otp',{message,id,mail})
             }
+
             else{
                         
                 const verify=await Otp.findOne({userid:id})
@@ -261,15 +286,18 @@ const verifyotp=async(req,res)=>{
                 res.render('login',{message})
                 }
                 else{
-                await Otp.deleteMany({userid:id})
+                // await Otp.deleteMany({userid:id})
                 await User.deleteMany({_id:id})
                 let message='Otp incorrect'
-    
+                 
                 //console.log("invalid creadentials");
-                res.render('otp',{message})
+                res.render('otp',{message,id,mail})
                 }
     
             }
+        }
+    
+            
         }
       
  
@@ -534,7 +562,171 @@ const loadwomen=async(req,res)=>{
     }
 }
 
+//forgetpassword----------------------------------
 
+const forgetpassword =async(req,res)=>{
+    try {
+        res.render('forgetpassword')
+    } 
+    catch (error) {
+        console.log(error.message);
+    }
+}
+
+//MAIL SEND----------------------------
+
+const forgetpasswordmailsend=async(req,res)=>{
+    try {
+         const mail=req.body.email
+         const user=await User.findOne({email:mail})
+
+         if(!user){
+            // res.render('forgetpassword')
+            return res.status(403).json({ message: ' User not found' });
+         }
+         else{
+            const check=await user.verified
+           
+            if(check!==true){
+                
+                return res.status(403).json({ message: 'User not verified' });
+            }
+            else{
+                const id=user._id
+                const resetPasswordLink = `http://localhost:12/resetpassword?id=${id}`;
+                const transporter=nodemailer.createTransport({
+                    service:'gmail',
+                    auth:{
+                        user:"deepakvkn1252@gmail.com",
+                        pass:'ursi lsmy iwpb sgcs'
+                    }
+                })
+              const mailoptions={
+                    from:"deepakvkn1252@gmail.com",
+                    to:mail,
+                    subject:"Password Reset",
+                    text:`Click on the link to reset your password ${resetPasswordLink}`
+                }
+               await transporter.sendMail(mailoptions, (error, info) => {
+                    if (error) {
+                        console.log(error.message);
+                        return res.status(500).json({ message: 'Email sent failed' });
+                    } else {
+                        return res.status(200).json({ message: 'Email sent successfully' });
+                        
+                    }
+                });
+        
+
+
+            }
+
+            }
+
+         //console.log(mail)
+
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+//reset password laod-------------------------------------
+
+const resetpasswordload=async(req,res)=>{
+    try {
+        const id=req.query.id
+    
+        res.render('resetpassword',{id})
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+//reset password---------------------------------
+const resetpassword = async (req, res) => {
+    try {
+        const id = req.query.id;
+        const pass1 = req.body.password1;
+        const hashedPassword = await passwordhash(pass1);
+        const user = await User.findOne({ _id: id });
+
+        if (user) {
+            const update = await User.updateOne({ _id: id }, { $set: { password: hashedPassword } });
+console.log(update)
+            if (update.modifiedCount > 0) {
+                // Password changed successfully
+                return res.status(200).json({ message: 'Password changed successfully' });
+            } else {
+                // Password not changed (perhaps the new password is the same as the old one)
+                return res.status(400).json({ message: 'Password not changed. Please try again.' });
+            }
+        } else {
+            // User not found
+            return res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+//Profile load 
+
+const profileload =async(req,res)=>{
+    try {
+        const id=req.query.id
+        const user=await User.findOne({email:id})
+        //console.log(user)
+        res.render('profile',{user})
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+
+//profile edit------------------------------------------------------------------------------------
+
+const profileedit=async(req,res)=>{
+    try {
+
+
+        const{mobile,name}=req.body
+        const id=req.query.id
+        const user=await User.findOne({_id:id})
+        if (!mobile && !name) {
+            return res.status(400).json({ message: 'Mobile or name must be provided for update' });
+        }
+
+        if(user){
+           const edited= await User.updateOne({_id:id},{$set:{
+                name:name|| user.name,
+                mobile:mobile||user.mobile
+           }})
+           if(edited.modifiedCount>0){
+            const us=await User.findOne({_id:id})
+            return res.status(200).json({message:"user updated",us})
+           }
+
+           else{
+            return res.status(400).json({ message: 'No changes made to the user profile' });
+           }
+        }
+        
+        else{
+           return res.status(404).json({ message: 'User not found' });
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
 
 
 module.exports={
@@ -549,9 +741,12 @@ module.exports={
     loadshop,
     loadsingleproduct,
     loadmen,
-    loadwomen
-    
-    
-
+    loadwomen,
+    forgetpassword,
+    forgetpasswordmailsend,
+    resetpasswordload,
+    resetpassword,
+    profileload,
+    profileedit
 
 }

@@ -16,11 +16,13 @@
                         <label for="register-email-2">Enter your otp*</label>
                         <input type="text" class="form-control" id="register-name-2" name="otp" required>
                         <input type="hidden" name="id" value="<%= locals.id %>" >
+                        <input type="hidden" name="mail" value="<%= locals.mail %>" >
                     </div>
-                    <!-- <button  class="btn btn-outline-primary-2">
-                        <a class="nav-link "  href="/otp" id="otp"  >Resend</a>
+                    <button  class="btn btn-outline-primary-2">
+                        <a class="nav-link" href="/otp?id=<%= locals.id %>&mail=<%= locals.mail %>" id="otp">Resend</a>
                         <i class="icon-long-arrow-right"></i>
-                    </button> -->
+                    </button>
+                    
                     
                     
                     
@@ -30,10 +32,12 @@
                     
 
                     <div class="form-footer">
-                        <button type="submit" class="btn btn-outline-primary-2">
-                            <span>Verify</span>
-                            <i class="icon-long-arrow-right"></i>
-                        </button>
+                        <% if (!locals.c) { %>
+                            <button type="submit" class="btn btn-outline-primary-2">
+                                <span>Verify</span>
+                                <i class="icon-long-arrow-right"></i>
+                            </button>
+                        <% } %>
 
                        
                     </div><!-- End .form-footer -->

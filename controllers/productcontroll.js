@@ -9,7 +9,7 @@ const bcrypt=require('bcrypt')
 const { checkout, render } = require("../routes/adminroute")
 const fs = require('fs');
 const path = require('path');
-
+const sharp=require('sharp')
 
 
 
@@ -21,7 +21,7 @@ const loadproduct= async(req,res)=>{
     try {
     
         // const prod= await Product.find({})
-        const prod = await Product.find().populate('category').lean();
+        const prod = await Product.find({is_delete:false}).populate('category').lean();
         const cata = await Category.find({Status:'Active'})        
         res.render('productlist',{prod,cata})
     } catch (error) {
@@ -55,7 +55,7 @@ const loadaddproduct=async(req,res)=>{
 
 const addproduct=async(req,res)=>{
     try {
-        console.log(req.body.category);
+        const images = req.files ? req.files.map(file => file.filename) : [];
         const category = await Category.findOne({
             Category: {
                 $regex: new RegExp("^" + req.body.category + "$", "i"),
@@ -68,7 +68,9 @@ const addproduct=async(req,res)=>{
             return res.status(404).send('Category not found');
         }
                  
-           const images = req.files.map(file => file.filename);
+        //    const images = req.files.map(file => file.filename);
+      
+
             
         const product= await new Product({
             name:req.body.name,
@@ -79,12 +81,29 @@ const addproduct=async(req,res)=>{
             brand:req.body.brand,
             color:req.body.color,
             status:req.body.status,
-            image:images,
             category:category._id
 
             })
+            
 
-        const saved= await product.save()
+        if (images.length > 0) {
+            const remainingSlots = 4 - product.image.length;
+            const imagesToPush = images.slice(0, remainingSlots);
+            
+            for (let i = 0; i < imagesToPush.length; i++) {
+                const originalImagePath = path.join(__dirname, '../public/images', imagesToPush[i]);
+                const resizedPath = path.join(__dirname, '../public/images', `resized_${imagesToPush[i]}`);
+
+                // Resize image using sharp
+                await sharp(originalImagePath)
+                    .resize(800, 1200, { fit: 'fill' })
+                    .toFile(resizedPath);
+
+                // Push the resized filename to the array
+                product.image.push(`resized_${imagesToPush[i]}`);
+            } 
+        }
+        const saved = await product.save();
         if(saved){
         
         
@@ -163,6 +182,22 @@ const productunblock=async(req,res)=>{
     }
 }
 
+//product soft delete =============================================
+
+const deleteproduct=async(req,res)=>{
+    try {
+    
+        const id=req.query.id
+        const cata=await Product.updateOne({_id:id},{$set:{is_delete:true}})
+        res.redirect('/admin/productlist')
+        //console.log(cata)
+
+     
+    } catch (error) {
+        console.log(eror.message);
+    }
+}
+
 //load edit product================================================
 
 const loadeditproduct=async(req,res)=>{
@@ -220,7 +255,8 @@ const editproduct = async (req, res) => {
             brand: req.body.brand,
             color: req.body.color,
             status: req.body.status,
-            category: req.body.category,
+            category: req.body.category
+
         };
 
         const newImages = req.files['newImages'];
@@ -304,10 +340,9 @@ module.exports={
     addproduct,
     blockproduct,
     productunblock,
+    deleteproduct,
     loadeditproduct,
     editproduct,
     deleteimage
-
     
-
 }

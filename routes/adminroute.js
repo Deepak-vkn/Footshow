@@ -67,11 +67,13 @@ route.get('/addcata',adminmiddle.islogin,admincontroll.loaddcata)
 route.post('/updatecata',admincontroll.updatecata)
 route.get('/catablock',adminmiddle.islogin,admincontroll.catablock)
 route.get('/cataunblock',adminmiddle.islogin,admincontroll.cataunblock)
+route.get('/catadelete',admincontroll.catadelete)
 route.get('/productlist',adminmiddle.islogin,productcontroll.loadproduct)
 route.get('/addproduct',adminmiddle.islogin,productcontroll.loadaddproduct)
 route.post('/addproduct', upload.array('image', 10), productcontroll.addproduct);
 route.get('/productblock',adminmiddle.islogin,productcontroll.blockproduct)
 route.get('/productunblock',adminmiddle.islogin,productcontroll.productunblock)
+route.get('/deleteproduct',productcontroll.deleteproduct)
 route.get('/editproduct',adminmiddle.islogin,productcontroll.loadeditproduct)
 //route.post('/editproduct',upload.array( 'replaceImages', 5),productcontroll.editproduct)
 route.post('/editproduct', upload.fields([{ name: 'newImages', maxCount: 4 }, { name: 'replaceImages', maxCount: 4 }]), productcontroll.editproduct);
