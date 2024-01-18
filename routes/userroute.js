@@ -1,6 +1,7 @@
 const express=require('express')
 const route=express();
 const usercontroll=require('../controllers/usercontroll')
+const cartcontroll=require('../controllers/cartcontroll')
 route.use(express.static('public'))
 const bodyparser=require('body-parser')
 route.set('view engine','ejs')
@@ -36,6 +37,14 @@ route.get('/resetpassword',usercontroll.resetpasswordload)
 route.post('/resetpassword',usercontroll.resetpassword)   
 route.get('/profile',usercontroll.profileload)
 route.post('/profile',usercontroll.profileedit)
+
+
+//cart
+
+route.post('/addtocart',cartcontroll.addtocart)
+route.get('/cart',cartcontroll.loadcart)
+route.post('/cartupdate',cartcontroll.updateacart)
+route.get('/removecart',cartcontroll.removecart)
 
 
 

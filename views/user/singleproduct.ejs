@@ -436,7 +436,7 @@
                         </form>
                     </div><!-- End .header-search -->
                     <div class="dropdown compare-dropdown">
-                        <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
+                        <a href="/cart" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
                             <i class="icon-random"></i>
                         </a>
 
@@ -460,14 +460,14 @@
                     </div><!-- End .compare-dropdown -->
 
                     <div class="dropdown cart-dropdown">
-                        <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                        <a href="/cart" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
                             <i class="icon-shopping-cart"></i>
                             <span class="cart-count">2</span>
                         </a>
 
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="dropdown-cart-products">
-                                <div class="product">
+                        <!-- <div class="dropdown-menu dropdown-menu-right"> -->
+                            <!-- <div class="dropdown-cart-products"> -->
+                                <!-- <div class="product">
                                     <div class="product-cart-details">
                                         <h4 class="product-title">
                                             <a href="product.html">Beige knitted elastic runner shoes</a>
@@ -477,7 +477,7 @@
                                             <span class="cart-product-qty">1</span>
                                             x $84.00
                                         </span>
-                                    </div><!-- End .product-cart-details -->
+                                    </div>
 
                                     <figure class="product-image-container">
                                         <a href="product.html" class="product-image">
@@ -485,9 +485,9 @@
                                         </a>
                                     </figure>
                                     <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                </div><!-- End .product -->
+                                </div> -->
 
-                                <div class="product">
+                                <!-- <div class="product">
                                     <div class="product-cart-details">
                                         <h4 class="product-title">
                                             <a href="product.html">Blue utility pinafore denim dress</a>
@@ -497,7 +497,7 @@
                                             <span class="cart-product-qty">1</span>
                                             x $76.00
                                         </span>
-                                    </div><!-- End .product-cart-details -->
+                                    </div>
 
                                     <figure class="product-image-container">
                                         <a href="product.html" class="product-image">
@@ -505,20 +505,19 @@
                                         </a>
                                     </figure>
                                     <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                </div><!-- End .product -->
-                            </div><!-- End .cart-product -->
-
-                            <div class="dropdown-cart-total">
+                                </div>
+                            </div> -->
+                            <!-- <div class="dropdown-cart-total">
                                 <span>Total</span>
 
                                 <span class="cart-total-price">$160.00</span>
-                            </div><!-- End .dropdown-cart-total -->
+                            </div>End .dropdown-cart-total -->
 
-                            <div class="dropdown-cart-action">
+                            <!-- <div class="dropdown-cart-action">
                                 <a href="cart.html" class="btn btn-primary">View Cart</a>
                                 <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .dropdown-cart-total -->
-                        </div><!-- End .dropdown-menu -->
+                            </div>End .dropdown-cart-total -->
+                        <!-- </div>End .dropdown-menu -->
                     </div><!-- End .cart-dropdown -->
                 </div><!-- End .header-right -->
             </div><!-- End .container -->
@@ -609,8 +608,8 @@
                                     <label for="size">Size:</label>
                                     <div class="select-custom">
                                         <select name="size" id="size" class="form-control">
-                                            <option value="#" selected="selected">Select a size</option>
-                                            <option value="<%= product.size %>"><%= product.size %></option>
+                                            <!-- <option value="#" selected="selected">Select a size</option> -->
+                                            <option value="<%= product.size %>" selected><%= product.size %></option>
                                            
                                         </select>
                                     </div><!-- End .select-custom -->
@@ -626,7 +625,10 @@
                                 </div><!-- End .details-filter-row -->
 
                                 <div class="product-details-action">
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    <a href="/addtocart?id=<%= product._id %>" class="btn-product btn-cart" id="addToCartBtn">
+                                        <span>add to cart
+
+                                        </span></a>
 
                                     <div class="details-action-wrapper">
                                         <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
@@ -1376,6 +1378,79 @@
 <script src="assets/js/jquery.elevateZoom.min.js"></script>
 <script src="assets/js/bootstrap-input-spinner.js"></script>
 <script src="assets/js/jquery.magnific-popup.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <!-- Main JS File -->
 <script src="assets/js/main.js"></script>
+
+<script>
+
+//add to cart
+
+
+document.getElementById('addToCartBtn').addEventListener('click',function(event){
+
+    event.preventDefault()
+    const pid= '<%= product._id %>'
+    const qty=document.getElementById('qty').value
+    console.log(qty)
+    fetch(`/addtocart?id=${pid}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body:JSON.stringify({qty})
+        
+    })
+
+    .then(response => {
+            
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to add to cart');
+            }
+        })
+        .then(data => {
+            handleCartResponse(data);
+        })
+    .catch(error => {
+            console.error('Error adding to cart:', error);
+            showAlert('Error', 'Failed to add to cart', 'error');
+        });
+
+});
+
+
+function handleCartResponse(data) {
+    if (data.success) {
+        showAlert('Success', data.message, 'success');
+    } else {
+        showAlert('Error', data.message, 'error');
+    }
+}
+function showAlert(title, message, icon) {
+    Swal.fire({
+        title: title,
+        text: message,
+        icon: icon,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+    });
+}
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
 <%- include('../layout/footer') -%>
