@@ -4,6 +4,8 @@ const Admin=require('../models/adminmodels')
 const User=require('../models/usermodel')
 const Product=require('../models/product')
 const Category=require('../models/category')
+const Cart=require('../models/cart')
+const Order=require('../models/orders')
 const bcrypt=require('bcrypt')
 const { checkout, render } = require("../routes/adminroute")
 
@@ -425,6 +427,59 @@ const logout =async(req,res)=>{
 
 
 
+// load orders--------------------------------------------
+
+
+
+const loadorder=async(req,res)=>{
+
+    try {
+        const order= await Order.find()
+      
+
+
+        
+        res.render('orders',{order})
+    } catch (error) {
+        console.log(error.message)
+        
+    }
+
+}
+
+
+// update status-----------------------------------------------------
+
+
+const orderstatus=async(req,res)=>{
+
+    try {
+        const { status, orderId}=req.body
+       
+        const order= await Order.findOne({_id:orderId})
+       
+        if(order){
+  const updatedorder= await Order.findOneAndUpdate({_id:orderId},{
+    $set:{status:status}
+  })
+      if(updatedorder){
+        res.json({success:true,message:"Status Updated"})
+      }
+      else{
+        res.json({success:false,message:"Failed to update status"})
+      }
+        }
+        else{
+            res.json({success:false,message:"Order not found"})
+             //ordr not  found
+        }
+        
+    } catch (error) {
+        res.json({success:false,message:"Failed to update status"})
+
+        console.log(error.message)
+    }
+}
 
 module.exports={
     loadlogin,
@@ -441,6 +496,8 @@ module.exports={
     catablock,
     cataunblock,
     catadelete,
-    logout
+    logout,
+    loadorder,
+    orderstatus
 
 }

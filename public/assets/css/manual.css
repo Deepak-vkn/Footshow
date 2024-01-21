@@ -7,7 +7,18 @@
     color:red;
     text-align:center;
 }
-
+#alert-container2{
+    color:red;
+    text-align:center;
+}
+#alert-container3{
+    color:red;
+    text-align:center;
+}
+#alert-container4{
+    color:red;
+    text-align:center;
+}
 #box{
 
     margin-top: 10px;
@@ -53,3 +64,37 @@
  /* #shop-image {
     max-width: 100%;
     height: auto; /* This ensures that the image maintains its aspect ratio */
+    #linkforget {
+        float: right;
+        /* You can also use other CSS properties for alignment, such as margin-right */
+        /* margin-right: 20px; */
+    }
+
+   
+   
+    #addAddressModal .modal-content {
+        background: #fff; /* Background color */
+        border-radius: 10px; /* Rounded corners */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle lift */
+        padding: 20px; /* Padding inside the modal */
+         /* Add border to the modal content */
+    }
+    #addAddressModal .modal-header {
+        border-bottom: none;
+        background-color: none; /* Remove border from the header */
+    }
+
+    #addAddressModal .form-group {
+        margin-bottom: 20px; /* Margin between form groups */
+    }
+    
+    #addAddressModal button {
+         /* Button background color */
+        color: #fff; /* Button text color */
+        border: none; /* Remove button border */
+        padding: 10px 15px; /* Padding inside the button */
+        border-radius: 5px; /* Rounded corners for the button */
+        cursor: pointer; /* Cursor style on hover */
+    }
+
+   

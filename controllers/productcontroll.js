@@ -81,7 +81,8 @@ const addproduct=async(req,res)=>{
             brand:req.body.brand,
             color:req.body.color,
             status:req.body.status,
-            category:category._id
+            category:category._id,
+            quantity:req.body.quantity
 
             })
             
@@ -96,7 +97,7 @@ const addproduct=async(req,res)=>{
 
                 // Resize image using sharp
                 await sharp(originalImagePath)
-                    .resize(800, 1200, { fit: 'fill' })
+                    .resize(800, 1070, { fit: 'fill' })
                     .toFile(resizedPath);
 
                 // Push the resized filename to the array
@@ -255,7 +256,8 @@ const editproduct = async (req, res) => {
             brand: req.body.brand,
             color: req.body.color,
             status: req.body.status,
-            category: req.body.category
+            category: req.body.category,
+            quantity:req.body.quantity
 
         };
 

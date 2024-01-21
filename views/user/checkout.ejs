@@ -1,4 +1,8 @@
 <%- include('../layout/header') -%>
+
+
+
+
     <div class="page-wrapper">
         <header class="header">
         
@@ -32,7 +36,10 @@
                                     <a href="/women" >WOMEN</a>
     
                                 </li>
-                                
+                                <li>
+                                    <a href="category.html" class="sf-with-ul">CHILDREN</a>
+    
+                                </li>
                                 
                             </ul><!-- End .menu -->
                         </nav><!-- End .main-nav -->
@@ -108,340 +115,173 @@
         <main class="main">
         	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
         		<div class="container">
-        			<h1 class="page-title">My Account<span>Shop</span></h1>
+        			<h1 class="page-title">Checkout<span>Shop</span></h1>
         		</div><!-- End .container -->
         	</div><!-- End .page-header -->
-            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
                 <div class="container">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Home</a></li>
                         <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">My Account</li>
+                        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
                     </ol>
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
 
             <div class="page-content">
-            	<div class="dashboard">
+            	<div class="checkout">
 	                <div class="container">
-	                	<div class="row">
-	                		<aside class="col-md-4 col-lg-3">
-	                			<ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-								    <li class="nav-item">
-								        <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Downloads</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Change Password</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" href="/logout">Sign Out</a>
-								    </li>
-								</ul>
-	                		</aside><!-- End .col-lg-3 -->
-
-	                		<div class="col-md-8 col-lg-9">
-	                			<div class="tab-content">
+            			<div class="checkout-discount">
+            				<!-- <form action="#">
+        						<input type="text" class="form-control" required id="checkout-discount-input">
+            					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
+            				</form> -->
+            		
+                    </div><!-- End .checkout-discount -->
+                    <% if(locals.user && locals.cart) { %>
+            			<form action="#" onsubmit="handleFormSubmission(event)">
+		                	<div class="row">
+		                		<div class="col-lg-9">
 
 
-                                    <input type="hidden" id="userid" value="user._id">
-
-								    <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
-								    	<form method="POST" id="profile_update">
-			                				
-			                					
-                                            <label> Name *</label>
-                                             <input type="text" class="form-control" id="name" value="<%= user.name %>" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed"required >
-			                				
-
-		            						<!-- <label>Mobile Number *</label>
-		            						<input type="text" class="form-control" id="mobile" value="<%= user.mobile %>" required>
-		            						<small class="form-text">This will be how your name will be displayed in the account section and in reviews</small> -->
-                                           
-		                					<label>Email address *</label>
-		        							<input type="email" class="form-control" value="<%= user.email %>" disabled>
-
-                                            
-		            						<!-- <label>Current password (leave blank to leave unchanged)</label>
-		            						<input type="password" class="form-control"> -->
-
-		            						<!-- <label>New password (leave blank to leave unchanged)</label>
-		            						<input type="password" class="form-control"> -->
-
-		            						
-
-		                					<!-- <button type="submit" class="btn btn-outline-primary-2">
-			                					<span>SAVE CHANGES</span>
-			            						<i class="icon-long-arrow-right"></i>
-			                				</button> -->
-                                            <p id="alert-container"><%= locals.message %></p>
-                                            <button type="submit" class="btn btn-outline-primary-2">
-			                					<span>SAVE CHANGES</span>
-			            						<i class="icon-long-arrow-right"></i>
-			                				</button>
-
-			                			</form>
-								    </div><!-- .End .tab-pane -->
-
-								    <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-                                        <% if (locals.order){ %>
-                                            <div class="row">
-                                            <% order.forEach((order,index)=>{ %>
-                                               
+                               	
+                       <!-- ---------------------------------adrss session--------------------------------------- -->
+                                    <div class="row">
+                                        <% if (user.address) { %>
+                                            <% user.address.forEach((address,index) => { %>
                                                 <div class="col-lg-6">
                                                     <div class="card card-dashboard">
                                                         <div class="card-body">
-                                                            <h3 class="card-title"> Order <%= index + 1 %></h3>
-                                                            <!-- End .card-title -->
-                                                
-                                                            <!-- Display order details -->
+                                                            <label>
+                                                                <input type="radio" name="selectedAddress" value="<%= index %>">
+                                                                
+                                                                Select
+                                                            </label>
+                                                            <h3 class="card-title">Address <%= index + 1 %></h3>
                                                             
-                                                                <ul>
-                                                                    <% order.products.forEach((product,i) => { %>
-                                                                        <li>
-                                                                            <span><img src="/images/<%= product.image %>" alt="<%= product.name %>" width="50" height="50"></span>
-                                                                            <%= product.name %> - <%= product.quantity %> x <%= product.price %> = <%= product.totalprice %>
-                                                                            <a href="/cancelorder?index=<%= i %>&oid=<%= order._id %>">Cancell </a>
-                                                                            
-                                                                        </li>
-                                                                    <% }); %>
-                                                                </ul>
-                                                
-                                                                <!-- Display total, payment, and status -->
-                                                                <p>
-                                                                    Total: <%= order.total %><br>
-                                                                    Payment: <%= order.payment %><br>
-                                                                    Status: <%= order.status %>
-                                                                    
-                                                                </p>
-                                                        
-                                                
-                                                            <!-- Display address -->
-                                                        
-                                                                <h3>Address</h3>
-                                                                <%
-                                                                                let parsedAddress;
-                                                                                try {
-                                                                                    // Correct the string representation to make it valid JSON
-                                                                                    const correctedAddressString = order.address
-                                                                                    .replace(/'/g, '"')  // Replace single quotes with double quotes
-                                                                                    .replace(/(\w+):/g, '"$1":')  // Wrap keys with double quotes
-                                                                                    .replace(/"_id":\s*new\s*ObjectId\("([^"]+)"\)/g, '"_id": "$1"');  // Replace new ObjectId() with the string value
-
-                                                                                    console.log('Corrected address string:', correctedAddressString);
-
-                                                                                    // Parse the corrected string as JSON
-                                                                                    parsedAddress = JSON.parse(correctedAddressString);
-                                                                                } catch (error) {
-                                                                                    console.error('Error parsing address:', error.message);
-                                                                                    parsedAddress = {};
-                                                                                }
-%>
-                                                                <p>
-                                                                    <%= parsedAddress.name %><br>
-                                                                    <%= parsedAddress.buildingname %> ,<%= parsedAddress.street %> ,<%= parsedAddress.city %>,<%= parsedAddress.pincode %><br>
-                                                                    <%= parsedAddress.state %><br>
-                                                                    <%= parsedAddress.mobile %><br>
-                                                                    
-                                                                </p>
-                                        
-                                                        </div>
-                                                        <!-- End .card-body -->
-                                                    </div>
-                                                    <!-- End .card-dashboard -->
-                                                </div>
-                                                <!-- End .col-lg-6 -->
-                                               
-                                                
-
-                                            <% }) %>
-                                        </div>
-                                        <%} else { %>
-                                            
-                                            <p>No order has been made yet.</p>
-                                       <% } %>
-								    	
-								    </div><!-- .End .tab-pane -->
-
-
-
-
-                                    
-								    <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-								    	<p>No downloads available yet.</p>
-								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-								    </div><!-- .End .tab-pane -->
-
-								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
-								    	<!-- <p>The following addresses will be used on the checkout page by default.</p> -->
-
-								    	<div class="row">
-                                            <% if (user.address) { %>
-                                                  
-                                                <% user.address.forEach((adress,index)=>{ %>
-
-                                                    <div class="col-lg-6">
-                                                        <div class="card card-dashboard">
-                                                            <div class="card-body">
-                                                                <h3 class="card-title"> Address</h3><!-- End .card-title -->
-        
-                                                                <p><%= adress.name %><br>
-                                                                    <%= adress.buildingname %> <br>
-                                                                    <%= adress.street %> <br>
-                                                                    <%= adress.city %><br>
-                                                                    <%= adress.state %><br>
-                                                                    <%= adress.mobile %><br>
-                                                                    <%= adress.pincode %><br>
-                                                                    <a href="/editaddress?index=<%= index %>&id=<%= user._id %>">Edit <i class="icon-edit"></i></a>
-                                                                </p>
-                                                            </div><!-- End .card-body -->
-                                                        </div><!-- End .card-dashboard -->
-                                                    </div><!-- End .col-lg-6 -->
-
-
-                                               <% }) %>
-
-
-                                         <%  } else { %>
-
-                                            <h1> no adress added yet</h1>
+                                                            <p>
+                                                                <%= address.name %><br>
+                                                                <%= address.buildingname %> <br>
+                                                                <%= address.street %> <br>
+                                                                <%= address.city %><br>
+                                                                <%= address.state %><br>
+                                                                <%= address.mobile %><br>
+                                                                <%= address.pincode %><br>
+                                                                
+                                                               
+                                                            </p>
+                                                        </div><!-- End .card-body -->
+                                                    </div><!-- End .card-dashboard -->
+                                                </div><!-- End .col-lg-6 -->
+                                            <% }); %>
+                                        <% } else { %>
+                                            <p>No addresses available.</p>
                                         <% } %>
-                                          
-								    		
-
-
-								    		<!-- <div class="col-lg-6">
-								    			<div class="card card-dashboard">
-								    				<div class="card-body">
-								    					<h3 class="card-title">Shipping Address</h3>End .card-title -->
-
-														<!-- <p>You have not set up this type of address yet.<br>pass
-														<a href="#">Edit <i class="icon-edit"></i></a></p>
-								    				</div>
-								    			</div>
-								    		</div> -->
-
-								    	</div><!-- End .row -->
-                                        <a href="#" id="addAddressLink">Add Address<i class="icon-edit"></i></a>
-								    </div><!-- .End .tab-pane -->
-
-                                
-
-                                    <!-- start modal -->
-                                    <div class="modal" id="addAddressModal">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                    
-                                                <!-- Modal Header -->
-                                                <div class="modal-header bg-primary text-white">
-                                                    <h4 class="modal-title text-center">Add Address</h4>
-                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                </div>
-                                    
-                                                <!-- Modal Body -->
-                                                <div class="modal-body">
-                                                    <!-- Your address form goes here -->
-                                                    <form id="addressForm"  action="/createaddress" method="POST" onsubmit="return validateForm()">
-                                                        <!-- Address input fields go here -->
-                                                        <div class="form-group">
-                                                            <label for="name">Name:</label>
-                                                            <input type="text" class="form-control" id="name" name="name"  pattern="[A-Za-z ]+" title="Please enter alphabets only" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="name">Buuilding/House Name:</label>
-                                                            <input type="text" class="form-control" id="bname" name="building" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="mobile">Mobile:</label>
-                                                            <input type="text" class="form-control" id="mobile" name="mobile" pattern="\d{10}" title="Please enter a 10-digit phone number" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="street">Street:</label>
-                                                            <input type="text" class="form-control" id="street" name="street" required>
-                                                        </div>
-                                    
-                                                        <div class="form-group">
-                                                            <label for="city">City:</label>
-                                                            <input type="text" class="form-control" id="city" name="city" required>
-                                                        </div>
-                                    
-                                                        <div class="form-group">
-                                                            <label for="state">State:</label>
-                                                            <input type="text" class="form-control" id="state" name="state" required>
-                                                        </div>
-                                    
-                                                        <div class="form-group">
-                                                            <label for="pincode">Pincode:</label>
-                                                            <input type="text" class="form-control" id="pincode" name="pincode"  pattern="\d{6}" title="Please enter a 6-digit pincode"required>
-                                                        </div>
-                                    
-                                                        <!-- Add other address fields as needed -->
-                                                        
-                                                        <button type="submit" class="btn btn-primary btn-block">Save Address</button>
-                                                    </form>
-                                                    <p id="alert-container3"><%= locals.message %></p>
-                                                </div>
-                                    
-                                            </div>
-                                        </div>
                                     </div>
+                                    <a href="/addaddress" id="addAddressLink">Add Address<i class="icon-edit"></i></a>
                                     
 
-                                    <!-- end of modal -->
 
 
-								    <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-								    	<form action="#" id="password_update" method="profile">
-			                				<!-- <div class="row">
-			                					<div class="col-sm-6">
-			                						<label>First Name *</label>
-			                						<input type="text" class="form-control" required>
-			                					</div>
 
-			                					<div class="col-sm-6">
-			                						<label>Last Name *</label>
-			                						<input type="text" class="form-control" required>
-			                					</div> End .col-sm-6 -->
-			                				<!-- </div> -->
 
-		            						<!-- <label>Display Name *</label>
-		            						<input type="text" class="form-control" required>
-		            						<small class="form-text">This will be how your name will be displayed in the account section and in reviews</small> -->
 
-		                					<!-- <label>Email address *</label>
-		        							<input type="email" class="form-control" required> -->
 
-		            						<label>Current password </label>
-		            						<input type="password" class="form-control" id="current_password" required>
 
-		            						<label>New password</label>
-		            						<input type="password" class="form-control" id="new_password" required>
 
-		            						<label>Confirm new password</label>
-		            						<input type="password" class="form-control mb-2" id="confirm_new_password" required>
-                                            <p id="alert-container2"><%= locals.message %></p>
-		                					<button type="submit" class="btn btn-outline-primary-2" >
-			                					<span>SAVE CHANGES</span>
-			            						<i class="icon-long-arrow-right"></i>
-			                				</button>
-                                            <a href="/forgetpassword" class="forgot-link" id="linkforget"> Forgot Your Password?</a>
-			                			</form>
-								    </div><!-- .End .tab-pane -->
-								</div>
-	                		</div><!-- End .col-lg-9 -->
-	                	</div><!-- End .row -->
+
+
+
+
+		                		</div><!-- End .col-lg-9 -->
+		                		<aside class="col-lg-3">
+		                			<div class="summary">
+		                				<h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+
+		                				<table class="table table-summary">
+		                					<thead>
+		                						<tr>
+		                							<th>Product</th>
+		                							<th>Total</th>
+		                						</tr>
+		                					</thead>
+
+		                					<tbody>
+                                                <% if(locals.cart){  %>
+
+
+                                                    <% cart.products.forEach((prdct)=>{ %>
+                                                        <tr>
+                                                            <td><a href="#"><%= prdct.productid.name %> </a></td>
+                                                            <td><%= prdct.totalprice %></td>
+                                                        </tr>
+
+                                                    <% })%>
+                                                    
+
+
+                                                    <tr class="summary-subtotal">
+                                                        <td>Subtotal:</td>
+                                                        <td><%= cart.total %></td>
+                                                    </tr><!-- End .summary-subtotal -->
+                                                    <tr>
+                                                        <td>Shipping:</td>
+                                                        <td>Free shipping</td>
+                                                    </tr>
+                                                    <tr class="summary-total">
+                                                        <td>Total:</td>
+                                                        <td><%= cart.total %></td>
+                                                    </tr><!-- End .summary-total -->
+    
+
+                                                <%} %>
+		                						
+		                						
+		                					</tbody>
+		                				</table><!-- End .table table-summary -->
+
+		                				<div class="accordion-summary" id="accordion-payment">
+                                            <div class="payment-options">
+                                                
+                                        
+                                            
+                                                    <div class="payment-option">
+                                                        <label>
+                                                            <input type="radio" name="selectedPayment" value="Cash on Delivery" >
+                                                            Cash on Delivery
+                                                        </label>
+                                                    </div>
+                                                    <div class="payment-option">
+                                                        <label>
+                                                            <input type="radio" name="selectedPayment"  value="check">
+                                                            Check Payment
+                                                        </label>
+                                                    </div>
+                                                    <div class="payment-option">
+                                                        <label>
+                                                            <input type="radio" name="selectedPayment" value="Net Banking" >
+                                                            Net Banking
+                                                        </label>
+                                                    </div>
+                                               
+                                        
+                                            </div><!-- End .payment-options -->
+										</div><!-- End .accordion -->
+
+		                				<button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+		                					<span class="btn-text">Place Order</span>
+		                					<span class="btn-hover-text">Proceed to Checkout</span>
+		                				</button>
+		                			</div><!-- End .summary -->
+		                		</aside><!-- End .col-lg-3 -->
+		                	</div><!-- End .row -->
+            			</form>
 	                </div><!-- End .container -->
-                </div><!-- End .dashboard -->
+                </div><!-- End .checkout -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
+
+
 
         <footer class="footer">
         	<div class="footer-middle">
@@ -757,7 +597,7 @@
                                     </div><!-- End .form-choice -->
                                 </div><!-- .End .tab-pane -->
                                 <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
-                                    <form action="#" id="password_update" method='POST'>
+                                    <form action="#">
                                         <div class="form-group">
                                             <label for="register-email">Your email address *</label>
                                             <input type="email" class="form-control" id="register-email" name="register-email" required>
@@ -813,169 +653,126 @@
     <script src="assets/js/jquery.waypoints.min.js"></script>
     <script src="assets/js/superfish.min.js"></script>
     <script src="assets/js/owl.carousel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
 
 
-    <script>
-
-        // FOR PROFILE UPDATE--------------------------
+<script>
 
 
-        document.getElementById('profile_update').addEventListener('submit', async (event) => {
-            event.preventDefault(); 
-            const nameInput = document.getElementById('name');
-            const alertContainer = document.getElementById('alert-container');
-           // const mobileInput = document.getElementById('mobile');
-           // const mobile = document.getElementById('mobile').value;
-            //const name = document.getElementById('name').value;
-            const name = nameInput.value.trim();
-    if (name === '') {
-        alertContainer.innerHTML = 'Name is required.';
-        return;
+async function handleFormSubmission(event) {
+    event.preventDefault(); 
+
+    const paymentRadioButtons = document.querySelectorAll('input[name="selectedPayment"]:checked');
+const addressRadioButtons = document.querySelectorAll('input[name="selectedAddress"]:checked');
+const cid = '<%= cart._id %>';
+
+if (paymentRadioButtons.length === 0 || addressRadioButtons.length === 0) {
+  // Display SweetAlert to notify the user to select both address and payment method
+  Swal.fire({
+    icon: 'warning',
+    title: 'Incomplete Order',
+    text: 'Please select both address and payment method before placing the order.',
+    showConfirmButton: true,
+    animation: {
+      showClass: 'animate__animated animate__fadeIn',
+      duration: 500,
     }
-            
-            const userId = '<%= user._id %>';
-            
-            try {
-                const response = await fetch(`/profile?id=${userId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({name }),
-                });
+  });
+  return;
+}
+
+// Both payment and address are selected, proceed with your order placement logic here
+const selectedPaymentMethod = paymentRadioButtons[0].value;
+const selectedValue = addressRadioButtons[0].value;
+
+
+
+
+
     
-                const data = await response.json();
-    
-                if (response.ok) {
-                    if(data.us){
-                     console.log(data.message)
-                     alertContainer.innerHTML=data.message
-                     nameInput.value=data.us.name
-                     //mobileInput.value=data.us.mobile
+    try {
+      const response = await fetch(`/checkout?cid=${cid}`, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({ selectedValue, selectedPaymentMethod }),
+      });
 
-                    }
+      if (response.ok) {
+        const data = await response.json();
 
-                    else{
-                    console.error(data.message);
-                    alertContainer.innerHTML=data.message
-                    }
-
-                    console.log(data.message);
-                    
-                } else {
-                    console.error(data.message);
-                    alertContainer.innerHTML=data.message
-                }
-            } catch (error) {
-
-                alertContainer.innerHTML=data.message
-                console.error('Error:', error.message);
-            }
-        });
-
-
-        // FOR PASSWORD UPDATE------------------------------
-
-
-        document.getElementById('password_update').addEventListener('submit',async()=>{
-            event.preventDefault()
-
-            const currentPassword = document.getElementById('current_password').value;
-            const newPassword = document.getElementById('new_password').value;
-            const confirmNewPassword = document.getElementById('confirm_new_password').value;
-            const userId = '<%= user._id %>';
-            const alertContainer = document.getElementById('alert-container2');
-
-            if (newPassword !== confirmNewPassword) {
-                alertContainer.innerHTML ='New password and confirm new password must match.'
-                return;
-            }
-             if (newPassword.length < 8) {
-                alertContainer.innerHTML = 'New password must be at least 8 characters long.'
-                return;
-            }
-
-            const updatePasswordResponse = await fetch(`/updatepassword?id=${userId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    currentPassword,
-                    newPassword,
-                }),
-            });
-
-
-            try {
-            
+        if (data.success) {
+          console.log('Order placed successfully:', data);
+          Swal.fire({
+            icon: 'success',
+            title: 'Order placed successfully',
+            text: 'Your order has been placed successfully.',
+            showConfirmButton: false,
+            animation: {
+            showClass: 'animate__animated animate__fadeIn', 
+            duration: 500, 
+            },
+            timer: 1000
                 
-                if (updatePasswordResponse.ok) {
-                    const data = await updatePasswordResponse.json();
-                    console.log(data);
-
-                   
-                    alertContainer.innerHTML = data.message;
-                    console.log(alertContainer)
-
-                }
-                 else {
-                   
-                    console.log('Server error:', updatePasswordResponse.message);
-                    alertContainer.innerHTML = 'Server error. Please try again later.';
-                }
-            }
-        
-             catch (error) {
-                console.log('Error parsing JSON:', error.message);
-                alertContainer.innerHTML = 'Error parsing response. Please try again later.';
-            }
-
-
-
-        })
-
-//modal -------
-
-    document.getElementById('addAddressLink').addEventListener('click', function () {
-        $('#addAddressModal').modal('show');
+          }).then(() => {
+      window.location.href = '/cart';
     });
-
-
-
-
-// validation 
-
-
-function validateForm() {
-        // Get form inputs
-        var name = document.getElementById('name').value.trim();
-    var building = document.getElementById('bname').value.trim();
-    var mobile = document.getElementById('mobile').value.trim();
-    var street = document.getElementById('street').value.trim();
-    var city = document.getElementById('city').value.trim();
-    var state = document.getElementById('state').value.trim();
-    var pincode = document.getElementById('pincode').value.trim();
-    const alertContainer = document.getElementById('alert-container3');
-
-        // Perform validation
-        if (name === '' || building === '' || mobile === '' || street === '' || city === '' || state === '' || pincode === '') {
-            alertContainer.innerHTML = 'Plese enter valid data';
-            return false; // Prevent form submission
+          
+        } else {
+          console.error('Unable to place order:', data.message);
+          Swal.fire({
+            icon: 'error',
+            title: 'Unable to place order',
+            text: data.message || 'There was an error placing your order. Please try again.',
+            showConfirmButton: false,
+            animation: {
+            showClass: 'animate__animated animate__fadeIn', 
+            duration: 500, 
+            },
+            timer: 1000
+          });
+          console.log('reached 2')
         }
-
-        // Additional validation logic can be added here
-
-        return true; // Allow form submission
+      } else {
+        const data = await response.json();
+        console.error('Unable to place order:', data.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Unable to place order',
+          text: data.message || 'There was an error placing your order. Please try again.',
+          showConfirmButton: false,
+          animation: {
+            showClass: 'animate__animated animate__fadeIn', 
+            duration: 500, 
+            },
+            timer: 1000
+        });
+        console.log('reached 3')
+        console.error('Failed to create order:', data);
+      }
+    } catch (error) {
+      console.error('Failed to create order:', error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Unable to place order',
+        text: 'There was an error placing your order. Please try again.',
+        showConfirmButton: false,
+        animation: {
+            showClass: 'animate__animated animate__fadeIn', 
+            duration: 500, 
+            },
+            timer: 1000
+      });
+      console.log(error.message);
     }
+  }
+
+</script>
+
+ <% }%>
 
 
-
-    // </script>
-
-
-
-
-<%- include('../layout/footer') -%>
+    <%- include('../layout/footer') -%>

@@ -18,14 +18,23 @@ const addtocart=async(req,res)=>{
 
     try {
       const id=req.query.id
+      //console.log(` produtc id is ${id}`)
       const usermail=req.session.userid
       const qty=req.body.qty
+      //console.log(` produtc qty now is ${qty}`)
       const prdct=await Product.findOne({_id:id})
     //   console.log(prdct)
       if(usermail){
        const user=await User.findOne({email:usermail})
         if(prdct){
+          const qtycheck=prdct.quantity
+          console.log(qtycheck)
+          if(qtycheck==='0'){
+            res.json({ success: false, message: ' Product Out of Stock' });
+          }
+          else{
 
+  
             const uid=user._id.toString()
             const cartcheck=await Cart.findOne({userid:uid})
             const price=prdct.price
@@ -44,6 +53,8 @@ const addtocart=async(req,res)=>{
                         existingProduct.quantity = Number(existingProduct.quantity) + Number(qty);
                         existingProduct.totalprice = Number(existingProduct.totalprice) + totalprice;
                     
+
+                        cartcheck.total=cartcheck.total+totalprice //update total
                         const updatedCart = await cartcheck.save();
 
                 if (updatedCart) {
@@ -61,8 +72,14 @@ const addtocart=async(req,res)=>{
                         quantity: qty,
                         totalprice: totalprice,
                         image:prdct.image[0]
-                    }
+                    },
+
                    }})
+                    // Recalculate the total cart value
+                    cartcheck.total = cartcheck.total+totalprice
+
+                    const updatedCart = await cartcheck.save();
+
                  
                    if(cartnew){
                     res.json({ success: true, message: 'Product added to cart' });
@@ -93,7 +110,8 @@ const addtocart=async(req,res)=>{
                         image:prdct.image[0]
 
                     }
-                ]
+                ],
+                total:totalprice
               })
               const c= await cartnew.save()
               if(c){
@@ -106,6 +124,9 @@ const addtocart=async(req,res)=>{
               }
                
             }
+          }
+          
+
         }
 
         else{
@@ -139,6 +160,7 @@ const loadcart=async(req,res)=>{
         const usermail= req.session.userid
 
         if(usermail){
+          const track=true
         const user= await User.findOne({email:usermail})
         const id=user._id.toString()
         const cart = await Cart.findOne({ userid: id })
@@ -149,27 +171,12 @@ const loadcart=async(req,res)=>{
         .lean();
 
         if(cart){
-            const total=await Cart.aggregate([
-                {
-                  $unwind: '$products' // Deconstruct the products array
-                },
-                {
-                  $group: {
-                    _id: null,
-                    total: { $sum: '$products.totalprice' } // Calculate the sum of totalprice
-                  }
-                },
-                {
-                  $project: {
-                    _id: 0, // Exclude the _id field
-                    total: 1 // Include only the total field
-                  }
-                }])
-        //console.log(total.total)
-            res.render('cart',{cart,total})
+            const total= cart.total
+            //console.log(total)
+            res.render('cart',{cart,total,track,user})
         }
         else{
-            res.render('cart')
+            res.render('cart',{track,user})
         }
         }
         else{
@@ -204,6 +211,14 @@ const updateacart=async(req,res)=>{
         const product = user.products.find(p => p.productid.toString() === pid);
         //console.log(product)
         if(product){
+            const dbproduct= await Product.findOne({_id:pid})
+
+            const oldquantity= dbproduct.quantity -1
+           if(oldquantity<qty){
+            console.log('product out of stock')
+            res.json({ success: false, message: 'Product out of stock' });
+           }
+           else{
             //const totalprice=product.totalprice
             const price=product.price
             const totalprice=qty*price
@@ -220,22 +235,13 @@ const updateacart=async(req,res)=>{
               //console.log('Updated Cart:', updatedCart);
 
               if(updatedCart){
-                const total=await Cart.aggregate([
-                    {
-                      $unwind: '$products' // Deconstruct the products array
-                    },
-                    {
-                      $group: {
-                        _id: null,
-                        total: { $sum: '$products.totalprice' } // Calculate the sum of totalprice
-                      }
-                    },
-                    {
-                      $project: {
-                        _id: 0, // Exclude the _id field
-                        total: 1 // Include only the total field
-                      }
-                    }])
+                const cart=await Cart.findOne({_id:id})
+                const total = updatedCart.products.reduce((acc, p) => acc + p.totalprice, 0);
+                await Cart.updateOne({ _id: id }, { $set: { total: total } });
+               
+
+
+
                     const editedProduct = updatedCart.products.find(p => p.productid.toString() === pid);
 
                    // console.log(editedProduct )
@@ -246,7 +252,10 @@ const updateacart=async(req,res)=>{
               else{
                 res.status(500).json({ success: false, message: 'Failed to update the cart.' });
               }
+           }
+            
         }
+
         else{
             res.status(404).json({successa:false,message:'Product not found in users Cart'})
 
@@ -284,7 +293,17 @@ const removecart=async(req,res)=>{
            res.redirect('/cart')
         }
         else{
-
+          const newTotalPrice = updatedcart.products.reduce(
+            (total, product) => total + product.totalprice,
+            0
+          );
+        
+          // Update the total price in the cart
+          updatedcart.total = newTotalPrice;
+        
+          // Save the updated cart
+          await updatedcart.save();
+        
             res.redirect('/cart')
         }
         
@@ -298,7 +317,33 @@ const removecart=async(req,res)=>{
 
 
 
+//stockcheck==========================
 
+
+const stockcheck=async(req,res)=>{
+    try {
+        
+        const newqty= req.body.newQuantity
+        const pid=req.query.pid
+        // console.log(qty)
+        // console.log(pid)
+        const product= await Product.findOne({_id:pid})
+        const oldquantity=product.quantity -1
+        //console.log(oldquantity)
+        if(oldquantity<newqty ){
+        res.json({success:false})
+        }
+        else{
+        res.json({success:true})
+        }
+
+
+
+    } catch (error) {
+        res.json({success:false})
+        console.log(error.message)
+    }
+}
 
 
 
@@ -308,7 +353,8 @@ module.exports= {
     addtocart,
     loadcart,
     updateacart,
-    removecart
+    removecart,
+    stockcheck
 }
 
 

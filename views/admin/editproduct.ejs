@@ -31,17 +31,11 @@
                 </a>
                 
             </li>
-            <li class="menu-item has-submenu">
-                <a class="menu-link" href="page-orders-1.html"> <i class="icon material-icons md-shopping_cart"></i>
+            <li class="menu-item ">
+                <a class="menu-link" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
                     <span class="text">Orders</span>
                 </a>
-                <div class="submenu">
-                    <a href="page-orders-1.html">Order list 1</a>
-                    <a href="page-orders-2.html">Order list 2</a>
-                    <a href="page-orders-detail.html">Order detail</a>
-                    <a href="page-orders-tracking.html">Order tracking</a>
-<a href="page-invoice.html">Invoice</a>
-                </div>
+                
             </li>
             <li class="menu-item has-submenu">
                 <a class="menu-link" href="page-sellers-cards.html"> <i class="icon material-icons md-store"></i>
@@ -196,7 +190,7 @@
                             <input type="hidden" value='<%= item.image.length %>' id="currentImageLength">
                             <div class="mb-4">
                                 <label for="product_title" class="form-label">Product Name</label>
-                                <input type="text"  class="form-control" id="product_title" name="name" value='<%= item.name %>' required>
+                                <input type="text"  class="form-control" id="product_title" name="name" value='<%= item.name %>' pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed"required>
                             </div>
                             
                             <div class="row gx-3">
@@ -275,7 +269,11 @@
                     <div class="card-body">
                         <div class="mb-4">
                             <label class="form-label">Price</label>
-                            <input type="text" placeholder="Type here" class="form-control" name="price"  value='<%= item.price %>' pattern="[0-9\s]+" title="Only numbers and spaces are allowed" required >
+                            <input type="text" placeholder="Type here" class="form-control" name="price"  value='<%= item.price %>'  pattern="[0-9]+(\.[0-9]+)?" title="Only numbers and spaces are allowed" required >
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Quantity</label>
+                            <input type="text" placeholder="Type here" class="form-control" name="quantity" value='<%= item.quantity %>'   pattern="[0-9]+(\.[0-9]+)?" title="Only numbers and spaces are allowed" required >
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Status</label>

@@ -2,6 +2,7 @@ const express=require('express')
 const route=express();
 const usercontroll=require('../controllers/usercontroll')
 const cartcontroll=require('../controllers/cartcontroll')
+const checkoutcontroll=require('../controllers/checkoutcontroll')
 route.use(express.static('public'))
 const bodyparser=require('body-parser')
 route.set('view engine','ejs')
@@ -31,22 +32,41 @@ route.get('/shop',usercontroll.loadshop)
 route.get('/singleproduct',usercontroll.loadsingleproduct)
 route.get('/men',usercontroll.loadmen)
 route.get('/women',usercontroll.loadwomen)
-route.get('/forgetpassword',usercontroll.forgetpassword)
+route.get('/forgetpassword',usermiddle.islogin,usercontroll.forgetpassword)
 route.post('/forgetpassword',usercontroll.forgetpasswordmailsend)
-route.get('/resetpassword',usercontroll.resetpasswordload) 
-route.post('/resetpassword',usercontroll.resetpassword)   
-route.get('/profile',usercontroll.profileload)
-route.post('/profile',usercontroll.profileedit)
+route.get('/resetpassword',usermiddle.islogin,usercontroll.resetpasswordload) 
+route.post('/resetpassword',usermiddle.islogin,usercontroll.resetpassword)   
+
+
+
+//profile
+
+route.get('/profile',usermiddle.islogin,usercontroll.profileload)
+route.post('/profile',usermiddle.islogin,usercontroll.profileedit)
+route.post('/updatepassword',usermiddle.islogin,usercontroll.updatepassword)
+route.post('/createaddress',usermiddle.islogin,usercontroll.createaddress)
+route.get('/editaddress',usermiddle.islogin,usercontroll.editaddress)
+route.post('/editaddress',usermiddle.islogin,usercontroll.editaddresspost)
+route.get('/addaddress',usermiddle.islogin,usercontroll.addaddress)
+route.post('/addaddress',usermiddle.islogin,usercontroll.addaddresspost)
+route.get('/cancelorder',usermiddle.islogin,usercontroll.cancelorder)
 
 
 //cart
 
-route.post('/addtocart',cartcontroll.addtocart)
-route.get('/cart',cartcontroll.loadcart)
-route.post('/cartupdate',cartcontroll.updateacart)
-route.get('/removecart',cartcontroll.removecart)
+route.post('/addtocart',usermiddle.islogin,cartcontroll.addtocart)
+route.get('/cart',usermiddle.islogin,cartcontroll.loadcart)
+route.post('/cartupdate',usermiddle.islogin,cartcontroll.updateacart)
+route.get('/removecart',usermiddle.islogin,cartcontroll.removecart)
+route.post('/stockcheck',usermiddle.islogin,cartcontroll.stockcheck)
 
 
+
+//checkout
+
+route.get('/checkout',usermiddle.islogin,checkoutcontroll.loadcheckout)
+route.post('/checkout',usermiddle.islogin,checkoutcontroll.payment)
+route.get('/success',checkoutcontroll.ordersuccess)
 
 
 

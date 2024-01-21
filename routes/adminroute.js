@@ -61,6 +61,8 @@ route.get('/dashboard',adminmiddle.islogin,admincontroll.laoddashbaord)
 route.get('/users',adminmiddle.islogin,admincontroll.loaduser)
 route.get('/block',adminmiddle.islogin,admincontroll.blockuser)
 route.get('/unblock',adminmiddle.islogin,admincontroll.unblockuser)
+
+//catagory
 route.get('/category',adminmiddle.islogin,admincontroll.loadcategory)
 route.post('/category',admincontroll.addcategory)
 route.get('/addcata',adminmiddle.islogin,admincontroll.loaddcata)
@@ -68,6 +70,9 @@ route.post('/updatecata',admincontroll.updatecata)
 route.get('/catablock',adminmiddle.islogin,admincontroll.catablock)
 route.get('/cataunblock',adminmiddle.islogin,admincontroll.cataunblock)
 route.get('/catadelete',admincontroll.catadelete)
+
+
+//product
 route.get('/productlist',adminmiddle.islogin,productcontroll.loadproduct)
 route.get('/addproduct',adminmiddle.islogin,productcontroll.loadaddproduct)
 route.post('/addproduct', upload.array('image', 10), productcontroll.addproduct);
@@ -81,7 +86,10 @@ route.post('/editproduct', upload.fields([{ name: 'newImages', maxCount: 4 }, { 
 route.get('/deleteimage',adminmiddle.islogin,productcontroll.deleteimage)
 route.get('/logout',admincontroll.logout)
 
+//orders
 
+route.get('/orders',adminmiddle.islogin,admincontroll.loadorder)
+route.post('/orderstatus',admincontroll.orderstatus)
 
 
 module.exports=route

@@ -47,6 +47,10 @@ const productschema= new mongoose.Schema({
     is_delete:{
         type:Boolean,
         default:false
+    },
+    quantity:{
+        type:Number,
+        required:true
     }
 })
  

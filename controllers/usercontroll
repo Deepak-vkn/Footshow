@@ -1,6 +1,8 @@
 const { log } = require('console')
 const User=require('../models/usermodel')
 const Product=require('../models/product')
+const Cart=require('../models/cart')
+const Order=require('../models/orders')
 const bcrypt=require('bcrypt')
 const Otp=require('../models/otp')
 const OTPgenerator=require('otp-generator')
@@ -319,7 +321,7 @@ const verifylogin=async(req,res)=>{
 
     if(userdata){
         const pass= await userdata.password
-
+  
   
         const passwordcheck=await  bcrypt.compare(password,pass)
         
@@ -456,12 +458,25 @@ const loadsingleproduct=async(req,res)=>{
 
     try {
         const id=req.query.id
+          mail=req.session.userid
+        if(mail){
+            const user=await User.findOne({email:mail,verified:true})
+            const track=true
+            const product = await Product.findOne({_id:id}).populate('category').lean();
+
         
-        //console.log(`id product is ${id} `);
+            res.render('singleproduct',{product,user,track})
+    
+        }
+        else{ 
         const product = await Product.findOne({_id:id}).populate('category').lean();
 
         
-       res.render('singleproduct',{product})
+        res.render('singleproduct',{product})
+
+        }
+        //console.log(`id product is ${id} `);
+      
         
     } catch (error) {
         console.log(error.message);
@@ -592,6 +607,7 @@ const forgetpasswordmailsend=async(req,res)=>{
             }
             else{
                 const id=user._id
+        
                 const resetPasswordLink = `http://localhost:12/resetpassword?id=${id}`;
                 const transporter=nodemailer.createTransport({
                     service:'gmail',
@@ -648,24 +664,32 @@ const resetpasswordload=async(req,res)=>{
 const resetpassword = async (req, res) => {
     try {
         const id = req.query.id;
+        console.log(id)
         const pass1 = req.body.password1;
         const hashedPassword = await passwordhash(pass1);
         const user = await User.findOne({ _id: id });
+ 
 
-        if (user) {
-            const update = await User.updateOne({ _id: id }, { $set: { password: hashedPassword } });
-console.log(update)
-            if (update.modifiedCount > 0) {
-                // Password changed successfully
-                return res.status(200).json({ message: 'Password changed successfully' });
+
+            if (user) {
+                const update = await User.updateOne({ _id: id }, { $set: { password: hashedPassword } });
+               console.log(update)
+                if (update.modifiedCount > 0) {
+                    // Password changed successfully
+                    return res.status(200).json({ message: 'Password changed successfully' });
+                    req.session.reset=null
+                } else {
+                    // Password not changed (perhaps the new password is the same as the old one)
+                    return res.status(400).json({ message: 'Password not changed. Please try again.' });
+                }
             } else {
-                // Password not changed (perhaps the new password is the same as the old one)
-                return res.status(400).json({ message: 'Password not changed. Please try again.' });
+                // User not found
+                return res.status(404).json({ message: 'User not found' });
             }
-        } else {
-            // User not found
-            return res.status(404).json({ message: 'User not found' });
-        }
+
+        
+        
+        
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({ message: 'Internal Server Error' });
@@ -677,10 +701,26 @@ console.log(update)
 
 const profileload =async(req,res)=>{
     try {
-        const id=req.query.id
-        const user=await User.findOne({email:id})
-        //console.log(user)
-        res.render('profile',{user})
+        const id=req.session.userid
+        if(id){
+            const user=await User.findOne({email:id,verified:true})
+            const uid=user._id
+            const track=true
+            const order=await Order.find({userid:uid})
+                if(order){
+                    res.render('profile',{user,order,track})
+                    
+                }
+                else{
+                    res.render('profile',{user,track})
+                }
+
+        }
+        else{
+            res.redirect('/login')
+        }
+       
+        
         
     } catch (error) {
         console.log(error.message);
@@ -693,19 +733,19 @@ const profileload =async(req,res)=>{
 
 const profileedit=async(req,res)=>{
     try {
+         
 
-
-        const{mobile,name}=req.body
+        const{name}=req.body
         const id=req.query.id
         const user=await User.findOne({_id:id})
-        if (!mobile && !name) {
-            return res.status(400).json({ message: 'Mobile or name must be provided for update' });
+        if (!name) {
+            return res.status(400).json({ message: ' name must be provided for update' });
         }
 
         if(user){
            const edited= await User.updateOne({_id:id},{$set:{
-                name:name|| user.name,
-                mobile:mobile||user.mobile
+                name:name|| user.name
+                
            }})
            if(edited.modifiedCount>0){
             const us=await User.findOne({_id:id})
@@ -728,6 +768,368 @@ const profileedit=async(req,res)=>{
 }
 
 
+//updatepassword------------------------------------------------
+
+
+const updatepassword=async(req,res)=>{
+    try {
+        const uid=req.query.id
+       
+        const {currentPassword,newPassword}=req.body
+        //console.log(currentPassword,newPassword)
+        const user= await User.findOne({_id:uid})
+        //console.log(user)
+        if(!user){
+            //console.log('user not found')
+
+            res.json({message:'User not found'})
+        }
+        else{
+
+            const pass=user.password
+            
+          
+            const passwordMatch = await bcrypt.compare(currentPassword, pass);
+            
+            if(passwordMatch){
+               // console.log('rupdated')
+                const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+                user.password=hashedNewPassword
+                user.save()
+                res.json({message:'Password Updated '})
+            }
+            else{
+                //console.log('password dont match')
+                res.json({message:'Enterd wrong password'})
+            }
+
+        }
+        
+        
+
+    } catch (error) {
+        res.json({message:'Failed to update password'})
+        console.log(error.message)
+    }
+}
+
+
+
+// create address---------------------------------------------------------
+
+const createaddress =async(req,res)=>{
+
+    try {
+        const { name, building, mobile, street, city, state, pincode } = req.body;
+        const mail=req.session.userid
+        const user=await User.findOne({email:mail,verified:true})
+
+        if(user){
+              
+            if(user.address.length>0){
+
+               user.address.push({
+                    name: name,
+                    buildingname:building,
+                    mobile: mobile,
+                    street: street,
+                    city: city,
+                    state: state,
+                    pincode: pincode
+                });
+                     
+                 const updatedUser = await user.save();
+                 if(updatedUser){
+                    const id=user._id.toString()
+                    
+
+                    res.redirect(`/profile?id=${mail}`)
+                 }
+                 else{
+                    //not updated
+                    res.json({ success: false, message: 'Failed to add address' });
+                 }
+          
+            }
+            else{
+                user.address = [{
+                    name: name,
+                    buildingname:building,
+                    mobile: mobile,
+                    street: street,
+                    city: city,
+                    state: state,
+                    pincode: pincode
+                }];
+            
+                const updatedUser = await user.save();
+            
+                if (updatedUser) {
+                    const id=user._id
+           
+                    res.redirect(`/profile?id=${mail}`)
+                    
+                } else {
+                    res.json({ success: false, message: 'Failed to add address' });
+                }
+               
+                //adress not prstt
+            }
+
+
+        }
+        else{
+            //user not found
+            res.json({ success: false, message: 'User not found' });
+        }
+        
+        
+        
+
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+//edit address---------------------------------------------------
+
+
+const editaddress= async(req,res)=>{
+    try {
+        const ind=req.query.index
+        const id=req.query.id
+       
+        const user= await User.findOne({_id:id,verified:true})
+       
+        const adress=user.address[ind]
+        
+        res.render('adressedit',{adress,user})
+
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+// edit adress post mesthod---------------------------
+
+const editaddresspost=async(req,res)=>{
+    try {
+        const id=req.body.address_id
+        const uid=req.body.user_id
+        const { edit_name, edit_building, edit_mobile, edit_street, edit_city, edit_state, edit_pincode } = req.body;
+        const user=await User.findOne({_id:uid,'address._id':id})
+        
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: uid, 'address._id': id },
+            {
+                $set: {
+                    'address.$.name': edit_name,
+                    'address.$.buildingname': edit_building,
+                    'address.$.mobile': edit_mobile,
+                    'address.$.street': edit_street,
+                    'address.$.city': edit_city,
+                    'address.$.state': edit_state,
+                    'address.$.pincode': edit_pincode
+                },
+            },
+            { new: true }
+        );
+        if(updatedUser){
+            const mail=user.email
+           
+            res.redirect(`/profile?id=${mail}`)
+        }
+        else{
+            return res.status(404).send('Address not found');
+        }
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+// add address-------------------------------------------------
+
+
+const addaddress=async(req,res)=>{
+
+    try {
+        res.render('addaddress')
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+//add adrss post----------------------------------------
+
+
+const addaddresspost=async(req,res)=>{
+
+    try {
+        const { name, building, mobile, street, city, state, pincode } = req.body;
+        const mail=req.session.userid
+        const user=await User.findOne({email:mail,verified:true})
+
+        if(user){
+              
+            if(user.address.length>0){
+
+               user.address.push({
+                    name: name,
+                    buildingname:building,
+                    mobile: mobile,
+                    street: street,
+                    city: city,
+                    state: state,
+                    pincode: pincode
+                });
+                     
+                 const updatedUser = await user.save();
+                 if(updatedUser){
+                    const id=user._id.toString()
+                    
+
+                    res.redirect(`/checkout?uid=${64378}`)
+                 }
+                 else{
+                    //not updated
+                    res.json({ success: false, message: 'Failed to add address' });
+                 }
+          
+            }
+            else{
+                user.address = [{
+                    name: name,
+                    buildingname:building,
+                    mobile: mobile,
+                    street: street,
+                    city: city,
+                    state: state,
+                    pincode: pincode
+                }];
+            
+                const updatedUser = await user.save();
+            
+                if (updatedUser) {
+                    const id=user._id
+           
+                    res.redirect(`/checkout?uid=${64378}`)
+                    
+                } else {
+                    res.json({ success: false, message: 'Failed to add address' });
+                }
+               
+                //adress not prstt
+            }
+
+
+        }
+        else{
+            //user not found
+            res.json({ success: false, message: 'User not found' });
+        }
+        
+        
+        
+
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+//cancel order-----------------------
+
+
+
+const cancelorder = async (req, res) => {
+    try {
+        const index = req.query.index;
+        const oid = req.query.oid;
+
+        const order = await Order.findOne({ _id: oid });
+        const prod = order.products[index];
+        const pid = prod.productid;
+
+        if (prod) {
+            // Product found
+            const producttotal = prod.totalprice;
+            let pquantity = prod.quantity;
+
+            const ordertotal = order.total;
+            const result = await Order.updateOne(
+                { _id: oid },
+                {
+                    $pull: {
+                        products: { productid: pid },
+                    },
+                    $inc: {
+                        total: -producttotal,
+                    },
+                }
+            );
+
+            if (result) {
+                const updatequantity = await Product.findOne({ _id: pid });
+                const updateProductResult = await Product.updateOne(
+                    { _id: pid },
+                    {
+                        $inc: {
+                            quantity: pquantity,
+                        },
+                    }
+                );
+
+                if (updateProductResult) {
+                    const updatedOrder = await Order.findOne({ _id: oid });
+                    if (!updatedOrder.products || updatedOrder.products.length === 0) {
+                        // No products left in the order, delete the cart
+                        const a=await Order.deleteOne({ _id: oid });
+                        console.log(a)
+
+                        res.redirect('/profile');
+                    } else {
+                        res.redirect('/profile');
+                    }
+                } else {
+                    // Failed to update product
+                    console.log(1)
+                    res.json({
+                        success: false,
+                        message: 'Failed to update product',
+                    });
+                }
+            } else {
+                // Failed to update order
+                console.log('2')
+                res.json({
+                    success: false,
+                    message: 'Failed to update order',
+                });
+            }
+        } else {
+            // No product found
+            console.log('3')
+            res.json({
+                success: false,
+                message: 'Product not found in order',
+            });
+        }
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: 'Error canceling order',
+        });
+    }
+};
+
+
 module.exports={
     home,
     loadlogin,
@@ -746,6 +1148,13 @@ module.exports={
     resetpasswordload,
     resetpassword,
     profileload,
-    profileedit
+    profileedit,
+    updatepassword,
+    createaddress,
+    editaddress,
+    editaddresspost,
+    addaddress,
+    addaddresspost,
+    cancelorder
 
 }
