@@ -662,10 +662,10 @@
         quantityInput.addEventListener('input', async function () {
             const quantity = parseInt(this.value, 10);
             
-            // Accessing the parent element of the current input
+            
             const parentElement = this.closest('.cart-product-quantity');
             
-            // Finding the associated productid input within the parent element
+            
             const productIdInput = parentElement.querySelector('.productid');
             
             // Getting the productid value

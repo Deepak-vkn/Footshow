@@ -434,7 +434,7 @@ const logout =async(req,res)=>{
 const loadorder=async(req,res)=>{
 
     try {
-        const order= await Order.find()
+        const order= await Order.find().sort({date:-1})
       
 
 

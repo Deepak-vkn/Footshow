@@ -11,24 +11,28 @@
 
 <!-- OTP Verification Form -->
                 <div class="tab-pane " id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
-                <form action="/otp" method="POST">
+                <form action="/otp" method="POST" id="otpform">
                     <div class="form-group">
                         <label for="register-email-2">Enter your otp*</label>
                         <input type="text" class="form-control" id="register-name-2" name="otp" required>
+                        <p id="alert"></p>
                         <input type="hidden" name="id" value="<%= locals.id %>" >
                         <input type="hidden" name="mail" value="<%= locals.mail %>" >
                     </div>
-                    <button  class="btn btn-outline-primary-2">
-                        <a class="nav-link" href="/otp?id=<%= locals.id %>&mail=<%= locals.mail %>" id="otp">Resend</a>
+
+                    <!-- ---------------timer---------------------- -->
+
+                    <div id="timer-container">
+                        <p id="timer">OTP will expire in: <span id="timer-value"></span></p>
+                    </div>
+<!-- --------------timer end------------------- -->
+
+
+                    <button  class="btn btn-outline-primary-2" id="resendBtn" disabled>
+                        <a class="nav-link" href='#' id="otplink" disabled>Resend</a>
                         <i class="icon-long-arrow-right"></i>
                     </button>
                     
-                    
-                    
-                    
-                    <% if (locals.message) { %>
-                        <p id="alert"><%= message %></p>
-                    <% } %>
                     
 
                     <div class="form-footer">
@@ -423,4 +427,123 @@
     <script src="assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
+
+
+
+    <script>
+        // Function to update the timer display
+        function updateTimer(timeRemaining) {
+            document.getElementById('timer-value').innerText = timeRemaining;
+        }
+        function enableResendButton() {
+        const resendButton = document.getElementById('resendBtn');
+        const resendLink = document.getElementById('otplink');
+        resendButton.removeAttribute('disabled');
+        resendLink.setAttribute('href', "/otpgenerte?id=<%= locals.id %>&mail=<%= locals.mail %>"); 
+        resendLink.style.cursor = 'pointer';
+    
+        
+    }
+    
+        // Function to start the timer countdown
+        function startTimer(durationInSeconds) {
+            let timeRemaining = durationInSeconds;
+            const timerInterval = setInterval(() => {
+                updateTimer(`${Math.floor(timeRemaining / 60)}:${(timeRemaining % 60).toString().padStart(2, '0')}`);
+                timeRemaining--;
+    
+                if (timeRemaining < 0) {
+                    clearInterval(timerInterval);
+                    enableResendButton();
+                   
+                }
+            }, 1000);
+        }
+    
+
+        //from submition-----------------------
+
+        async function verifyform(){
+          
+
+            try {
+                event.preventDefault();
+                const form=document.getElementById('otpform')
+                formData= new FormData(form)
+                const alert= document.getElementById('alert')
+
+                const response= await  fetch('/otp',{
+                    method:'POST',
+                    headers:{
+                        'Content-type':'application/json'
+                    },
+                    body:JSON.stringify({
+                        otp:formData.get('otp'),
+                        id:formData.get('id'),
+                        mail:formData.get('mail')
+                    })
+                })
+
+                if(response.ok){
+
+                    const data= await response.json()
+
+                    if(data.success){
+
+                        alert.innerHTML = data.message;
+                        setTimeout(() => {
+                        window.location.href = '/login'; 
+                    }, 1000)
+
+                    }
+                   
+                    else{
+                    
+                        alert.innerHTML = data.message;
+
+                   
+                                        }
+
+
+                }
+                else{
+                    console.log('reached here 3')
+                    alert.innerHTML=data.message
+                    //failed
+                }
+             
+                
+
+            }
+            catch (error) {
+                console.log('reached here 4')
+                alert.innerHTML = 'An error occurred during form submission';
+                console.log(error.message)
+            }
+
+        }
+
+
+
+
+
+
+
+
+        // Start the timer when the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+
+            const otpExpirationTime = 66; 
+            startTimer(otpExpirationTime);
+        });
+
+       const form= document.getElementById('otpform')
+       form.addEventListener('submit',(event)=>{
+        event.preventDefault()
+        verifyform()
+       })
+    </script>
+    
+
+
     <%- include('../layout/footer') -%>

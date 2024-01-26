@@ -281,7 +281,7 @@ const editproduct = async (req, res) => {
             
         } else {
             console.log('Product not updated');
-            res.status(500).send('Internal server error and Prodcut not updated');
+            res.status(500).send('Internal server error and Prodcut not updated');6
         }
     } catch (error) {
         console.log(error.message);

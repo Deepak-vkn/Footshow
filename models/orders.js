@@ -53,7 +53,11 @@ const order= new mongoose.Schema({
     },
     status:{
         type:String,
-        default:'Placed'
+        default:'Pending'
+    },
+    date:{
+        type:Date,
+        required:true
     }
 
 

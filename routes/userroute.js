@@ -27,15 +27,16 @@ route.get('/register',usercontroll.loadregister)
 route.post('/register',usercontroll.register)
 route.get('/otp',usercontroll.loadotp)
 route.post('/otp',usercontroll.verifyotp)
+route.get('/otpgenerte',usercontroll.otpgenerte)
 route.get('/logout',usercontroll.logout)
 route.get('/shop',usercontroll.loadshop)
 route.get('/singleproduct',usercontroll.loadsingleproduct)
 route.get('/men',usercontroll.loadmen)
 route.get('/women',usercontroll.loadwomen)
-route.get('/forgetpassword',usermiddle.islogin,usercontroll.forgetpassword)
+route.get('/forgetpassword',usercontroll.forgetpassword)
 route.post('/forgetpassword',usercontroll.forgetpasswordmailsend)
-route.get('/resetpassword',usermiddle.islogin,usercontroll.resetpasswordload) 
-route.post('/resetpassword',usermiddle.islogin,usercontroll.resetpassword)   
+route.get('/resetpassword',usercontroll.resetpasswordload) 
+route.post('/resetpassword',usercontroll.resetpassword)   
 
 
 
@@ -67,7 +68,7 @@ route.post('/stockcheck',usermiddle.islogin,cartcontroll.stockcheck)
 route.get('/checkout',usermiddle.islogin,checkoutcontroll.loadcheckout)
 route.post('/checkout',usermiddle.islogin,checkoutcontroll.payment)
 route.get('/success',checkoutcontroll.ordersuccess)
-
+route.post('/verifypayment',checkoutcontroll.verifypayment)
 
 
 

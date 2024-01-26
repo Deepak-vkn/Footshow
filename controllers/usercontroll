@@ -116,7 +116,9 @@ const register = async (req, res) => {
                     const id = userData._id;
                   
                     // Redirect to OTP page
-                    return res.redirect(`/otp?id=${id}&mail=${mail}`);
+                    //return res.redirect(`/otp?id=${id}&mail=${mail}`);
+                    return res.redirect(`/otpgenerte?id=${id}&mail=${mail}`);
+                    
                 }
             }
         }
@@ -144,7 +146,7 @@ const register = async (req, res) => {
                 const id = userData._id;
               
                 // Redirect to OTP page
-                return res.redirect(`/otp?id=${id}&mail=${mail}`);
+                return res.redirect(`/otpgenerte?id=${id}&mail=${mail}`);
             }
             
         }
@@ -158,6 +160,76 @@ const register = async (req, res) => {
     }
 };
 
+
+
+
+// generate otp========================================================
+
+const otpgenerte= async(req,res)=>{
+    try {
+        const id=req.query.id
+    
+        const mail=req.query.mail
+        
+        const test=await Otp.find({userid:id})
+        if(test){
+            
+            await Otp.deleteMany({userid:id})
+        }
+  
+            const otp = Math.floor(1000 + Math.random() * 9000); 
+            const hashedotp = await bcrypt.hash(String(otp), 10);
+           
+            const otpsetup=await new Otp({
+                userid:id,
+                otp:hashedotp,
+                createdAt:Date.now(),
+                expireAt:Date.now()+66000
+    
+            })
+            const otpsave=await otpsetup.save()
+        
+    
+    
+            const transporter=nodemailer.createTransport({
+                service:'gmail',
+                auth:{
+                    user:"deepakvkn1252@gmail.com",
+                    pass:'ursi lsmy iwpb sgcs'
+                }
+            })
+          const mailoptions={
+                from:"deepakvkn1252@gmail.com",
+                to:mail,
+                subject:"Footshow verification",
+                text:`Welcome to Footshow, your verification otp is ${otp}`
+            }
+           await transporter.sendMail(mailoptions, (error, info) => {
+                if (error) {
+                    console.log(error.message);
+                } else {
+                    console.log(`Email sent: ${info.response}`);
+                }
+            });
+    
+        
+            setTimeout(async () => {
+                await Otp.deleteMany({ userid: id });
+                console.log('OTP deleted after timeout');
+            }, 44000);
+            return res.redirect(`/otp?id=${id}&mail=${mail}`);
+            
+        } catch (error) {
+            console.log(error.message);
+        }
+}
+
+
+
+
+
+
+
 //loadotp-------------------------------------------------------------
 
 
@@ -167,54 +239,9 @@ const loadotp=async(req,res)=>{
 
     const mail=req.query.mail
     
-    const test=await Otp.find({userid:id})
-    if(test){
-        console.log(test)
-        await Otp.deleteMany({userid:id})
-    }
         res.render('otp',{id,mail})
        
-        const otp = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
-        const hashedotp = await bcrypt.hash(String(otp), 10);
-       
-        const otpsetup=await new Otp({
-            userid:id,
-            otp:hashedotp,
-            createdAt:Date.now(),
-            expireAt:Date.now()+66000
-
-        })
-        const otpsave=await otpsetup.save()
-    
-
-
-        const transporter=nodemailer.createTransport({
-            service:'gmail',
-            auth:{
-                user:"deepakvkn1252@gmail.com",
-                pass:'ursi lsmy iwpb sgcs'
-            }
-        })
-      const mailoptions={
-            from:"deepakvkn1252@gmail.com",
-            to:mail,
-            subject:"Footshow verification",
-            text:`Welcome to Footshow, your verification otp is ${otp}`
-        }
-       await transporter.sendMail(mailoptions, (error, info) => {
-            if (error) {
-                console.log(error.message);
-            } else {
-                console.log(`Email sent: ${info.response}`);
-            }
-        });
-
-    
-        setTimeout(async () => {
-            await Otp.deleteMany({ userid: id });
-            console.log('OTP deleted after timeout');
-        }, 44000);
-        
+      
     } catch (error) {
         console.log(error.message);
     }
@@ -248,8 +275,7 @@ const verifyotp=async(req,res)=>{
     const id=req.body.id
     const mail=req.body.mail
     const data=await Otp.findOne({userid:id})
-    
-    
+
     
     try {
         if(!data){
@@ -257,8 +283,9 @@ const verifyotp=async(req,res)=>{
              await User.deleteMany({_id:id})
              let message='Otp expierd'
               const c=true
-             //console.log("invalid creadentials");
-             res.render('otp',{message,c,id,mail})
+              console.log("expierd");
+             //res.render('otp',{message,c,id,mail})
+             res.json({success:false,message:'Your otp has been expired'})
         }
         else{
             expire= data.expireAt
@@ -266,9 +293,9 @@ const verifyotp=async(req,res)=>{
             {
                // await Otp.deleteMany({userid:id})
                 await  User.deleteMany({_id:id})
-                let message='Your otp has been expired'
-                
-                res.render('otp',{message,id,mail})
+                console.log("expierd");
+                //res.render('otp',{message,id,mail})
+                res.json({success:false,message:'Your otp has been expired'})
             }
 
             else{
@@ -280,19 +307,19 @@ const verifyotp=async(req,res)=>{
 
                 if(finalcheck){
                 await Otp.deleteMany({userid:id})
-                let message='User succesfully registerd'
                 await User.updateOne({_id:id},{ $set: { verified: true } })
-
-                //console.log("user regster success");
-                res.render('login',{message})
+                console.log("user regster success");
+                //res.render('login',{message})
+                res.json({success:true,message:'User succesfully registerd'})
                 }
                 else{
                 // await Otp.deleteMany({userid:id})
                 await User.deleteMany({_id:id})
-                let message='Otp incorrect'
+                
                  
-                //console.log("invalid creadentials");
-                res.render('otp',{message,id,mail})
+                console.log("invalid creadentials");
+               // res.render('otp',{message,id,mail})
+               res.json({success:false,message:'Otp incorrect'})
                 }
     
             }
@@ -303,6 +330,8 @@ const verifyotp=async(req,res)=>{
       
  
     catch (error) {
+        console.log('raecher catch')
+        res.json({success:false,message:"Internal server error"})
         console.log(error.message);
         
     }
@@ -679,7 +708,7 @@ const resetpassword = async (req, res) => {
                     return res.status(200).json({ message: 'Password changed successfully' });
                     req.session.reset=null
                 } else {
-                    // Password not changed (perhaps the new password is the same as the old one)
+                    // Password not changed 
                     return res.status(400).json({ message: 'Password not changed. Please try again.' });
                 }
             } else {
@@ -1135,6 +1164,7 @@ module.exports={
     loadlogin,
     loadregister,
     register,
+    otpgenerte,
     loadotp,
     verifyotp,
     verifylogin,

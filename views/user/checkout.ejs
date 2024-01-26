@@ -253,14 +253,8 @@
                                                     </div>
                                                     <div class="payment-option">
                                                         <label>
-                                                            <input type="radio" name="selectedPayment"  value="check">
-                                                            Check Payment
-                                                        </label>
-                                                    </div>
-                                                    <div class="payment-option">
-                                                        <label>
-                                                            <input type="radio" name="selectedPayment" value="Net Banking" >
-                                                            Net Banking
+                                                            <input type="radio" name="selectedPayment" value="Razorpay" >
+                                                            Razor Pay
                                                         </label>
                                                     </div>
                                                
@@ -541,6 +535,9 @@
                         <span aria-hidden="true"><i class="icon-close"></i></span>
                     </button>
 
+
+                    <!-- ................................................................ -->
+                    <button id="rzp-button1">Pay</button>
                     <div class="form-box">
                         <div class="form-tab">
                             <ul class="nav nav-pills nav-fill" role="tablist">
@@ -654,6 +651,7 @@
     <script src="assets/js/superfish.min.js"></script>
     <script src="assets/js/owl.carousel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
 
@@ -669,7 +667,7 @@ const addressRadioButtons = document.querySelectorAll('input[name="selectedAddre
 const cid = '<%= cart._id %>';
 
 if (paymentRadioButtons.length === 0 || addressRadioButtons.length === 0) {
-  // Display SweetAlert to notify the user to select both address and payment method
+  
   Swal.fire({
     icon: 'warning',
     title: 'Incomplete Order',
@@ -683,11 +681,11 @@ if (paymentRadioButtons.length === 0 || addressRadioButtons.length === 0) {
   return;
 }
 
-// Both payment and address are selected, proceed with your order placement logic here
+
 const selectedPaymentMethod = paymentRadioButtons[0].value;
 const selectedValue = addressRadioButtons[0].value;
 
-
+console.log(selectedPaymentMethod)
 
 
 
@@ -718,9 +716,50 @@ const selectedValue = addressRadioButtons[0].value;
             timer: 1000
                 
           }).then(() => {
-      window.location.href = '/cart';
+      window.location.href = '/success';
     });
           
+        }
+
+        // handle razoapy optionss---------------------
+
+
+        else if(data.razo){
+         const razorder= data.razorder
+        
+         var options = {
+                            "key": 'rzp_test_h3Pi6e5POBlikj', // Enter the Key ID generated from the Dashboard
+                            "amount": data.razorder.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                            "currency": "INR",
+                            "name": "Foot Show", //your business name
+                            "description": "Test Transaction",
+                            "image": "https://example.com/your_logo",
+                            "order_id": data.razorder.id, //This is a sample Order ID. Pass the id obtained in the response of Step 1
+                            "handler": function (response) {
+
+                                verifyPayment(response,razorder)
+                            },
+                            "prefill": { 
+                                "name": "Gaurav Kumar", //your customer's name
+                                "email": "gaurav.kumar@example.com",
+                                "contact": "9000090000"  //Provide the customer's phone number for better conversion rates 
+                            },
+                            "notes": {
+                                "address": "Razorpay Corporate Office"
+                            },
+                            "theme": {
+                                "color": "#008080"
+                            }
+                        };
+                        var rzp1 = new Razorpay(options);
+
+                        rzp1.open();
+                       
+
+
+
+
+
         } else {
           console.error('Unable to place order:', data.message);
           Swal.fire({
@@ -769,6 +808,113 @@ const selectedValue = addressRadioButtons[0].value;
       console.log(error.message);
     }
   }
+
+
+
+//  Verify payment ---------------------------------------------
+
+async function verifyPayment(response,razorder){
+
+    try {
+
+        const serverresponse=await  fetch('/verifypayment',{
+
+            method:'POST',
+            headers:{
+                'Content-type':'application/json'
+            },
+            body:JSON.stringify({response,razorder})
+        })
+
+        if(serverresponse.ok){
+            
+            const data= await serverresponse.json()
+            console.log(`data is ${data}`)
+            if (data.success) {
+                console.log('1')
+          console.log('Order placed successfully:', data);
+          Swal.fire({
+            icon: 'success',
+            title: 'Order placed successfully',
+            text: 'Your order has been placed successfully.',
+            showConfirmButton: false,
+            animation: {
+            showClass: 'animate__animated animate__fadeIn', 
+            duration: 500, 
+            },
+            timer: 1000
+                
+          }).then(() => {
+      window.location.href = '/success';
+    });
+          
+        }
+
+        else{
+            
+            Swal.fire({
+            icon: 'error',
+            title: 'Order failed',
+            text: 'Failed to place your order.',
+            showConfirmButton: false,
+            animation: {
+            showClass: 'animate__animated animate__fadeIn', 
+            duration: 500, 
+            },
+            timer: 1000
+                
+          }).then(() => {
+      window.location.href = '/cart';
+    });
+            //no response
+        }
+    }
+    else{
+            Swal.fire({
+            icon: 'error',
+            title: 'Order failed',
+            text: data.message,
+            showConfirmButton: false,
+            animation: {
+            showClass: 'animate__animated animate__fadeIn', 
+            duration: 500, 
+            },
+            timer: 1000
+                
+          }).then(() => {
+      window.location.href = '/cart';
+    });
+            //no response
+        }
+    } catch (error) {
+       
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Order failed',
+            text: 'Failed to place your order due to some internal server error.',
+            showConfirmButton: false,
+            animation: {
+            showClass: 'animate__animated animate__fadeIn', 
+            duration: 500, 
+            },
+            timer: 1000
+                
+          }).then(() => {
+      window.location.href = '/cart';
+    });
+
+        console.log(error.message)
+    }
+}
+
+
+
+
+
+
+
+
 
 </script>
 

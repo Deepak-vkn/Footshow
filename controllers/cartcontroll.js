@@ -29,7 +29,8 @@ const addtocart=async(req,res)=>{
         if(prdct){
           const qtycheck=prdct.quantity
           console.log(qtycheck)
-          if(qtycheck==='0'){
+          if(qtycheck===0){
+            console.log('out of stcxok')
             res.json({ success: false, message: ' Product Out of Stock' });
           }
           else{
@@ -43,7 +44,7 @@ const addtocart=async(req,res)=>{
            //chaeck cart exuist  for user or not
             if(cartcheck){
                 
-                const pcheck=await Cart.findOne({'products.productid':id})//checking whather product alerady in cart or not
+                const pcheck=await Cart.findOne({'products.productid':id})
                 if(pcheck){
 
                         const existingProductIndex = cartcheck.products.findIndex(product => product.productid.toString() === id);
@@ -54,7 +55,7 @@ const addtocart=async(req,res)=>{
                         existingProduct.totalprice = Number(existingProduct.totalprice) + totalprice;
                     
 
-                        cartcheck.total=cartcheck.total+totalprice //update total
+                        cartcheck.total=cartcheck.total+totalprice 
                         const updatedCart = await cartcheck.save();
 
                 if (updatedCart) {
@@ -75,7 +76,7 @@ const addtocart=async(req,res)=>{
                     },
 
                    }})
-                    // Recalculate the total cart value
+                    
                     cartcheck.total = cartcheck.total+totalprice
 
                     const updatedCart = await cartcheck.save();
@@ -230,7 +231,7 @@ const updateacart=async(req,res)=>{
                     'products.$.totalprice': totalprice
                   }
                 },
-                { new: true } // Return the updated document
+                { new: true } 
               );
               //console.log('Updated Cart:', updatedCart);
 

@@ -999,7 +999,7 @@ document.getElementById('addToCartBtn').addEventListener('click',function(event)
         })
     .catch(error => {
             console.error('Error adding to cart:', error);
-            showAlert('Error', 'Failed to add to cart', 'error');
+            showAlert('Failed', 'Failed to add to cart', 'error');
         });
 
 });
@@ -1010,7 +1010,7 @@ function handleCartResponse(data) {
         showAlert('Success', data.message, 'success');
     } else {
 
-        showAlert('Error', data.message, 'error');
+        showAlert('Failed', data.message, 'error');
 
         
 
@@ -1085,7 +1085,7 @@ quantityInput.addEventListener('input', function () {
 
 
 
-
+7
 </script>
 
 

@@ -12,13 +12,13 @@ app.use(flash());
 // const port=12;
 const port = process.env.PORT || 3000;
 
+
 app.use(nocache())
 // mongoose.connect('mongodb://localhost:27017/footshow')
 mongoose.connect(process.env.MONGODB_URI);
 app.use('/',userroute)
 
 app.use('/admin',adminroute)
-
 
 
 

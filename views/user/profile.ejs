@@ -209,7 +209,14 @@
                                                                         <li>
                                                                             <span><img src="/images/<%= product.image %>" alt="<%= product.name %>" width="50" height="50"></span>
                                                                             <%= product.name %> - <%= product.quantity %> x <%= product.price %> = <%= product.totalprice %>
-                                                                            <a href="/cancelorder?index=<%= i %>&oid=<%= order._id %>">Cancell </a>
+                                                                            <% if (order.status === 'Placed') { %>
+                                                                                <a href="/cancelorder?index=<%= i %>&oid=<%= order._id %>">Cancel</a>
+                                                                            <% } %>
+                                                                
+                                                                            <!-- Show "Return" if the order status is "Delivered" -->
+                                                                            <% if (order.status === 'Deliverd') { %>
+                                                                                <a href="#">Return</a>
+                                                                            <% } %>
                                                                             
                                                                         </li>
                                                                     <% }); %>
@@ -963,12 +970,12 @@ function validateForm() {
         // Perform validation
         if (name === '' || building === '' || mobile === '' || street === '' || city === '' || state === '' || pincode === '') {
             alertContainer.innerHTML = 'Plese enter valid data';
-            return false; // Prevent form submission
+            return false; 
         }
 
-        // Additional validation logic can be added here
+        
 
-        return true; // Allow form submission
+        return true; 
     }
 
 
