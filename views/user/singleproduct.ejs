@@ -204,7 +204,7 @@
                                 <div class="details-filter-row details-row-size">
                                     <label for="qty">Qty:</label>
                                     <div class="product-details-quantity">
-                                        <input type="number" id="qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
+                                        <input type="number" id="qty" class="form-control" value="1" min="1" max="<%= product.quantity %>" step="1" data-decimals="0" required>
                                     </div><!-- End .product-details-quantity -->
                                 </div><!-- End .details-filter-row -->
 
@@ -999,7 +999,7 @@ document.getElementById('addToCartBtn').addEventListener('click',function(event)
         })
     .catch(error => {
             console.error('Error adding to cart:', error);
-            showAlert('Failed', 'Failed to add to cart', 'error');
+            showAlert('Error', 'Failed to add to cart', 'error');
         });
 
 });
@@ -1026,14 +1026,10 @@ function showAlert(title, message, icon) {
             popup: 'animate__animated animate__fadeOut',
         },
     }).then((result) => {
-        // Execute the callback after the user clicks "OK"
-        if (result.isConfirmed) {
-            // Check if the message indicates that the user is not logged in
-            if (message.toLowerCase().includes('user not login')) {
-                // Redirect to the login page
-                window.location.href = '/login';
-            }
-        }
+            if (message.includes('User not login')) {
+    window.location.href = '/login';
+}
+        
     });
 }
 

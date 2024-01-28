@@ -203,47 +203,60 @@
                             </thead>
                            
                             <% if (locals.order && locals.order.length > 0) { %>
-                                    
-                                    <tbody>
 
-                                        <% order.forEach((order,index) => { %>
+                                <tbody>
+                            
+                                    <% order.forEach((order, index) => { %>
+                                        <% order.products.forEach((product, productIndex) => { %>
                                             <tr>
-                                                <td><%= index+1 %></td>
-                                                <td><b><%= order.userid %></b></td>
+                                                
+                                                    <!-- Empty cells for subsequent product rows -->
+                                                    <td><%= index + 1 %></td>
+                                                    <td><b><%= order.userid %></b></td>
+                                                    <td><%= product.name %>  <%= product.quantity %> x <%= product.price %></td>
+                                                    <td>₹<%= product.totalprice %></td>
+                                                    <td><%= order.payment %></td>
+                            
+                                                <!-- Display status for each product individually -->
                                                 <td>
                                                     <ul>
-                                                        <% order.products.forEach((product) => { %>
-                                                            <li><%= product.name %> - <%= product.quantity %> x <%= product.price %> = <%= product.totalprice %></li>
-                                                        <% }); %>
+                                                        <span class="badge rounded-pill <%= product.status === 'Placed' ? 'alert-primary' :
+                                                            (product.status === 'Cancelled' ? 'alert-warning' :
+                                                                (product.status === 'Delivered' ? 'alert-success' :
+                                                                    (product.status === 'Shipped' ? 'alert-info' :
+                                                                        (product.status === 'Out for delivery' ? 'alert-success' :
+                                                                            (product.status === 'Return Request' ? 'alert-danger' :
+                                                                                (product.status === 'Return' ? 'alert-danger' : 'alert-dark')))))) %>">
+                                                            <%= product.status %>
+                                                        </span>
                                                     </ul>
                                                 </td>
-                                                <td>₹<%= order.total %></td>
-                                                <td><%= order.payment %></td>
-                                                <!-- <td><span class="badge rounded-pill alert-success"><%= order.status %></span></td> -->
-                                                <td>
-                                                    <span class="badge rounded-pill <%= order.status === 'Placed' ? 'alert-primary' : 
-                                                                                  (order.status === 'Cancelled' ? 'alert-warning' : 
-                                                                                  (order.status === 'Delivered' ? 'alert-success' : 'alert-success')) %>">
-                                                        <%= order.status %>
-                                                    </span>
-                                                </td>
+                            
+                                                <%  if(product.status==='Return Request') { %>
+
+                                                   <td class="text-end"><span class="btn btn-md rounded font-sm returnButton" id="requestButton" data-order-id="<%= order.id %>" data-product-index="<%= productIndex %>" data-product-reason="<%= product.return %>"> Request pending</span></td> 
+                                               <% }  else{ %>
+
                                                 <td class="text-end">
-                                                    <select  class="btn btn-md rounded font-sm mySelect"   data-order-id="<%= order.id %>">
+                                                    <select class="btn btn-md rounded font-sm mySelect" data-order-id="<%= order.id %>" data-product-index="<%= productIndex %>">
                                                         <option value="" disabled selected>Update Status</option>
                                                         <option value="Placed">Placed</option>
                                                         <option value="Cancelled">Cancelled</option>
-                                                        <option value="Deliverd">Deliverd</option>
-                                                        
+                                                        <option value="Delivered">Delivered</option>
+                                                        <option value="Shipped">Shipped</option>
+                                                        <option value="Out for delivery">Out for delivery</option>
                                                     </select>
                                                 </td>
+
+                                                    <% }%>
                                                 
                                             </tr>
                                         <% }); %>
-
-                                    </tbody>
-
-                                <%} %>
-                                
+                                    <% }); %>
+                            
+                                </tbody>
+                            
+                            <% } %>
                                 
                         </table>
                     </div> <!-- table-responsive //end -->
@@ -271,6 +284,7 @@
     <script src="assets/js/vendors/select2.min.js"></script>
     <script src="assets/js/vendors/perfect-scrollbar.js"></script>
     <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <!-- Main Script -->
     <script src="assets/js/main.js" type="text/javascript"></script>
 
@@ -291,6 +305,7 @@ selectElements.forEach(selectElement => {
         try {
             const status = selectElement.value;
             const orderId = selectElement.getAttribute('data-order-id');
+            const productIndex  = selectElement.getAttribute('data-product-index');
 
             if (!orderId) {
                 throw new Error('Order ID not found in select element.');
@@ -299,7 +314,7 @@ selectElements.forEach(selectElement => {
             console.log('Selected Order ID:', orderId);
             console.log('Selected Status:', status);
 
-            statuschange(status, orderId);
+            statuschange(status, orderId,productIndex);
         } catch (error) {
             console.error('Error in handleSelectChange:', error.message);
         }
@@ -307,7 +322,7 @@ selectElements.forEach(selectElement => {
 
 
 
-  async  function statuschange(status,orderId){
+  async  function statuschange(status,orderId,productIndex){
         //console.log(orderId)
 
         try {
@@ -319,7 +334,7 @@ selectElements.forEach(selectElement => {
                 headers: {
                 'Content-Type': 'application/json',
             },
-            body:JSON.stringify({status,orderId})
+            body:JSON.stringify({status,orderId,productIndex})
             })
 
             if(response.ok){
@@ -365,7 +380,71 @@ selectElements.forEach(selectElement => {
        
     }
 
+// RETURN HANDLING----------------------------------------------------
+document.querySelectorAll(".returnButton").forEach(function(button) {
+    button.addEventListener('click', function() {
+        const orderId = this.getAttribute('data-order-id');
+        const productIndex = this.getAttribute('data-product-index');
+        const reason = this.getAttribute('data-product-reason');
 
+        console.log(orderId);
+        console.log(productIndex);
+        console.log(reason);
+
+        Swal.fire({
+            title: 'Return Reason',
+            text: reason,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Proceed',
+            customClass: {
+                popup: 'my-custom-size',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Proceed with the fetch request
+                fetch('/admin/returnrequest', {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                    },
+                    body: JSON.stringify({ orderId, productIndex, reason }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: data.message,
+                            timer: 1000, 
+                            showConfirmButton: false,
+                            customClass: {
+                    popup: 'animate__animated animate__fadeOut',
+                },
+                        })
+                        .then(() => {
+                            location.reload(); 
+                        });
+                       
+
+
+
+                        console.log('Request successful:', data.message);
+                    } else {
+                        // Handle failure
+                        console.log('Request failed:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error.message);
+                });
+            }
+        });
+    });
+});
 
 
 

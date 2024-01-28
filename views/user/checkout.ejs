@@ -257,6 +257,19 @@
                                                             Razor Pay
                                                         </label>
                                                     </div>
+                                                    <% if(locals.wallet) { %>
+
+                                                        <div class="payment-option">
+                                                            <label>
+                                                                <input type="radio" name="selectedPayment" value="Wallet" >
+                                                                Wallet
+                                                            </label>
+                                                        </div>
+
+                                                    <% } %>
+
+
+                                                   
                                                
                                         
                                             </div><!-- End .payment-options -->
@@ -662,7 +675,7 @@
 async function handleFormSubmission(event) {
     event.preventDefault(); 
 
-    const paymentRadioButtons = document.querySelectorAll('input[name="selectedPayment"]:checked');
+const paymentRadioButtons = document.querySelectorAll('input[name="selectedPayment"]:checked');
 const addressRadioButtons = document.querySelectorAll('input[name="selectedAddress"]:checked');
 const cid = '<%= cart._id %>';
 
@@ -721,7 +734,7 @@ console.log(selectedPaymentMethod)
           
         }
 
-        // handle razoapy optionss---------------------
+        // handle razoapy optionss---------------------------
 
 
         else if(data.razo){

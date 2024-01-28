@@ -36,6 +36,13 @@ const order= new mongoose.Schema({
             required:true
             
         },
+        status:{
+            type:String,
+            default:'Pending'
+        },
+        return:{
+            type:String
+        }
         
 
 }],
@@ -50,10 +57,6 @@ const order= new mongoose.Schema({
     payment:{
         type:String,
         required:true
-    },
-    status:{
-        type:String,
-        default:'Pending'
     },
     date:{
         type:Date,

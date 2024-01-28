@@ -90,6 +90,7 @@ route.get('/logout',admincontroll.logout)
 
 route.get('/orders',adminmiddle.islogin,admincontroll.loadorder)
 route.post('/orderstatus',admincontroll.orderstatus)
+route.post('/returnrequest',admincontroll.returnrequest)
 
 
 module.exports=route

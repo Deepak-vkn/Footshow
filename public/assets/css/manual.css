@@ -97,4 +97,18 @@
         cursor: pointer; /* Cursor style on hover */
     }
 
+    .custom-input {
+        font-size: 16px; /* Adjust the font size as needed */
+    }
+
+    .custom-button {
+        background-color: #4caf50; /* Custom color for buttons */
+        color: #fff; /* Text color for buttons */
+        font-size: 18px; /* Adjust the font size as needed */
+    }
+    .product-item {
+        border-bottom: 1px solid orange; /* Set the border to be orange */
+        margin-bottom: 10px; /* Add some space below each product */
+        padding-bottom: 10px; /* Add additional padding if needed */
+    }
    

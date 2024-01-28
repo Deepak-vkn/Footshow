@@ -1158,6 +1158,33 @@ const cancelorder = async (req, res) => {
     }
 };
 
+// returnproduct -----------------------------------------
+
+
+const returnproduct= async(req,res)=>{
+    try {
+        const{reason,index,orderId}=req.body
+        const order=await Order.findOne({_id:orderId})
+        console.log(order)
+        order.products[index].status='Return Request'
+        order.products[index].return=reason
+        const updated= await order.save()
+
+        if(updated){
+            res.json({success:true})
+            console.log('updated')
+        }
+        else{
+            res.json({success:false})
+            //console.log('updation failed')
+        }
+    } catch (error) {
+        res.json({success:false})
+        //console.log(error.message)
+    }
+}
+
+
 
 module.exports={
     home,
@@ -1185,6 +1212,7 @@ module.exports={
     editaddresspost,
     addaddress,
     addaddresspost,
-    cancelorder
+    cancelorder,
+    returnproduct
 
 }

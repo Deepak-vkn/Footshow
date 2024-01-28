@@ -51,11 +51,11 @@ route.post('/editaddress',usermiddle.islogin,usercontroll.editaddresspost)
 route.get('/addaddress',usermiddle.islogin,usercontroll.addaddress)
 route.post('/addaddress',usermiddle.islogin,usercontroll.addaddresspost)
 route.get('/cancelorder',usermiddle.islogin,usercontroll.cancelorder)
-
+route.post('/returnproduct',usercontroll.returnproduct)
 
 //cart
 
-route.post('/addtocart',usermiddle.islogin,cartcontroll.addtocart)
+route.post('/addtocart',cartcontroll.addtocart)
 route.get('/cart',usermiddle.islogin,cartcontroll.loadcart)
 route.post('/cartupdate',usermiddle.islogin,cartcontroll.updateacart)
 route.get('/removecart',usermiddle.islogin,cartcontroll.removecart)

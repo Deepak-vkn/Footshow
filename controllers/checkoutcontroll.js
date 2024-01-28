@@ -16,8 +16,7 @@ const Crypto = require("crypto");
 require('dotenv').config();
 var instance = new Razorpay({key_id: process.env.key_id, key_secret: process.env.key_secret })
 
-console.log(process.env.key_id);
-console.log(process.env.key_secret);
+
 const loadcheckout=async(req,res)=>{
     try {
         const folow=req.query.uid
@@ -26,14 +25,45 @@ const loadcheckout=async(req,res)=>{
             const mail=req.session.userid
             if(mail){
                
-                 //console.log(mail)
+                //console.log(mail)
                 const user=await User.findOne({email:mail,verified:true})
                 const track=true
                 const uid=user._id
                 req.session.payment=uid
+
                 const cart= await Cart.findOne({userid:uid}).populate('products.productid').lean();
-                //console.log(cart)
-                res.render('checkout',{user,cart,track})
+
+                const wallet= user.wallet
+                const total= cart.total
+
+
+                // quantity check -------
+
+
+                const quantityCheck = cart.products.some(cartProduct => {
+                    const productQuantityInCart = cartProduct.quantity;
+                    const productQuantityInDatabase = cartProduct.productid.quantity;
+
+                    return productQuantityInCart > productQuantityInDatabase;
+                });
+
+                if (quantityCheck) {
+                    
+                    req.flash('error', 'Quantity in cart exceeds available quantity. Please update your cart.');
+                    return res.redirect('/cart');
+                }
+
+                if(wallet>= total){
+
+
+                    res.render('checkout',{user,cart,track,wallet})
+                    
+                }
+                else{
+                    res.render('checkout',{user,cart,track})
+
+                }
+
     
             }
             else{
@@ -104,9 +134,13 @@ const payment=async(req,res)=>{
 
                     if(payment==='Cash on Delivery')
                     {
-                        neworder.status='Placed'
+                        neworder.products.forEach((product) => {
+                            product.status = 'Placed';
+                        });
                         const chek=neworder.save()
                     if(chek){
+
+
                        //console.log('saved')
                         await Cart.deleteOne({ _id: cid })
     
@@ -131,6 +165,7 @@ const payment=async(req,res)=>{
                     }
                     else if(payment==='Razorpay')
                     {
+                        
                         const check=neworder.save()
                       
                         if(check){
@@ -141,20 +176,57 @@ const payment=async(req,res)=>{
                                         res.json({razo:true,razorder:razorder})
                                 }
                                 else{
+                                    res.json({success:false, message: 'Unable to place order'})
                                     //error in creatinf razopay order
                                 }
                         }
                         else{
+
+                            res.json({success:false, message: 'Unable to place order'})
                             //not created
                         }
 
                         
-                    console.log('reached razopay')
+                    
                     }
-                    else
+                    else if(payment==='Wallet')
                     {
-                        console.log('eror')
+                        neworder.products.forEach((product) => {
+                            product.status = 'Placed';
+                        });
+                        const chek=neworder.save()
+                    if(chek){
 
+                        user.wallet=user.wallet-total
+                        user.save()
+
+
+
+                       //console.log('saved')
+                        await Cart.deleteOne({ _id: cid })
+    
+                        
+                        for (const product of productlist) {
+                            const { productid, quantity } = product;
+        
+                            // Update each product's quantity
+                            await Product.updateOne(
+                                { _id: productid },
+                                { $inc: { quantity: -quantity } }
+                            );
+                        }
+                        req.session.folow=null
+                        res.json({success:true,message: 'Order placed successfully'});
+                    }
+                    else{
+                        res.json({success:false, message: 'Unable to place order'});
+                        //console.log('error')
+                    }
+                        
+
+                    }
+                    else{
+                        res.json({success:false, message: 'Unable to place order'})
                     }
                     
             }
@@ -253,7 +325,9 @@ const verifypayment= async(req,res)=>{
             if(order){
 
                 const uid= order.userid
-                order.status='Placed'
+                order.products.forEach((product) => {
+                    product.status = 'Placed';
+                });
                 const check= await order.save()
             
             if(check){

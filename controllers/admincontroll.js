@@ -454,20 +454,17 @@ const loadorder=async(req,res)=>{
 const orderstatus=async(req,res)=>{
 
     try {
-        const { status, orderId}=req.body
+        const { status, orderId,productIndex}=req.body
        
         const order= await Order.findOne({_id:orderId})
        
         if(order){
-  const updatedorder= await Order.findOneAndUpdate({_id:orderId},{
-    $set:{status:status}
-  })
-      if(updatedorder){
+            const updatedorder= order.products[productIndex].status = status;
+
+            // Save the updated order
+            await order.save();
         res.json({success:true,message:"Status Updated"})
-      }
-      else{
-        res.json({success:false,message:"Failed to update status"})
-      }
+
         }
         else{
             res.json({success:false,message:"Order not found"})
@@ -480,6 +477,102 @@ const orderstatus=async(req,res)=>{
         console.log(error.message)
     }
 }
+
+
+
+
+
+//returnrequest------------------------------------------------
+
+
+const returnrequest= async(req,res)=>{
+    try {
+        
+
+        const{ orderId, productIndex, reason }= req.body
+        //console.log( orderId, productIndex, reason )
+
+        const order= await Order.findOne({_id:orderId})
+        //console.log(`order is ${order}`)
+        const paymentmethod= order.payment
+        if(paymentmethod=='Cash on Delivery'){
+             //cod
+
+           order.products[productIndex].status='Returned'
+           const updated= await order.save()
+           if(updated){
+            res.json({success:true,message:'Request approved'})
+            
+           }
+           else{
+            res.json({success:false,message:'Failed to approve request'})
+           }
+
+        }
+
+
+
+
+
+        //razorpay or wallet managemnt
+        else{
+
+            const uid=order.userid
+            const user= await User.findOne({_id:uid})
+            console.log(user)
+
+            order.products[productIndex].status='Returned'
+           const updated= await order.save()
+           if(updated){
+
+            if(user){
+
+                const refund= order.products[productIndex].totalprice
+
+                user.wallet= user.wallet+refund
+                const refunded= user.save()
+                if(refunded){
+                    //sucss refund
+                    res.json({success:true,message:'Request approved and refund initiated'})
+                }
+                else{
+
+                    res.json({success:false,message:'Request approved,but Fialed to initiate refund'})
+                    // failed refund
+                }
+                //user found
+            }
+            else{
+
+                res.json({success:false,message:'Request approved,but Fialed to initiate refund,user not found'})
+                //user not found
+            }
+
+
+           }
+           else{
+            res.json({success:false,message:'Failed to approve request'})
+           }
+            
+
+
+            //rozor // wallet
+        }
+    } catch (error) {
+        res.json({success:false,message:'Internal server error'})
+        console.log(error.message)
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 module.exports={
     loadlogin,
@@ -498,6 +591,7 @@ module.exports={
     catadelete,
     logout,
     loadorder,
-    orderstatus
+    orderstatus,
+    returnrequest
 
 }

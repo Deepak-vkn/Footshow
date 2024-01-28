@@ -17,21 +17,24 @@ const sharp=require('sharp')
 const addtocart=async(req,res)=>{
 
     try {
+      console.log('reched cart')
       const id=req.query.id
-      //console.log(` produtc id is ${id}`)
+      console.log(` produtc id is ${id}`)
       const usermail=req.session.userid
       const qty=req.body.qty
-      //console.log(` produtc qty now is ${qty}`)
+     /// console.log(` produtc qty now is ${qty}`)
       const prdct=await Product.findOne({_id:id})
-    //   console.log(prdct)
+     // console.log(prdct)
       if(usermail){
-       const user=await User.findOne({email:usermail})
+        console.log('user is logind')
+       const user=await User.findOne({email:usermail,verified:true})
         if(prdct){
           const qtycheck=prdct.quantity
-          console.log(qtycheck)
+          
           if(qtycheck===0){
-            console.log('out of stcxok')
             res.json({ success: false, message: ' Product Out of Stock' });
+            console.log('out of stock')
+            return 
           }
           else{
 
@@ -51,10 +54,21 @@ const addtocart=async(req,res)=>{
             
                     
                         const existingProduct = cartcheck.products[existingProductIndex];
-                        existingProduct.quantity = Number(existingProduct.quantity) + Number(qty);
-                        existingProduct.totalprice = Number(existingProduct.totalprice) + totalprice;
+                        updatedQuantity = Number(existingProduct.quantity) + Number(qty);
+                        
                     
+                        if (updatedQuantity >= qtycheck) {
+                          res.json({ success: false, message: 'Quantity limit exceeded' });
+                          return;
+                      }
 
+                      if (updatedQuantity > 10) {
+                          res.json({ success: false, message: 'Quantity in cart exceeds 10' });
+                          return;
+                      }
+
+                        existingProduct.quantity = updatedQuantity;
+                        existingProduct.totalprice = Number(existingProduct.totalprice) + totalprice;
                         cartcheck.total=cartcheck.total+totalprice 
                         const updatedCart = await cartcheck.save();
 
@@ -139,6 +153,7 @@ const addtocart=async(req,res)=>{
       }
 
       else{
+        console.log('user not login')
         res.json({ success: false, message: 'User not login' });
 
         //console.log('rediercted to login')
@@ -146,6 +161,7 @@ const addtocart=async(req,res)=>{
       }
 
     } catch (error) {
+      console.log('error in catch')
         res.json({ success: false, message: 'Failed to add cart' });
         console.log(error.message)
     }

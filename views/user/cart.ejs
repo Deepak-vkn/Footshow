@@ -261,7 +261,11 @@
 
 	                				<a href="/checkout?uid=<%= user._id %>" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
 	                			</div><!-- End .summary -->
-
+                                <% if (messages.error) { %>
+                                    <div class="alert alert-danger">
+                                        <%= messages.error %>
+                                    </div>
+                                <% } %>
 		            			<a href="/shop" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
 	                		</aside><!-- End .col-lg-3 -->
 	                	</div><!-- End .row -->

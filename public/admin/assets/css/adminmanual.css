@@ -32,3 +32,6 @@
         display: block;
         margin-top: 10px; /* Adjust the margin as needed */
     }
+    .my-custom-size {
+        width: 00px; /* Adjust the width as per your requirement */
+    }

@@ -134,7 +134,7 @@
 								        <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
 								    </li>
 								    <li class="nav-item">
-								        <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Downloads</a>
+								        <a class="nav-link" id="tab-wallet-link" data-toggle="tab" href="#tab-wallet" role="tab" aria-controls="tab-wallet" aria-selected="false">Wallet</a>
 								    </li>
 								    <li class="nav-item">
 								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
@@ -206,18 +206,20 @@
                                                             
                                                                 <ul>
                                                                     <% order.products.forEach((product,i) => { %>
-                                                                        <li>
+                                                                        <li class="product-item">
                                                                             <span><img src="/images/<%= product.image %>" alt="<%= product.name %>" width="50" height="50"></span>
                                                                             <%= product.name %> - <%= product.quantity %> x <%= product.price %> = <%= product.totalprice %>
-                                                                            <% if (order.status === 'Placed') { %>
+
+                                                                            <% if (product.status === 'Placed') { %>
                                                                                 <a href="/cancelorder?index=<%= i %>&oid=<%= order._id %>">Cancel</a>
                                                                             <% } %>
                                                                 
                                                                             <!-- Show "Return" if the order status is "Delivered" -->
-                                                                            <% if (order.status === 'Deliverd') { %>
-                                                                                <a href="#">Return</a>
-                                                                            <% } %>
-                                                                            
+                                                                            <% if (product.status === 'Delivered') { %>
+                                                                                <a href="#" onclick="showReturnAlert('<%= i %>', '<%= order._id %>')">Return</a>
+
+                                                                            <% } %><br>
+                                                                            Status: <%= product.status %>
                                                                         </li>
                                                                     <% }); %>
                                                                 </ul>
@@ -226,7 +228,7 @@
                                                                 <p>
                                                                     Total: <%= order.total %><br>
                                                                     Payment: <%= order.payment %><br>
-                                                                    Status: <%= order.status %>
+                                                            
                                                                     
                                                                 </p>
                                                         
@@ -282,9 +284,25 @@
 
 
                                     
-								    <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-								    	<p>No downloads available yet.</p>
-								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+								    <div class="tab-pane fade" id="tab-wallet" role="tabpanel" aria-labelledby="tab-wallet-link">
+								    	
+
+
+                                        <div class="col-lg-6  text-center">
+                                            <div class="card card-dashboard" style="text-align: center; background-color: #f1f1f1; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                                                <div class="card-body">
+                                                    <h4 class="card-title" style="color: #333; font-size: 30px;">Wallet</h4><!-- End .card-title -->
+                                        
+                                                    <div style="font-size: 18px; color: #666;">
+                                                                        <p style="font-weight: bold;">Current Balance:</p>
+                                                                        <p style="font-size: 20px;  font-weight: bold;">₹<%= user.wallet %></p>
+                                                                    </div>
+                                                                                                                        
+                                                </div><!-- End .card-body -->
+                                            </div><!-- End .card-dashboard -->
+                                        </div><!-- End .col-lg-6 -->
+
+								    	<a href="#" class="btn btn-outline-primary-2"><span>Add Amount</span><i class="icon-long-arrow-right"></i></a>
 								    </div><!-- .End .tab-pane -->
 
 								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
@@ -820,6 +838,7 @@
     <script src="assets/js/jquery.waypoints.min.js"></script>
     <script src="assets/js/superfish.min.js"></script>
     <script src="assets/js/owl.carousel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
 
@@ -977,6 +996,97 @@ function validateForm() {
 
         return true; 
     }
+
+
+    async function showReturnAlert(index, orderId) {
+    try {
+        const result = await Swal.fire({
+            title: 'Return Order',
+            html: '<input type="text" id="returnReason" class="swal2-input custom-input" placeholder="Enter reason for return">',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Cancel',
+            focusConfirm: false,
+            preConfirm: () => {
+                const returnReason = document.getElementById('returnReason').value;
+                if (!returnReason) {
+                    Swal.showValidationMessage('Please enter the reason for return');
+                }
+                return returnReason;
+            },
+            allowOutsideClick: () => !Swal.isLoading(),
+            customClass: {
+                input: 'custom-input',
+                confirmButton: 'custom-button',
+                cancelButton: 'custom-button'
+            }
+        });
+
+        if (result.isConfirmed) {
+            const reason = result.value;
+
+            await Swal.fire({
+                title: 'Return submitted!',
+                text: `Reason: ${reason}`,
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: false,
+                customClass: {
+                    popup: 'animate__animated animate__fadeOut',
+                },
+            });
+
+            const response = await fetch('/returnproduct', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    reason,
+                    index,
+                    orderId
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('reached');
+
+                if (data.success) {
+                    console.log('success');
+                    location.reload();
+                   // window.location.href = '/profile';
+                } else {
+                    console.log('failed', data.message || 'No specific error message');
+                }
+            } else {
+                console.error(`HTTP error! Status: ${response.status}`);
+            }
+        }
+    } catch (error) {
+        console.error('Error during fetch:', error);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
