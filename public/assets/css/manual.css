@@ -111,4 +111,12 @@
         margin-bottom: 10px; /* Add some space below each product */
         padding-bottom: 10px; /* Add additional padding if needed */
     }
-   
+    .btn-wishlist.active {
+        /* Add your styling for the active state */
+        color: green;  /* For example, change text color to green */
+        font-weight: bold;
+    }
+    .btn-wishlist.active span,
+.btn-wishlist.active i {
+    color: green;  /* Add your desired color for both text and icon */
+}

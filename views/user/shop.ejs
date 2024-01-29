@@ -45,13 +45,15 @@
                         <form action="#" method="get">
                             <div class="header-search-wrapper">
                                 <label for="q" class="sr-only">Search</label>
-                                <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
+                                <!-- HTML -->
+                                <input type="search" class="form-control" name="q" id="searchInput" placeholder="Search product ..." oninput="handleSearchInput(this.value)" required>
+
                                 <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
                             </div><!-- End .header-search-wrapper -->
                         </form>
                     </div><!-- End .header-search -->
                     
-                    <a href="#" class="wishlist-link">
+                    <a href="/wishlist" class="wishlist-link">
                         <i class="icon-heart-o"></i>
                         <!-- <span class="wishlist-count">3</span> -->
                     </a>
@@ -190,12 +192,12 @@
                             </div><!-- End .toolbox-right -->
                         </div><!-- End .toolbox -->
 
-                        <div class="products mb-3">
+                        <div class="products mb-3" id="pcard">
                             <div class="row justify-content-center">
                                 <div class="products mb-3">
                                     <div class="row justify-content-center-start">
                                         <% product.forEach((product,index) => { %>
-                                            <div class="col-6 col-md-4 col-lg-4 col-xl-3">
+                                            <div class="col-6 col-md-4 col-lg-4 col-xl-3 product-card" >
                                                 <!-- <div class="col-12 col-md-4 col-lg-4 col-xl-3 <%= index % 3 === 0 ? ' offset-md-0 offset-lg-0 offset-xl-0' : '' %>"> -->
                                                 <div class="product product-7 text-center">
                                                     <figure class="product-media">
@@ -786,5 +788,15 @@
 <script src="assets/js/nouislider.min.js"></script>
 <!-- Main JS File -->
 <script src="assets/js/main.js"></script>
+
+
+<script>
+    async function handleSearchInput(searchTerm) {
+       
+           $('#pcard').load(`/shop?search=${searchTerm} #pcard`)
+
+     
+    }
+</script>
 
 <%- include('../layout/footer') -%>

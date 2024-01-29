@@ -3,6 +3,7 @@ const User=require('../models/usermodel')
 const Product=require('../models/product')
 const Cart=require('../models/cart')
 const Order=require('../models/orders')
+const Wishlist=require('../models/wishlist')
 const bcrypt=require('bcrypt')
 const Otp=require('../models/otp')
 const OTPgenerator=require('otp-generator')
@@ -17,7 +18,14 @@ const home=async(req,res)=>{
     try{
         let track
         let user
-        const product = await Product.find({status:'Active'}).populate('category').lean();
+        const products = await Product.find({status:'Active'}).populate('category').lean();
+        
+        const  product= products.filter(product => {
+            return (
+                product.category && 
+                product.category.Status === 'Active' 
+            );
+        });
         if(req.session.userid){
             track=true
             const mail=req.session.userid
@@ -435,50 +443,94 @@ const logout = async (req, res) => {
 };
 
 //load shop-------------------------------------------------------------------------------------------
-
-
-const loadshop=async(req,res)=>{
-
+const loadshop = async (req, res) => {
     try {
-        let track
-        let user
-        let totalproducts=await Product.find({status:'Active'}).count()
-        let totalPages=Math.ceil(totalproducts/10)
+        let track;
+        let user;
+        const searchTerm = req.query.search;
+        let products;
+        let totalproducts = await Product.find({ status: 'Active' }).count();
+        let totalPages = Math.ceil(totalproducts / 10);
         let currentPage = parseInt(req.query.page, 12) || 1;
-        const skip=(currentPage-1)*12
-        if(req.session.userid){
-            track=true
-            const mail=req.session.userid
-            user=await User.findOne({email:mail})
-           
-            const product = await Product.find({status:'Active'}).populate('category')
-            .skip(skip)
-            .limit(12)
-            .lean();
-            const category = await Category.find({})
-           
-         
-            res.render('shop',{product,category,user,track,totalPages,currentPage})
-        }
-        else{
+        const skip = (currentPage - 1) * 12;
 
-            track=false
-            const product = await Product.find({status:'Active'}).populate('category')
-            .skip(skip)
-            .limit(10
-                )
-            .lean();
-            const category = await Category.find({})
-            res.render('shop',{product,category,user,track,totalPages,currentPage})
+        if (req.session.userid) {
+            track = true;
+            const mail = req.session.userid;
+            user = await User.findOne({ email: mail });
+
+            if (searchTerm) {
+                products = await Product.find({
+                    $and: [
+                        { status: 'Active' },
+                        {
+                            $or: [
+                                { name: { $regex: searchTerm, $options: 'i' } },
+                            ],
+                        },
+                    ],
+                })
+                    .populate('category')
+                    .skip(skip)
+                    .limit(12)
+                    .lean();
+                  
+            } else {
+                products = await Product.find({ status: 'Active' })
+                    .populate('category')
+                    .skip(skip)
+                    .limit(12)
+                    .lean();
+            }
            
+
+            const category = await Category.find({});
+            const product = products.filter((product) => {
+                return product.category && product.category.Status === 'Active';
+            });
+
+            res.render('shop', { product, category, user, track, totalPages, currentPage });
+        } else {
+            
+            track = false;
+
+            if (searchTerm) {
+                // If there's a search term, perform a search query
+                products = await Product.find({
+                    $and: [
+                        { status: 'Active' },
+                        {
+                            $or: [
+                                { name: { $regex: searchTerm, $options: 'i' } },
+                            ],
+                        },
+                    ],
+                })
+                    .populate('category')
+                    .skip(skip)
+                    .limit(12)
+                    .lean();
+                  
+            } else {
+                products = await Product.find({ status: 'Active' })
+                    .populate('category')
+                    .skip(skip)
+                    .limit(12)
+                    .lean();
+            }
+           
+            const product = products.filter((product) => {
+                return product.category && product.category.Status === 'Active';
+            });
+            console.log(product);
+            const category = await Category.find({});
+            res.render('shop', { product, category, user, track, totalPages, currentPage });
             
         }
-
-      
-        
     } catch (error) {
-        console.log(error.message);    }
-}
+        console.log(error.message);
+    }
+};
 
 
 // load single product --------------------------------------------------------------------------------
@@ -493,8 +545,17 @@ const loadsingleproduct=async(req,res)=>{
             const track=true
             const product = await Product.findOne({_id:id}).populate('category').lean();
 
+            const wishlist =await Wishlist.findOne({'products.productid':id})
+            if(wishlist){
+                res.render('singleproduct',{product,user,track,wishlist})
+console.log(wishlist)
+            }
+            else{
+                res.render('singleproduct',{product,user,track})
+            }
+
         
-            res.render('singleproduct',{product,user,track})
+          
     
         }
         else{ 
@@ -522,6 +583,8 @@ const loadmen=async(req,res)=>{
       
           let track
           let user
+          const searchTerm = req.query.search;
+          let products;
           let totalproducts=await Product.find({status:'Active',gender:'male'}).count()
           let totalPages=Math.ceil(totalproducts/12)
           let currentPage = parseInt(req.query.page, 10) || 1;
@@ -531,22 +594,76 @@ const loadmen=async(req,res)=>{
             const mail=req.session.userid
             user=await User.findOne({email:mail})
            
-            const product = await Product.find({status:'Active',gender:'male'}).populate('category')
-            .skip(skip)
-            .limit(12)
-            .lean();
+            if (searchTerm) {
+                products = await Product.find({
+                    $and: [
+                        { status: 'Active' },
+                        { gender: 'male' },
+                        {
+                            $or: [
+                                { name: { $regex: searchTerm, $options: 'i' } },
+                            ],
+                        },
+                    ],
+                })
+                    .populate('category')
+                    .skip(skip)
+                    .limit(12)
+                    .lean();
+                  
+            } else {
+                products =await  Product.find({status:'Active',gender:'male'}).populate('category')
+                .skip(skip)
+                .limit(12)
+                .lean();
+            }
             const category = await Category.find({})
+
+            const  product= products.filter(product => {
+                return (
+                    product.category && 
+                    product.category.Status === 'Active' 
+                );
+            });
          
             res.render('men',{product,category,user,track,currentPage,totalPages})
         }
         else{
+            
 
             track=false
-            const product = await Product.find({status:'Active',gender:'male'}).populate('category')
-            .skip(skip)
-            .limit(12)
-            .lean();
+            if (searchTerm) {
+                products = await Product.find({
+                    $and: [
+                        { status: 'Active' },
+                        { gender: 'male' },
+                        {
+                            $or: [
+                                { name: { $regex: searchTerm, $options: 'i' } },
+                            ],
+                        },
+                    ],
+                })
+                    .populate('category')
+                    .skip(skip)
+                    .limit(12)
+                    .lean();
+                  
+            } else {
+                products =await  Product.find({status:'Active',gender:'male'}).populate('category')
+                .skip(skip)
+                .limit(12)
+                .lean();
+            }
             const category = await Category.find({})
+
+
+            const  product= products.filter(product => {
+                return (
+                    product.category && // Ensure category is populated
+                    product.category.Status === 'Active' // Filter based on category status
+                );
+            });
            
             res.render('men',{product,category,user,track,totalPages,currentPage})
            
@@ -567,6 +684,8 @@ const loadwomen=async(req,res)=>{
     try {
         let track
         let user
+        const searchTerm = req.query.search;
+        let products;
         let totalproducts=await Product.find({status:'Active',gender:'female'}).count()
         let totalPages=Math.ceil(totalproducts/12)
         let currentPage = parseInt(req.query.page, 10) || 1;
@@ -577,23 +696,75 @@ const loadwomen=async(req,res)=>{
           const mail=req.session.userid
           user=await User.findOne({email:mail})
          
-          const product = await Product.find({status:'Active',gender:'female'}).populate('category')
-          .skip(skip)
-          .limit(12)
-          .lean();
+          if (searchTerm) {
+            products = await Product.find({
+                $and: [
+                    { status: 'Active' },
+                    { gender: 'female' },
+                    {
+                        $or: [
+                            { name: { $regex: searchTerm, $options: 'i' } },
+                        ],
+                    },
+                ],
+            })
+                .populate('category')
+                .skip(skip)
+                .limit(12)
+                .lean();
+              
+        } else {
+            products =await  Product.find({status:'Active',gender:'female'}).populate('category')
+            .skip(skip)
+            .limit(12)
+            .lean();
+        }
           const category = await Category.find({})
          
+
+          const  product= products.filter(product => {
+            return (
+                product.category && 
+                product.category.Status === 'Active' 
+            );
+        });
        
           res.render('women',{product,category,user,track,currentPage,totalPages})
       }
       else{
 
           track=false
-          const product = await Product.find({status:'Active',gender:'female'}).populate('category')
-          .skip(skip)
-          .limit(12)
-          .lean();
+          if (searchTerm) {
+            products = await Product.find({
+                $and: [
+                    { status: 'Active' },
+                    { gender: 'female' },
+                    {
+                        $or: [
+                            { name: { $regex: searchTerm, $options: 'i' } },
+                        ],
+                    },
+                ],
+            })
+                .populate('category')
+                .skip(skip)
+                .limit(12)
+                .lean();
+              
+        } else {
+            products =await  Product.find({status:'Active',gender:'female'}).populate('category')
+            .skip(skip)
+            .limit(12)
+            .lean();
+        }
           const category = await Category.find({})
+
+          const  product= products.filter(product => {
+            return (
+                product.category && // Ensure category is populated
+                product.category.Status === 'Active' // Filter based on category status
+            );
+        });
           res.render('women',{product,category,user,track,currentPage,totalPages})
          
           

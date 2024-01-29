@@ -3,13 +3,15 @@ const route=express();
 const usercontroll=require('../controllers/usercontroll')
 const cartcontroll=require('../controllers/cartcontroll')
 const checkoutcontroll=require('../controllers/checkoutcontroll')
+const wishlistcontroll=require('../controllers/wishlistcontroll')
 route.use(express.static('public'))
 const bodyparser=require('body-parser')
 route.set('view engine','ejs')
 route.set('views','views/user')
 const session=require('express-session')
 const confi=require("../configuration/confi")
-const usermiddle=require('../middleware/middle')
+const usermiddle=require('../middleware/middle');
+const wishlist = require('../models/wishlist');
 route.use(bodyparser.json())
 route.use(bodyparser.urlencoded({extended:true}))
 route.use(
@@ -70,6 +72,13 @@ route.post('/checkout',usermiddle.islogin,checkoutcontroll.payment)
 route.get('/success',checkoutcontroll.ordersuccess)
 route.post('/verifypayment',checkoutcontroll.verifypayment)
 
+
+// wishlist
+
+route.post('/addtowishlist',wishlistcontroll.addtowishlist)
+route.get('/wishlist',wishlistcontroll.loadwishlist)
+route.get('/addtocartwish',wishlistcontroll.addtocart)
+route.get('/removewishlist',wishlistcontroll.removewishlist)
 
 
 

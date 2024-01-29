@@ -53,7 +53,7 @@
                         </form>
                     </div><!-- End .header-search -->
                     
-                    <a href="#" class="wishlist-link">
+                    <a href="/wishlist" class="wishlist-link">
                         <i class="icon-heart-o"></i>
                         <!-- <span class="wishlist-count">3</span> -->
                     </a>
@@ -215,7 +215,14 @@
                                         </span></a>
 
                                     <div class="details-action-wrapper">
-                                        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+                                        <% if (locals.wishlist) { %>
+                                            <a href="#" class="btn-product btn-wishlist active" data-product-id="<%= product._id %>" title="Wishlist"><span>Added to Wishlist</span></a>
+                                        <%} else { %>
+                                            <a href="#" class="btn-product btn-wishlist" id="addToWishlistBtn" data-product-id="<%= product._id %>" title="Wishlist"><span>Add to Wishlist</span></a>
+                                        <%} %>
+
+                                     
+
                                         <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
                                     </div><!-- End .details-action-wrapper -->
                                 </div><!-- End .product-details-action -->
@@ -1077,11 +1084,71 @@ quantityInput.addEventListener('input', function () {
         });
 
 
+// add to wishlist 
+
+
+document.getElementById('addToWishlistBtn').addEventListener('click', function (event) {
+    event.preventDefault();
+
+    const productId = this.getAttribute('data-product-id');
+
+    
+    fetch('/addtowishlist', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+
+            Swal.fire({
+        title:'Success',
+        text: data.message,
+        icon: 'success',
+        showConfirmButton: false,
+        timer: 1000,customClass: {
+            popup: 'animate__animated animate__fadeOut',
+        },
+    }).then((result) => {
+        location.reload()
+        
+        //window.location.href = `/singleproduct?id=${pid}`;
+    });
+
+            
+            console.log('Product added to wishlist:', data.message);
+        } else {
+
+        Swal.fire({
+        title: 'Failed',
+        text: data.message,
+        icon: 'error',
+        showConfirmButton: false,
+        timer: 1000,customClass: {
+            popup: 'animate__animated animate__fadeOut',
+        },
+    }).then((result) => {
+            if (message.includes('User not login')) {
+    window.location.href = '/login';
+}
+        
+    });
+            
+            console.error('Failed to add product to wishlist:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+    });
+});
 
 
 
 
-7
+
 </script>
 
 

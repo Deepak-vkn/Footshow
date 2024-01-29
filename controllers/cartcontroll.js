@@ -26,7 +26,7 @@ const addtocart=async(req,res)=>{
       const prdct=await Product.findOne({_id:id})
      // console.log(prdct)
       if(usermail){
-        console.log('user is logind')
+        //console.log('user is logind')
        const user=await User.findOne({email:usermail,verified:true})
         if(prdct){
           const qtycheck=prdct.quantity
