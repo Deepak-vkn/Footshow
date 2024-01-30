@@ -82,7 +82,8 @@ const addproduct=async(req,res)=>{
             color:req.body.color,
             status:req.body.status,
             category:category._id,
-            quantity:req.body.quantity
+            quantity:req.body.quantity,
+            createdAt:Date.now()
 
             })
             
@@ -257,7 +258,8 @@ const editproduct = async (req, res) => {
             color: req.body.color,
             status: req.body.status,
             category: req.body.category,
-            quantity:req.body.quantity
+            quantity:req.body.quantity,
+            createdAt:Date.now()
 
         };
 

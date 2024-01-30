@@ -442,18 +442,64 @@ const logout = async (req, res) => {
     }
 };
 
-//load shop-------------------------------------------------------------------------------------------
+//load shop-------------------------------------------------------------------------------------------------
 const loadshop = async (req, res) => {
     try {
         let track;
         let user;
         const searchTerm = req.query.search;
         let products;
-        let totalproducts = await Product.find({ status: 'Active' }).count();
-        let totalPages = Math.ceil(totalproducts / 10);
+        let totalproducts
+        let totalPages
+        let sort=req.query.sort
+        let sortOptions
         let currentPage = parseInt(req.query.page, 12) || 1;
-        const skip = (currentPage - 1) * 12;
+        let skip = (currentPage - 1) * 12;
+        let filter=req.query.filter
+        const filtercata=filter?filter.split(','):[]
+        let filterquery={}
+        if(filtercata.length>0){
+         filterquery={
+             'category': { $in: filtercata },
+             'status': 'Active'
+         }
+ 
+        }
+        else{
+         filterquery = { 'status': 'Active' };
+ 
+        }
+   
 
+         //sort----------
+
+         if(sort){
+            switch (sort) {
+                case 'Latest':
+                    sortOptions = { createdAt: -1 };
+                    break;
+                case 'Oldest':
+                    sortOptions = { createdAt: 1 };
+                    break;
+                case 'Pricelow':
+                    sortOptions = { price: 1 };
+                    break;
+                case 'Pricehigh':
+                    sortOptions = { price: -1 };
+                    break;
+                default:
+                    
+                    sortOptions = { createdAt: -1 };
+                    break;
+            }
+
+
+          }
+          else{
+             sortOptions = {createdAt: -1 };
+
+          }
+       
         if (req.session.userid) {
             track = true;
             const mail = req.session.userid;
@@ -471,24 +517,27 @@ const loadshop = async (req, res) => {
                     ],
                 })
                     .populate('category')
+                    .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
                     .lean();
                   
             } else {
-                products = await Product.find({ status: 'Active' })
+                products = await Product.find(filterquery)
                     .populate('category')
+                    .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
                     .lean();
             }
            
 
-            const category = await Category.find({});
+            const category = await Category.find({'Status':'Active'});
             const product = products.filter((product) => {
                 return product.category && product.category.Status === 'Active';
             });
-
+            totalproducts=product.length
+            totalPages = Math.ceil(totalproducts / 12);
             res.render('shop', { product, category, user, track, totalPages, currentPage });
         } else {
             
@@ -507,13 +556,15 @@ const loadshop = async (req, res) => {
                     ],
                 })
                     .populate('category')
+                    .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
                     .lean();
                   
             } else {
-                products = await Product.find({ status: 'Active' })
+                products = await Product.find(filterquery)
                     .populate('category')
+                    .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
                     .lean();
@@ -522,8 +573,9 @@ const loadshop = async (req, res) => {
             const product = products.filter((product) => {
                 return product.category && product.category.Status === 'Active';
             });
-            console.log(product);
-            const category = await Category.find({});
+            totalproducts=product.length
+            totalPages = Math.ceil(totalproducts / 12);
+            const category = await Category.find({'Status':'Active'});
             res.render('shop', { product, category, user, track, totalPages, currentPage });
             
         }
@@ -583,12 +635,64 @@ const loadmen=async(req,res)=>{
       
           let track
           let user
+          let totalproducts
+          let totalPages
+          let sort=req.query.sort
           const searchTerm = req.query.search;
           let products;
-          let totalproducts=await Product.find({status:'Active',gender:'male'}).count()
-          let totalPages=Math.ceil(totalproducts/12)
           let currentPage = parseInt(req.query.page, 10) || 1;
           const skip=(currentPage-1)*12
+          let filter=req.query.filter
+          const filtercata=filter?filter.split(','):[]
+          let filterquery={}
+          let sortOptions
+         
+
+
+          if(filtercata.length>0){
+           filterquery={
+               'category': { $in: filtercata },
+               'status': 'Active',
+               'gender':'male'
+           }
+   
+          }
+          else{
+           filterquery = {status:'Active',gender:'male'};
+   
+          }
+
+          //sort----------
+
+          if(sort){
+            switch (sort) {
+                case 'Latest':
+                    sortOptions = { createdAt: -1 };
+                    break;
+                case 'Oldest':
+                    sortOptions = { createdAt: 1 };
+                    break;
+                case 'Pricelow':
+                    sortOptions = { price: 1 };
+                    break;
+                case 'Pricehigh':
+                    sortOptions = { price: -1 };
+                    break;
+                default:
+                    
+                    sortOptions = { createdAt: -1 };
+                    break;
+            }
+
+
+          }
+          else{
+             sortOptions = {createdAt: -1 };
+
+          }
+        
+        
+        
          if(req.session.userid){
             track=true
             const mail=req.session.userid
@@ -607,17 +711,19 @@ const loadmen=async(req,res)=>{
                     ],
                 })
                     .populate('category')
+                    .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
                     .lean();
                   
             } else {
-                products =await  Product.find({status:'Active',gender:'male'}).populate('category')
+                products =await  Product.find(filterquery).populate('category')
+                .sort(sortOptions)
                 .skip(skip)
                 .limit(12)
                 .lean();
             }
-            const category = await Category.find({})
+            const category = await Category.find({'Status':'Active'})
 
             const  product= products.filter(product => {
                 return (
@@ -625,7 +731,8 @@ const loadmen=async(req,res)=>{
                     product.category.Status === 'Active' 
                 );
             });
-         
+            totalproducts=product.length
+            totalPages=Math.ceil(totalproducts/12)
             res.render('men',{product,category,user,track,currentPage,totalPages})
         }
         else{
@@ -645,25 +752,29 @@ const loadmen=async(req,res)=>{
                     ],
                 })
                     .populate('category')
+                    .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
                     .lean();
                   
             } else {
-                products =await  Product.find({status:'Active',gender:'male'}).populate('category')
+                products =await  Product.find(filterquery).populate('category')
+                .sort(sortOptions)
                 .skip(skip)
                 .limit(12)
                 .lean();
             }
-            const category = await Category.find({})
+            const category = await Category.find({'Status':'Active'})
 
 
             const  product= products.filter(product => {
                 return (
-                    product.category && // Ensure category is populated
-                    product.category.Status === 'Active' // Filter based on category status
+                    product.category && 
+                    product.category.Status === 'Active'
                 );
             });
+            totalproducts=product.length
+            totalPages=Math.ceil(totalproducts/12)
            
             res.render('men',{product,category,user,track,totalPages,currentPage})
            
@@ -686,10 +797,61 @@ const loadwomen=async(req,res)=>{
         let user
         const searchTerm = req.query.search;
         let products;
-        let totalproducts=await Product.find({status:'Active',gender:'female'}).count()
-        let totalPages=Math.ceil(totalproducts/12)
+        let totalproducts
+        let totalPages
+        let sort=req.query.sort
+        let sortOptions
         let currentPage = parseInt(req.query.page, 10) || 1;
         const skip=(currentPage-1)*12
+
+        let filter=req.query.filter
+          const filtercata=filter?filter.split(','):[]
+          let filterquery={}
+
+
+          if(filtercata.length>0){
+           filterquery={
+               'category': { $in: filtercata },
+               'status': 'Active',
+               'gender':'female'
+           }
+   
+          }
+          else{
+           filterquery = {status:'Active',gender:'female'};
+   
+          }
+
+          //sort
+
+            //sort----------
+
+            if(sort){
+                switch (sort) {
+                    case 'Latest':
+                        sortOptions = { createdAt: -1 };
+                        break;
+                    case 'Oldest':
+                        sortOptions = { createdAt: 1 };
+                        break;
+                    case 'Pricelow':
+                        sortOptions = { price: 1 };
+                        break;
+                    case 'Pricehigh':
+                        sortOptions = { price: -1 };
+                        break;
+                    default:
+                        
+                        sortOptions = { createdAt: -1 };
+                        break;
+                }
+    
+    
+              }
+              else{
+                 sortOptions = {createdAt: -1 };
+    
+              }
         
         if(req.session.userid){
           track=true
@@ -709,17 +871,19 @@ const loadwomen=async(req,res)=>{
                 ],
             })
                 .populate('category')
+                .sort(sortOptions)
                 .skip(skip)
                 .limit(12)
                 .lean();
               
         } else {
-            products =await  Product.find({status:'Active',gender:'female'}).populate('category')
+            products =await  Product.find(filterquery).populate('category')
+            .sort(sortOptions)
             .skip(skip)
             .limit(12)
             .lean();
         }
-          const category = await Category.find({})
+          const category = await Category.find({'Status':'Active'})
          
 
           const  product= products.filter(product => {
@@ -728,6 +892,8 @@ const loadwomen=async(req,res)=>{
                 product.category.Status === 'Active' 
             );
         });
+        totalproducts=product.length
+        totalPages=Math.ceil(totalproducts/12)
        
           res.render('women',{product,category,user,track,currentPage,totalPages})
       }
@@ -747,17 +913,19 @@ const loadwomen=async(req,res)=>{
                 ],
             })
                 .populate('category')
+                .sort(sortOptions)
                 .skip(skip)
                 .limit(12)
                 .lean();
               
         } else {
-            products =await  Product.find({status:'Active',gender:'female'}).populate('category')
+            products =await  Product.find(filterquery).populate('category')
+            .sort(sortOptions)
             .skip(skip)
             .limit(12)
             .lean();
         }
-          const category = await Category.find({})
+          const category = await Category.find({'Status':'Active'})
 
           const  product= products.filter(product => {
             return (
@@ -765,6 +933,8 @@ const loadwomen=async(req,res)=>{
                 product.category.Status === 'Active' // Filter based on category status
             );
         });
+        totalproducts=product.length
+        totalPages=Math.ceil(totalproducts/12)
           res.render('women',{product,category,user,track,currentPage,totalPages})
          
           
