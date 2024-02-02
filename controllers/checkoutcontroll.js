@@ -5,6 +5,7 @@ const User=require('../models/usermodel')
 const Product=require('../models/product')
 const Category=require('../models/category')
 const Cart=require('../models/cart')
+const Coupon=require('../models/coupon')
 const Order=require('../models/orders')
 const bcrypt=require('bcrypt')
 const { checkout, render } = require("../routes/adminroute")
@@ -98,15 +99,16 @@ const payment=async(req,res)=>{
             const payment=req.body.selectedPaymentMethod
             const mail= req.session.userid
             const user=await User.findOne({email:mail})
-            //const cart=await Cart.findOne({_id:cid})
             const cart = await Cart.findById({_id:cid}).populate('products.productid');
-            //console.log(user)
+            const code=req.body.code
+            console.log('code is',code)
+            
             if(user){
                 //user exist
                 const uid=user._id
                 const address=user.address[index]
                 //console.log(address)
-                const total= cart.total
+                const total= req.body.newtotal || cart.total
                 const ordercheck= await Order.findOne({userid:uid})
     
                 
@@ -121,6 +123,26 @@ const payment=async(req,res)=>{
                         image: product.productid.image[0]
     
                     }))
+
+                    //coupon management
+
+                    if(code){
+                        console.log('raehed code')
+                        const coupon=await Coupon.findOne({code:code})
+
+                        const offer=coupon.offeramount
+                        const discount=offer/productlist.length.toFixed(1);
+
+                        productlist.forEach((product)=>{
+                            product.price -= parseFloat(discount);
+                            product.totalprice=product.price*product.quantity
+
+                        })
+                    }
+
+
+
+
                                     
                     const neworder= new Order({
     
@@ -154,6 +176,19 @@ const payment=async(req,res)=>{
                                 { $inc: { quantity: -quantity } }
                             );
                         }
+
+                        if(code){
+
+                            const coupon=await Coupon.findOne({code:code})
+
+                            coupon.useduser.push({
+                                userid: uid,
+                                usedstatus: true
+                            });
+                            await coupon.save();
+
+                        }
+                        
                         req.session.folow=null
                         res.json({success:true,message: 'Order placed successfully'});
                     }
@@ -172,6 +207,19 @@ const payment=async(req,res)=>{
 
                                  const razorder= await  await createRazorpayOrder(neworder._id, neworder.total);
                                 if(razorder){
+
+
+                                    if(code){
+
+                                        const coupon=await Coupon.findOne({code:code})
+            
+                                        coupon.useduser.push({
+                                            userid: uid,
+                                            usedstatus: true
+                                        });
+                                        await coupon.save();
+            
+                                    }
 
                                         res.json({razo:true,razorder:razorder})
                                 }
@@ -216,6 +264,17 @@ const payment=async(req,res)=>{
                             );
                         }
                         req.session.folow=null
+                        if(code){
+
+                            const coupon=await Coupon.findOne({code:code})
+
+                            coupon.useduser.push({
+                                userid: uid,
+                                usedstatus: true
+                            });
+                            await coupon.save();
+
+                        }
                         res.json({success:true,message: 'Order placed successfully'});
                     }
                     else{
@@ -376,6 +435,58 @@ const verifypayment= async(req,res)=>{
 
 
 
+//applycoupon------------------------------------------------------------
+
+
+const applycoupon=async(req,res)=>{
+    try {
+
+        const code=req.query.code
+        const mail= req.session.userid
+        const user=await User.findOne({email:mail,verified:true})
+        const uid=user._id
+        const coupon=await Coupon.findOne({code:code,isdelete:false})
+
+        if(coupon){
+            const checkused=await Coupon.findOne({code:code,'useduser.userid':uid})
+           if(checkused){
+            res.json({success:false,message:'Coupon already used by user'})
+
+           }
+           else{
+            const cart=await Cart.findOne({userid:uid})
+            const total=cart.total
+            const couponmini=coupon.minamount
+            const offer=coupon.offeramount
+            if(total<couponmini){
+                //cehchk mini amount
+                res.json({success:false,message:`You need minimum ₹${couponmini} to apply this coupon`})
+            }
+            else{
+            //reduce price
+            console.log('reduced price')
+            const newtotal=total-offer
+            res.json({success:true,newtotal:newtotal,code:code})
+
+            }
+            //res.json({success:true})
+
+           }
+
+
+
+        }
+        else{
+            res.json({success:false,message:'Coupon not found'})
+
+        }
+        
+    } catch (error) {
+        res.json({success:false,message:'internal server error'})
+        console.log(error.message)
+        
+    }
+}
 
 
 
@@ -386,7 +497,8 @@ module.exports={
     loadcheckout,
     payment,
     ordersuccess,
-    verifypayment
+    verifypayment,
+    applycoupon
 
 }
 

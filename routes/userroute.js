@@ -71,6 +71,7 @@ route.get('/checkout',usermiddle.islogin,checkoutcontroll.loadcheckout)
 route.post('/checkout',usermiddle.islogin,checkoutcontroll.payment)
 route.get('/success',checkoutcontroll.ordersuccess)
 route.post('/verifypayment',checkoutcontroll.verifypayment)
+route.get('/applycoupon',checkoutcontroll.applycoupon)
 
 
 // wishlist

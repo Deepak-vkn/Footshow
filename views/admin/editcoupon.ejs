@@ -1,0 +1,62 @@
+
+<%- include('../layout2/header') -%>
+
+
+
+    <div class="row justify-content-center " >
+        
+        <div class="col-md-3">
+            <h3 class="text-center">ADD COUPON</h3>
+            <form  id="addcoupon" method="POST" action="/admin/editcoupon?id=<%= coupon._id %>">
+                <div class="mb-4">
+                    <label for="product_name" class="form-label">Name</label>
+                    <input type="text" placeholder="Type here" class="form-control" name="name" value="<%= coupon.name %>" />
+                </div>
+                <div class="mb-4">
+                    <label for="product_slug" class="form-label">Code</label>
+                    <input type="text" placeholder="Type here" class="form-control" name="code" value="<%= coupon.code %>" />
+                </div>
+
+               
+
+
+
+                <div class="mb-4">
+                    <label for="couponDate" class="form-label">Expire Date</label>
+                    <input type="date" class="form-control" id="couponDate" name="couponDate" value="<%= coupon.expireDate %>">
+
+                </div>
+                <div class="mb-4">
+                    <label for="minAmount" class="form-label">Min Amount</label>
+                    <input type="number" placeholder="Enter Min Amount" class="form-control" name="minAmount" value="<%= coupon.minamount %>" />
+                </div>
+                <div class="mb-4">
+                    <label for="offerAmount" class="form-label">Offer Amount</label>
+                    <input type="number" placeholder="Enter Offer Amount" class="form-control" name="offerAmount" value="<%= coupon.offeramount %>" />
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Description</label>
+                    <textarea placeholder="Type here" class="form-control" name="description"><%= coupon.description %></textarea>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary">Create category</button>
+                    <% if (locals.message) { %>
+                        <p id="alert"><%= message %></p>
+                    <% } %>
+                    <a href="/admin/coupon" class="btn btn-secondary text-center" style="width: 200px; height: 40px; margin: 0 auto; margin-top:10px;">Go Back</a>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <script>
+        const date = new Date("<%= coupon.expireDate %>");
+        const formatted = date.toISOString().slice(0, 10);
+        document.getElementById('couponDate').value = formatted;
+    </script>
+
+
+<%- include('../layout2/footer') -%>

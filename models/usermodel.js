@@ -58,6 +58,10 @@ const userschema=new mongoose.Schema({
     wallet:{
         type:Number,
         default:0
+    },
+    date:{
+        type:Date,
+        required:true
     }
 
 })

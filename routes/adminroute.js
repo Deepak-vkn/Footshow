@@ -57,7 +57,7 @@ const upload = multer({ storage: storage });
 
 route.get('/',adminmiddle.islogout,admincontroll.loadlogin)
 route.post('/',admincontroll.loginverify)
-route.get('/dashboard',adminmiddle.islogin,admincontroll.laoddashbaord)
+route.get('/dashboard',admincontroll.laoddashbaord)
 route.get('/users',adminmiddle.islogin,admincontroll.loaduser)
 route.get('/block',adminmiddle.islogin,admincontroll.blockuser)
 route.get('/unblock',adminmiddle.islogin,admincontroll.unblockuser)
@@ -92,5 +92,14 @@ route.get('/orders',adminmiddle.islogin,admincontroll.loadorder)
 route.post('/orderstatus',admincontroll.orderstatus)
 route.post('/returnrequest',admincontroll.returnrequest)
 
+
+// coupon 
+
+route.get('/coupon',admincontroll.couponload)
+route.get('/addcoupon',admincontroll.addcouponlaod)
+route.post('/addcoupon',admincontroll.submitaddcoupon)
+route.get('/editcoupon',admincontroll.loadedit)
+route.post('/editcoupon',admincontroll.editcoupon)
+route.delete('/deletecoupon',admincontroll.deletecoupon)
 
 module.exports=route

@@ -1,0 +1,123 @@
+
+<%- include('../layout2/header') -%>
+
+
+
+    <div class="row justify-content-center " >
+        
+        <div class="col-md-3">
+            <h3 class="text-center">ADD COUPON</h3>
+            <form  id="addcoupon">
+                <div class="mb-4">
+                    <label for="product_name" class="form-label">Name</label>
+                    <input type="text" placeholder="Type here" class="form-control" id="name" />
+                </div>
+                <div class="mb-4">
+                    <label for="product_slug" class="form-label">Code</label>
+                    <input type="text" placeholder="Type here" class="form-control" id="code" />
+                </div>
+                <div class="mb-4">
+                    <label for="couponDate" class="form-label">Expiredate </label>
+                    <input type="date" class="form-control" id="couponDate" name="couponDate">
+                </div>
+                <div class="mb-4">
+                    <label for="minAmount" class="form-label">Min Amount</label>
+                    <input type="number" placeholder="Enter Min Amount" class="form-control" id="minAmount" />
+                </div>
+                <div class="mb-4">
+                    <label for="offerAmount" class="form-label">Offer Amount</label>
+                    <input type="number" placeholder="Enter Offer Amount" class="form-control" id="offerAmount" />
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Description</label>
+                    <textarea placeholder="Type here" class="form-control"  id="description"></textarea>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary">Create category</button>
+                    <p id="alert-containersucess"><%= locals.message %></p>
+                    <p id="alert-containerfail"><%= locals.message %></p>
+                    <a href="/admin/coupon" class="btn btn-secondary text-center" style="width: 200px; height: 40px; margin: 0 auto; margin-top:10px;">Go Back</a>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+
+
+
+
+        document.getElementById('addcoupon').addEventListener('submit', function (event) {
+            event.preventDefault(); 
+            const alertContainer1 = document.getElementById('alert-containersucess');
+            const alertContainer2 = document.getElementById('alert-containerfail');
+            const form = document.getElementById('addcoupon')
+            var formData = {
+                name: document.getElementById('name').value,
+                code: document.getElementById('code').value,
+                couponDate: document.getElementById('couponDate').value,
+                description: document.getElementById('description').value,
+                minAmount: document.getElementById('minAmount').value,
+                offerAmount: document.getElementById('offerAmount').value
+            };
+
+            fetch('/admin/addcoupon',{
+                method:'POST',
+                headers:{
+                    'Content-type':'application/json'
+                },
+                body:JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data=>{
+
+                if(data.success){
+              
+                
+                    alertContainer1.innerHTML=data.message
+                    form.reset();
+                
+                    console.log(data.message)
+                }
+                else{
+                    alertContainer2.innerHTML=data.message
+                    form.reset();
+             
+                    console.log(data.message)
+
+                }
+
+
+            })
+            .catch(error=>{
+                alertContainer2.innerHTML='Internal server error'
+                form.reset();
+                
+                console.log('internal server errror')
+                console.log(error.message)
+            })
+           
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+
+
+
+<%- include('../layout2/footer') -%>

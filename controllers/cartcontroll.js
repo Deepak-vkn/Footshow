@@ -10,7 +10,7 @@ const { checkout, render } = require("../routes/adminroute")
 const fs = require('fs');
 const path = require('path');
 const sharp=require('sharp')
-
+const Coupon=require('../models/coupon')
 
 //add to cart ----------------------------
 

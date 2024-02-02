@@ -10,7 +10,7 @@ const { checkout, render } = require("../routes/adminroute")
 const fs = require('fs');
 const path = require('path');
 const sharp=require('sharp')
-
+const Coupon=require('../models/coupon')
 
 
 
@@ -224,8 +224,6 @@ const loadeditproduct=async(req,res)=>{
             const product = await Product.find({_id:id}).populate('category').lean();
       
             const categories = await Category.find();
-    
-            
     
             res.render('editproduct',{product,categories,message})
     

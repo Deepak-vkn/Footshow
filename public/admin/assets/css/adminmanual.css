@@ -35,3 +35,16 @@
     .my-custom-size {
         width: 00px; /* Adjust the width as per your requirement */
     }
+
+    #alert-containersucess{
+        color:green;
+        text-align:center;
+    }
+
+
+    #alert-containerfail{
+        color:red;
+        text-align:center;
+    }
+
+   

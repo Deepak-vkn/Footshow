@@ -56,6 +56,7 @@ const productschema= new mongoose.Schema({
         type:Date,
         required:true
     }
+    
 })
  
 

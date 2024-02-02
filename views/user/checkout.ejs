@@ -131,13 +131,7 @@
             <div class="page-content">
             	<div class="checkout">
 	                <div class="container">
-            			<div class="checkout-discount">
-            				<!-- <form action="#">
-        						<input type="text" class="form-control" required id="checkout-discount-input">
-            					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
-            				</form> -->
-            		
-                    </div><!-- End .checkout-discount -->
+            			
                     <% if(locals.user && locals.cart) { %>
             			<form action="#" onsubmit="handleFormSubmission(event)">
 		                	<div class="row">
@@ -180,8 +174,16 @@
                                     </div>
                                     <a href="/addaddress" id="addAddressLink">Add Address<i class="icon-edit"></i></a>
                                     
-
-
+                                    <div class="checkout-discount">
+                                        <form action="#">
+                                            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                                <input type="text" class="form-control"  id="checkout-discount-input">
+                                                <label for="checkout-discount-input" class="text-truncate" id="coupon-label">Have a coupon? <span>Click here to enter your code</span></label>
+                                            </div>
+                                            <p id="alert-container3"><%= locals.message %></p>
+                                            <button href="/applycoupon" type="button" class="btn btn-primary btn-round" id="apply-coupon-button" style="display: none; padding: 10px 15px; margin-top: 10px;">Apply Coupon</button>
+                                        </form>
+                                    </div>
 
 
 
@@ -230,8 +232,11 @@
                                                     </tr>
                                                     <tr class="summary-total">
                                                         <td>Total:</td>
-                                                        <td><%= cart.total %></td>
-                                                    </tr><!-- End .summary-total -->
+                                                        <td>
+                                                            <span id="original-total">₹<%= cart.total %></span>
+                                                            <span id="new-total" style="display: none;"></span>
+                                                        </td>
+                                                    </tr>
     
 
                                                 <%} %>
@@ -671,13 +676,14 @@
 
 <script>
 
-
+let code;
 async function handleFormSubmission(event) {
     event.preventDefault(); 
 
 const paymentRadioButtons = document.querySelectorAll('input[name="selectedPayment"]:checked');
 const addressRadioButtons = document.querySelectorAll('input[name="selectedAddress"]:checked');
 const cid = '<%= cart._id %>';
+
 
 if (paymentRadioButtons.length === 0 || addressRadioButtons.length === 0) {
   
@@ -697,19 +703,15 @@ if (paymentRadioButtons.length === 0 || addressRadioButtons.length === 0) {
 
 const selectedPaymentMethod = paymentRadioButtons[0].value;
 const selectedValue = addressRadioButtons[0].value;
-
-console.log(selectedPaymentMethod)
-
-
-
-    
+const newtotal=document.getElementById('new-total').textContent
+ 
     try {
       const response = await fetch(`/checkout?cid=${cid}`, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
         },
-        body: JSON.stringify({ selectedValue, selectedPaymentMethod }),
+        body: JSON.stringify({ selectedValue, selectedPaymentMethod ,newtotal,code}),
       });
 
       if (response.ok) {
@@ -741,10 +743,10 @@ console.log(selectedPaymentMethod)
          const razorder= data.razorder
         
          var options = {
-                            "key": 'rzp_test_h3Pi6e5POBlikj', // Enter the Key ID generated from the Dashboard
-                            "amount": data.razorder.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                            "key": 'rzp_test_h3Pi6e5POBlikj',
+                            "amount": data.razorder.amount, 
                             "currency": "INR",
-                            "name": "Foot Show", //your business name
+                            "name": "Foot Show",
                             "description": "Test Transaction",
                             "image": "https://example.com/your_logo",
                             "order_id": data.razorder.id, //This is a sample Order ID. Pass the id obtained in the response of Step 1
@@ -922,9 +924,64 @@ async function verifyPayment(response,razorder){
 }
 
 
+//coupon management
+
+const couponInput = document.getElementById('checkout-discount-input');
+const applyCouponButton = document.getElementById('apply-coupon-button');
+const couponLabel = document.getElementById('coupon-label');
+couponInput.addEventListener('input', function() {
+    
+    applyCouponButton.style.display = this.value.trim() !== '' ? 'block' : 'none';
+});
+
+couponInput.addEventListener('input', function() {
+        couponLabel.style.display = 'none';
+    });
+
+   
+  
 
 
 
+
+//apply coupon  button
+
+
+document.getElementById('apply-coupon-button').addEventListener('click', function () {
+  
+        const couponCode = document.getElementById('checkout-discount-input').value;
+        const alertContainer = document.getElementById('alert-container3');
+        const originalTotalSpan = document.getElementById('original-total');
+        const newTotalSpan = document.getElementById('new-total');
+        const checkoutDiscountDiv = document.querySelector('.checkout-discount');
+    
+      
+        fetch(`/applycoupon?code=${couponCode}`, {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            
+            if(data.success){
+                originalTotalSpan.style.textDecoration = 'line-through';
+                originalTotalSpan.style.color = 'gray'
+                newTotalSpan.style.display = 'inline';
+                newTotalSpan.textContent = data.newtotal;
+                alertContainer.innerHTML='coupon applied'
+                code=data.code
+                checkoutDiscountDiv.style.display = 'none';
+              
+
+
+            }
+            else{
+                alertContainer.innerHTML=data.message
+            }
+        })
+        .catch(error => {
+            console.error('Error applying coupon:', error);
+        });
+    });
 
 
 

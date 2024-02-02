@@ -117,7 +117,8 @@ const register = async (req, res) => {
                     const user = new User({
                         name: req.body.name,
                         email: req.body.email,
-                        password: hashed
+                        password: hashed,
+                        date:Date.now()
                     });
     
                     const userData = await user.save();
@@ -508,6 +509,7 @@ const loadshop = async (req, res) => {
             if (searchTerm) {
                 products = await Product.find({
                     $and: [
+                        filterquery,
                         { status: 'Active' },
                         {
                             $or: [
@@ -547,6 +549,7 @@ const loadshop = async (req, res) => {
                 // If there's a search term, perform a search query
                 products = await Product.find({
                     $and: [
+                        filterquery,
                         { status: 'Active' },
                         {
                             $or: [
@@ -1413,7 +1416,7 @@ const addaddresspost=async(req,res)=>{
         console.log(error.message)
     }
 }
-//cancel order-----------------------
+//cancel order------------------------------------------------------
 
 
 
@@ -1432,6 +1435,21 @@ const cancelorder = async (req, res) => {
             let pquantity = prod.quantity;
 
             const ordertotal = order.total;
+
+            
+            //refund
+            if (order.payment !== 'Cash on Delivery') {
+                const user = await User.findOne({ _id: order.userid });
+
+                if (user) {
+                    const refundAmount = producttotal
+                    user.wallet += refundAmount;
+                    await user.save();
+                }
+            }
+
+
+
             const result = await Order.updateOne(
                 { _id: oid },
                 {
