@@ -24,18 +24,16 @@ const loadproduct= async(req,res)=>{
         let totalpage
        let currentPage = parseInt(req.query.page, 10) || 1
        let skip = (currentPage - 1) * limit
-
-
-
-
+       const product = await Product.find({is_delete:false})
+       totalpage = Math.ceil(product.length / limit);
+       console.log(totalpage)
     
         // const prod= await Product.find({})
         const prod = await Product.find({is_delete:false}).populate('category')
         .skip(skip)
         .limit(limit)
         .lean();
-        totalpage = Math.ceil(prod.length / limit);
-
+     
         const cata = await Category.find({Status:'Active'})        
         res.render('productlist',{prod,cata,currentPage,skip,totalpage})
     } catch (error) {
@@ -280,11 +278,31 @@ const editproduct = async (req, res) => {
 
         // Handle replacement images
         if (replaceImages && replaceImages.length > 0) {
-            updatedProduct.image = replaceImages.map(file => file.filename);
+            for (const file of replaceImages) {
+                const originalImagePath = path.join(__dirname, '../public/images', file.filename);
+                const resizedPath = path.join(__dirname, '../public/images', `resized_${file.filename}`);
+
+             
+                await sharp(originalImagePath)
+                    .resize(800, 1070, { fit: 'fill' })
+                    .toFile(resizedPath);
+                updatedProduct.image = [`resized_${file.filename}`];
+            }
+
+            //updatedProduct.image = replaceImages.map(file => file.filename);
         } else {
-            // No replacement images, append new images to the existing ones
-            // updatedProduct.image = prod.image.concat(newImages.map(file => file.filename));
-            updatedProduct.image = newImages ? prod.image.concat(newImages.map(file => file.filename)) : prod.image;
+            updatedProduct.image = newImages ? await Promise.all(newImages.map(async (file) => {
+                const originalImagePath = path.join(__dirname, '../public/images', file.filename);
+                const resizedPath = path.join(__dirname, '../public/images', `resized_${file.filename}`);
+
+                // Resize image using sharp
+                await sharp(originalImagePath)
+                    .resize(800, 1070, { fit: 'fill' })
+                    .toFile(resizedPath);
+
+                // Return the resized filename
+                return `resized_${file.filename}`;
+            })) : prod.image;
         }
 
         // Update the product

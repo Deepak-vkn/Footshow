@@ -193,7 +193,7 @@
                                 </tr>
                             </thead>
         <% if(locals.order){ %>
-
+            <% let i=skip+1 %>
 
                         
                             <% if (locals.order && locals.order.length > 0) { %>
@@ -205,7 +205,7 @@
                                             <tr>
                                                 
                                                     <!-- Empty cells for subsequent product rows -->
-                                                    <td><%= index + 1 %></td>
+                                                    <td><%= i++ %></td>
                                                     <td><b><%= order.userid %></b></td>
                                                     <td><%= product.name %>  <%= product.quantity %> x <%= product.price %></td>
                                                     <td>₹<%= product.totalprice %></td>
@@ -255,9 +255,46 @@
                         </table>
                     </div> <!-- table-responsive //end -->
                 </div> <!-- card-body end// -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <% if (currentPage > 1) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/admin/orders?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                        <% } else { %>
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&laquo;</span>
+                            </li>
+                        <% } %>
+                
+                        <% for (let page = 1; page <= totalpage; page++) { %>
+                            <li class="page-item <%= currentPage === page ? 'active' : '' %>">
+                                <a class="page-link" href="/admin/orders?page=<%= page %>"><%= page %></a>
+                            </li>
+                        <% } %>
+                
+                        <% if (currentPage < totalpage) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/admin/orders?page=<%= currentPage + 1 %>" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                        <% } else { %>
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&raquo;</span>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
             </div> <!-- card end// -->
             
+            
         </section> <!-- content-main end// -->
+        
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">
                 <div class="col-sm-6">

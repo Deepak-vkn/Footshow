@@ -983,7 +983,7 @@ document.getElementById('addToCartBtn').addEventListener('click',function(event)
     event.preventDefault()
     const pid= '<%= product._id %>'
     const qty=document.getElementById('qty').value
-    console.log(qty)
+    
     fetch(`/addtocart?id=${pid}`, {
         method: 'POST',
         headers: {

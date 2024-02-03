@@ -213,7 +213,11 @@
                                                         </div><!-- End .product-action-vertical -->
                                 
                                                         <div class="product-action">
-                                                            <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                                            <% if(product.quantity>0) { %>
+                                                                <a href="#" class="btn-product btn-cart" pid="<%= product._id %>"><span>Add to Cart</span></a>
+                                                           <% } else { %>
+                                                               <a href="#" class="btn-product btn-cart"><span>out of stock</span></a>
+                                                          <% } %>
                                                         </div><!-- End .product-action -->
                                                     </figure><!-- End .product-media -->
                                 
@@ -704,6 +708,7 @@
 <script src="assets/js/bootstrap-input-spinner.js"></script>
 <script src="assets/js/jquery.magnific-popup.min.js"></script>
 <script src="assets/js/nouislider.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <!-- Main JS File -->
 <script src="assets/js/main.js"></script>
 
@@ -763,6 +768,95 @@
 
 
         })
+
+
+
+//add to cart
+
+document.addEventListener('DOMContentLoaded', function () {
+   
+   document.querySelectorAll('.btn-cart').forEach(function (btn) {
+       btn.addEventListener('click', function (event) {
+           event.preventDefault();
+         
+           const pid = btn.getAttribute('pid');
+
+           const qty=1
+       
+           fetch(`/addtocart?id=${pid}`, {
+       method: 'POST',
+       headers: {
+           'Content-Type': 'application/json'
+       },
+       body:JSON.stringify({qty})
+       
+   })
+
+   .then(response => {
+           
+           if (response.ok) {
+               return response.json();
+           } else {
+               throw new Error('Failed to add to cart');
+           }
+       })
+       .then(data => {
+           btn.querySelector('span').textContent = 'Added to Cart';
+
+
+setTimeout(() => {
+   btn.querySelector('span').textContent = 'Add to Cart';
+}, 10000);
+           handleCartResponse(data);
+       })
+   .catch(error => {
+           console.error('Error adding to cart:', error);
+           showAlert('Error', 'Failed to add to cart', 'error');
+       });
+           
+       
+
+
+
+         
+       });
+   });
+});
+
+
+
+function handleCartResponse(data) {
+   if (data.success) {
+       showAlert('Success', data.message, 'success');
+   } else {
+
+       showAlert('Failed', data.message, 'error');
+
+       
+
+   }
+}
+function showAlert(title, message, icon) {
+   Swal.fire({
+       title: title,
+       text: message,
+       icon: icon,
+       showConfirmButton: false,
+       timer: 1000,customClass: {
+           popup: 'animate__animated animate__fadeOut',
+       },
+   }).then((result) => {
+           if (message.includes('User not login')) {
+   window.location.href = '/login';
+}
+       
+   });
+}
+
+
+
+
+
 
 </script>
 <%- include('../layout/footer') -%>

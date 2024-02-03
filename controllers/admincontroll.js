@@ -229,9 +229,18 @@ const laoddashbaord=async(re,res)=>{
 const loaduser=async(req,res)=>{
     try {
 
-        const data=await User.find({verified:true})
+        let limit =8
+       let totalpage
+       let currentPage = parseInt(req.query.page, 10) || 1
+       let skip = (currentPage - 1) * limit
+       const od = await User.find({verified:true})
+       totalpage = Math.ceil(od.length / limit);
+
+
+
+        const data=await User.find({verified:true}).limit(limit).skip(skip)
        
-        res.render('users',{user:data})
+        res.render('users',{user:data,currentPage,skip,totalpage})
     } catch (error) {
         console.log(error.message);
     }
@@ -307,8 +316,19 @@ const unblockuser=async(req,res)=>{
 
 const loadcategory=async(req,res)=>{
     try {
-        const category= await Category.find({is_delete:false})
-        res.render('category',{category})
+
+
+       let limit =6
+       let totalpage
+       let currentPage = parseInt(req.query.page, 10) || 1
+       let skip = (currentPage - 1) * limit
+       const ca = await Category.find({ is_delete:false})
+       totalpage = Math.ceil(ca.length / limit);
+       
+    
+
+        const category= await Category.find({is_delete:false}).limit(limit).skip(skip)
+        res.render('category',{category,currentPage,skip,totalpage})
     } catch (error) {
         console.log(error.message);
     }
@@ -577,12 +597,23 @@ const logout =async(req,res)=>{
 const loadorder=async(req,res)=>{
 
     try {
-        const order= await Order.find().sort({date:-1})
+
+       let limit =8
+       let totalpage
+       let currentPage = parseInt(req.query.page, 10) || 1
+       let skip = (currentPage - 1) * limit
+       const od = await Order.find()
+       totalpage = Math.ceil(od.length / limit);
+
+
+
+
+
+
+
+        const order= await Order.find().sort({date:-1}).skip(skip).limit(limit)
       
-
-
-        
-        res.render('orders',{order})
+        res.render('orders',{order,totalpage,skip,currentPage})
     } catch (error) {
         console.log(error.message)
         

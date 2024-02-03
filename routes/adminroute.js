@@ -54,7 +54,6 @@ const upload = multer({ storage: storage });
 
 
 
-
 route.get('/',adminmiddle.islogout,admincontroll.loadlogin)
 route.post('/',admincontroll.loginverify)
 route.get('/dashboard',admincontroll.laoddashbaord)
