@@ -36,6 +36,7 @@ const loadcheckout=async(req,res)=>{
 
                 const wallet= user.wallet
                 const total= cart.total
+        
 
 
                 // quantity check -------
@@ -101,7 +102,6 @@ const payment=async(req,res)=>{
             const user=await User.findOne({email:mail})
             const cart = await Cart.findById({_id:cid}).populate('products.productid');
             const code=req.body.code
-            console.log('code is',code)
             
             if(user){
                 //user exist
@@ -111,7 +111,7 @@ const payment=async(req,res)=>{
                 const total= req.body.newtotal || cart.total
                 const ordercheck= await Order.findOne({userid:uid})
     
-                
+                console.log(total)
                 
                     //NewORDER
                     const productlist=  cart.products.map((product)=>({
@@ -152,6 +152,7 @@ const payment=async(req,res)=>{
                         total:total,
                         payment:payment,
                         date:Date.now()
+                        
                     })
 
                     if(payment==='Cash on Delivery')
@@ -337,9 +338,9 @@ async function createRazorpayOrder(orderid,total){
     try {
       
         const order = await instance.orders.create({
-            amount: total*100, // Amount in paise (multiply by 100)
+            amount: total*100, 
             currency: "INR",
-            receipt: orderid, // Unique identifier for the order
+            receipt: orderid, 
         });
 if(order){
     console.log('craeted order')

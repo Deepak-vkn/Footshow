@@ -208,6 +208,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th>Index</th>
                                     <th>Name</th>
                                     <th>Name</th>
                                     <th>Price</th>
@@ -221,10 +222,12 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <% let i=skip+1 %>
                                 
                                 <% if (prod.length > 0) { %>
                                     <% prod.forEach((product) => { %>
                                         <tr>
+                                            <td><%= i++ %></td>
                                             <td><%= product.name %></td>
                                             <td><%= product.category ? product.category.Category : 'N/A' %></td>
                                             <td><%= product.price  %></td>
@@ -266,6 +269,33 @@
                             </tbody> 
                         </table>
                     </div>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-start">
+                            <% if (currentPage > 1) { %>
+                                <!-- Previous page link -->
+                                <li class="page-item">
+                                    <a class="page-link" href="/admin/productlist?page=<%= currentPage - 1 %>">
+                                        <i class="material-icons md-chevron_left"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                    
+                            <!-- Example: Display pages 1 to 16 -->
+                            <% for (let i = 1; i <= totalpage; i++) { %>
+                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                    <a class="page-link" href="/admin/productlist?page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                    
+                            <!-- Next page link -->
+                            <li class="page-item">
+                                <a class="page-link" href="/admin/productlist?page=<%= currentPage + 1 %>">
+                                    <i class="material-icons md-chevron_right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    
                 </div>
                 
             

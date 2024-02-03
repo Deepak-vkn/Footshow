@@ -10,27 +10,27 @@
             <form  id="addcoupon">
                 <div class="mb-4">
                     <label for="product_name" class="form-label">Name</label>
-                    <input type="text" placeholder="Type here" class="form-control" id="name" />
+                    <input type="text" placeholder="Type here" class="form-control" id="name"  pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" required/>
                 </div>
                 <div class="mb-4">
                     <label for="product_slug" class="form-label">Code</label>
-                    <input type="text" placeholder="Type here" class="form-control" id="code" />
+                    <input type="text" placeholder="Type here" class="form-control" id="code"  pattern="[A-Za-z0-9]+" required/>
                 </div>
                 <div class="mb-4">
                     <label for="couponDate" class="form-label">Expiredate </label>
-                    <input type="date" class="form-control" id="couponDate" name="couponDate">
+                    <input type="date" class="form-control" id="couponDate" name="couponDate" min="<%= new Date().toISOString().split('T')[0] %>" required>
                 </div>
                 <div class="mb-4">
                     <label for="minAmount" class="form-label">Min Amount</label>
-                    <input type="number" placeholder="Enter Min Amount" class="form-control" id="minAmount" />
+                    <input type="text" placeholder="Enter Min Amount" class="form-control" id="minAmount"pattern="[0-9]+(\.[0-9]+)?" title="Only numbers and decimals are allowed" required />
                 </div>
                 <div class="mb-4">
                     <label for="offerAmount" class="form-label">Offer Amount</label>
-                    <input type="number" placeholder="Enter Offer Amount" class="form-control" id="offerAmount" />
+                    <input type="text" placeholder="Enter Offer Amount" class="form-control" id="offerAmount" pattern="[0-9]+(\.[0-9]+)?" title="Only numbers and decimals are allowed" required />
                 </div>
                 <div class="mb-4">
                     <label class="form-label">Description</label>
-                    <textarea placeholder="Type here" class="form-control"  id="description"></textarea>
+                    <textarea placeholder="Type here" class="form-control"  id="description" required></textarea>
                 </div>
                 <div class="d-grid">
                     <button class="btn btn-primary">Create category</button>

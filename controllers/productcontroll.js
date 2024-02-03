@@ -19,11 +19,25 @@ const Coupon=require('../models/coupon')
 
 const loadproduct= async(req,res)=>{
     try {
+
+        let limit =6
+        let totalpage
+       let currentPage = parseInt(req.query.page, 10) || 1
+       let skip = (currentPage - 1) * limit
+
+
+
+
     
         // const prod= await Product.find({})
-        const prod = await Product.find({is_delete:false}).populate('category').lean();
+        const prod = await Product.find({is_delete:false}).populate('category')
+        .skip(skip)
+        .limit(limit)
+        .lean();
+        totalpage = Math.ceil(prod.length / limit);
+
         const cata = await Category.find({Status:'Active'})        
-        res.render('productlist',{prod,cata})
+        res.render('productlist',{prod,cata,currentPage,skip,totalpage})
     } catch (error) {
         res.status(400).send('load product falied');
         console.log(error.message);

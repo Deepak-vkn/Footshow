@@ -1,10 +1,16 @@
-
 <%- include('../layout2/header') -%>
+
+
+
+
+
+
+
     <div class="screen-overlay"></div>
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
             <a href="index.html" class="brand-wrap">
-                <img src="/admin/assets/imgs/card-brands/croped.png" alt="Evara Dashboard" style="width: 180px; padding-left: 40px;padding-top: 10px;">
+                <img src="assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
             </a>
             <div>
                 <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
@@ -21,7 +27,7 @@
                     <a class="menu-link" href="/admin/users"> <i class="icon material-icons md-stars"></i>
                         <span class="text">Users</span> </a>
                 </li>
-                <li class="menu-item ">
+                <li class="menu-item">
                     <a class="menu-link" href="/admin/category"> <i class="icon material-icons md-stars"></i>
                         <span class="text">Categories</span> </a>
                 </li>
@@ -37,17 +43,28 @@
                     </a>
                     
                 </li>
-                <li class="menu-item active">
+                <li class="menu-item ">
                     <a class="menu-link" href="/admin/coupon"> <i class="icon material-icons md-shopping_cart"></i>
                         <span class="text">Coupon</span>
                     </a>
                     
                 </li>
-                <li class="menu-item ">
+                <li class="menu-item active">
                     <a class="menu-link" href="/admin/sales"> <i class="icon material-icons md-shopping_cart"></i>
                         <span class="text">Sales Report</span>
                     </a>
                     
+                </li>
+                <li class="menu-item has-submenu">
+                    <a class="menu-link" href="page-form-product-1.html"> <i class="icon material-icons md-add_box"></i>
+                        <span class="text">Add product</span>
+                    </a>
+                    <div class="submenu">
+                        <a href="page-form-product-1.html">Add product 1</a>
+                        <a href="page-form-product-2.html">Add product 2</a>
+                        <a href="page-form-product-3.html">Add product 3</a>
+                        <a href="page-form-product-4.html">Add product 4</a>
+                    </div>
                 </li>
                 <li class="menu-item has-submenu">
                     <a class="menu-link" href="page-transactions-1.html"> <i class="icon material-icons md-monetization_on"></i>
@@ -105,7 +122,6 @@
             <br>
         </nav>
     </aside>
-
     <main class="main-wrap">
         <header class="main-header navbar">
             <div class="col-search">
@@ -161,174 +177,134 @@
                 </ul>
             </div>
         </header>
-        <section class="content-main">
-            <div class="content-header">
-                <div>
-                    <h2 class="content-title card-title">Coupons </h2>
-                    <p>Add, edit or delete a coupon</p>
-                </div>
-                <div>
+
+
+
+        <div class="card mb-4" >
+            <header class="card-header">
+                <h4 class="card-title"></h4>
+                <div class="row align-items-center">
+                    <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+                       
+                    </div>
                     
-                    <a href="/admin/addcoupon" class="btn btn-primary btn-sm rounded">Create new</a>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>No.</th>
-                                            <th>Name</th>
-                                            <th>Code</th>
-                                            <th>Description</th>
-                                            <th>Expiredate</th>
-                                            <th>Min amount</th>
-                                            <th>Offer price</th>
-                                            <th class="text-end">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="coupontable">
-                                        <% if(locals.coupon) { %>
-                                            <% coupon.forEach((coupon,i)=>{ %>
 
-                                                <tr>
-                                                    <td><%= i + 1 %></td>
-                                                    <td><b><%= coupon.name %></b></td>
-                                                    <td><%= coupon.code %></td>
-                                                    <td><%= coupon.description %></td>
-                                                    <td><%= coupon.expireDate.toLocaleDateString() %></td>
-                                                    <td><%= coupon.minamount %></td>
-                                                    <td><%= coupon.offeramount %></td>
-                                                   
-                                                    <td class="col text-end">
-                                                        <a href="/admin/editcoupon?id=<%= coupon._id %>" class="btn btn-sm font-sm btn-warning rounded">
-                                                            <i class="material-icons"  ></i> Edit
-                                                        </a>
-                                                        <!-- <% if (coupon.status==='Active'){ %>
-                                                            <a href='' class="btn btn-sm font-sm btn-danger rounded actionButton">
-                                                                <i class="material-icons"></i> Block
-            
-                                                            </a>
-                                                            <% } else{ %>
-            
-                                                                <a href="" class="btn btn-sm font-sm btn-success rounded actionButton">
-                                                                    <i class="material-icons"></i> Unblock
-                                                                </a>
-            
-                                                                <% } %> -->
-                                                                <a href="#" class="btn btn-sm font-sm btn-dark rounded deleteButton" onclick="confirmDelete('<%= coupon._id %>')">
-                                                                    <i class="material-icons"  ></i> Delete
-                                                                </a>
-                                                    </td>
-                                                </tr>
-    
+                    <div class="col-md-2 col-6">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" value="02.05.2022" class="form-control">
+                    </div>
+                    
+                    <div class="col-md-2 col-6">
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" value="02.05.2022" class="form-control">
+                    </div>
+                    
+                    <div class="col-md-1 col-6">
+                        <button id="applyBtn" class="btn btn-primary" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;">Apply</button>
+                    </div>
+        
+        
 
-                                            <%})%>
-                                           
 
-                                        <%}   else{ %>
-                                            <h3>no coupon exist</h3>
-                                            <%}%>
-                                       
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div> <!-- .col// -->
-                    </div> <!-- .row // -->
-                </div> <!-- card body .// -->
-            </div> <!-- card .// -->
-        </section> <!-- content-main end// -->
-        <footer class="main-footer font-xs">
-            <div class="row pb-30 pt-15">
-                <div class="col-sm-6">
-                    <script>
-                    document.write(new Date().getFullYear())
-                    </script> ©, Evara - HTML Ecommerce Template .
-                </div>
-                <div class="col-sm-6">
-                    <div class="text-sm-end">
-                        All rights reserved
+                    <div class="col-md-2 col-6">
+                        <div class="custom_select">
+                            <select class="form-select select-nice" id="sortSelect">
+                                <option value="All" selected>All</option>
+                                <option value="today">Today</option>
+                                <option value="thisWeek">This Week</option>
+                                <option value="thisMonth">This Month</option>
+                                <option value="thisYear">This Year</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+            </header>
+            <div class="card-body" id="salesreload">
+                <div class="table-responsive">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                  
+                                    <th class="align-middle" scope="col">Order ID</th>
+                                    <th class="align-middle" scope="col">Billing Name</th>
+                                    <th class="align-middle" scope="col">Product Name</th>
+                                    <th class="align-middle" scope="col">Date</th>
+                                    <th class="align-middle" scope="col">Total</th>
+                                    <th class="align-middle" scope="col">Payment Status</th>
+                                    <th class="align-middle" scope="col">Payment Method</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody >
+                                <% if (locals.sales){ %>
+                                    <% sales.forEach((sales)=>{ %>
+
+                                        <tr>
+                                    
+                                            <td><a href="#" class="fw-bold">#<%= sales.orderid.toString() %></a> </td>
+                                            <td><%= sales.username %></td>
+                                            <td><%= sales.productname %></td>
+                                            <td>
+                                                <%= sales.date.toDateString() %>
+                                            </td>
+                                            <td>
+                                                ₹ <%= sales.price %>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-pill badge-soft-success">✓<%= sales.status %></span>
+                                            </td>
+                                            <td>
+                                                <i class="material-icons md-payment font-xxl text-muted mr-5"></i> <%= sales.paymentmethod %>
+                                            </td>
+                                          
+                                        </tr>
+
+                                   <% }) %>
+
+
+                                <%} %>
+                               
+                            </tbody>
+                        </table>
+                    </div>
+                </div> <!-- table-responsive end// -->
             </div>
-        </footer>
-    </main>
-    <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/vendors/select2.min.js"></script>
-    <script src="assets/js/vendors/perfect-scrollbar.js"></script>
-    <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
-    <!-- Main Script -->
-    <script src="assets/js/main.js" type="text/javascript"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 
-    <script>
-        function confirmDelete(couponId) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'You won\'t be able to revert this!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
- 
-                    deleteCoupon(couponId);
-                }
-            });
-        }
+
+
+        <script>
+
+document.getElementById('sortSelect').addEventListener('change', function() {
+    const selectedValue = this.value;
+    console.log(selectedValue)
+
+
+   
+    $('#salesreload').load(`/admin/sales?selected=${selectedValue} #salesreload`)
     
-        function deleteCoupon(couponId) {
- 
-            fetch(`/admin/deletecoupon?id=${couponId}`, {
-                method: 'DELETE'
-           
-            })
-            .then(response => response.json())
-            .then(data => {
-               
-                if (data.success) {
-                    Swal.fire({
-                title: 'Deleted!',
-                text: data.message,
-                icon: 'success',
-                allowOutsideClick: false,  
-                showConfirmButton: false  
-            });
-                    setTimeout(() => {
-                window.location.href = '/admin/coupon';
-            }, 1000);
+});
 
-    
-                } else {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: data.message,
-                        icon: 'error'
-                    });
-                    window.location.href = '/admin/coupon';
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting coupon:', error);
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Something went wrong. Please try again later.',
-                    icon: 'error'
-                });
-                window.location.href = '/admin/coupon';
-            });
-        }
-    </script>
+
+//sort using date
+
+
+document.getElementById('applyBtn').addEventListener('click', function () {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        console.log('Selected Start Date:', startDate);
+        console.log('Selected End Date:', endDate);
+
+        $('#salesreload').load(`/admin/sales?startDate=${startDate}&endDate=${endDate} #salesreload`)
+
+    });
+
+        </script>
+
 
     <%- include('../layout2/footer') -%>
-
-
-
-    coupontable

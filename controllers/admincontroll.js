@@ -71,7 +71,7 @@ const loginverify=async(req,res)=>{
         console.log(error.message);
     }
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////
 const laoddashbaord=async(re,res)=>{
     try {
 
@@ -83,6 +83,7 @@ const laoddashbaord=async(re,res)=>{
             }
 
         }])
+        console.log(revenue)
         
 
        
@@ -97,17 +98,126 @@ const laoddashbaord=async(re,res)=>{
         const availableproducts=await Product.find({ is_delete:false}).count()
         const totalproducts = revenue.length > 0 ? products[0].total : 0;
         const totalRevenue = revenue.length > 0 ? revenue[0].total : 0;
+        const currentDate = new Date();
        
-        // console.log('Total products:', totalproducts);
-        // console.log('Total Revenue:', totalRevenue);
-        // console.log('Total order:', totalorder);
-        // console.log('Availble produts:', availableproducts);
+        const monthlySales = await Order.aggregate([
+            {
+                $match: {
+                    date: {
+                        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+                        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: '$date' }, // Group by month instead of day
+                    total: { $sum: '$total' },
+                    totalOrders: { $sum: 1 } // Count the number of orders
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: '$_id',
+                    total: 1,
+                    totalOrders: 1
+                }
+            },
+            {
+                $sort: {
+                    month: 1 // Sort the result by month if needed
+                }
+            }
+        ]);
 
+     
+        const monthlyUserRegistrations = await User.aggregate([
+            {
+                $match: {
+                    date: {
+                        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+                        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dayOfMonth: '$date' },
+                    total: { $sum: 1 },
+                    users: { $push: { name: '$name', email: '$email', date: '$date' } }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    day: '$_id',
+                    total: 1,
+                    users: 1
+                }
+            }
+        ]);
+
+        const monthlyProductDetails = await Product.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: new Date(new Date().getFullYear(), 0, 1), 
+                        $lt: new Date(new Date().getFullYear() + 1, 0, 1)  
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: '$createdAt' },
+                    total: { $sum: 1 },
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: '$_id',
+                    total: 1,
+                }
+            },
+            {
+                $sort: {
+                    month: 1
+                }
+            }
+        ]);
         
+        const currentMonthSales = await Order.aggregate([
+            {
+                $match: {
+                    date: {
+                        $gte: new Date(new Date().getFullYear(), currentDate.getMonth(), 1),
+                        $lt: new Date(new Date().getFullYear(), currentDate.getMonth() + 1, 1)
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: '$total' }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    totalRevenue: 1
+                }
+            }
+        ]);
 
+
+        const newusers=await User.find({verified:true}).limit(3).sort({date:-1})
+        const newprod=await Product.find({status:'Active',is_delete:false}).limit(3).sort({date:-1})
+      
 
       
-        res.render('dashboard',{availableproducts,totalproducts,totalRevenue,totalorder,catagery})
+
+        res.render('dashboard',{availableproducts,totalproducts,totalRevenue,totalorder,catagery,monthlySales,monthlyUserRegistrations,monthlyProductDetails,currentMonthSales,newusers,newprod})
 
     } catch (error) {
         console.log(error.message);
@@ -774,6 +884,147 @@ const deletecoupon = async (req, res) => {
 
 
 
+// sales report----------------------------------------------------------------------
+
+const loadsales=async(req,res)=>{
+
+    try {
+        const matchcond={}
+        const selected=req.query.selected|| 'All'
+        const startDate=req.query.startDate
+        const endDate=req.query.endDate
+        const today = new Date();
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59);
+        const startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+        const endOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (6 - today.getDay()), 23, 59, 59);
+        const startOfYear = new Date(today.getFullYear(), 0, 1);
+        const endOfYear = new Date(today.getFullYear(), 11, 31, 23, 59, 59);
+        let  date=null
+
+        if(selected!=='All'){
+           
+            
+
+            switch (selected) {
+                case 'today':
+                    case 'today':
+                        date = {
+                            'date': {
+                                $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+                                $lt: new Date(new Date().setHours(23, 59, 59, 999))
+                            }
+                        };
+                    
+                    break
+                case 'thisWeek':
+                    date = {
+                        'date': {
+                            $gte: startOfWeek,
+                            $lte: endOfWeek
+                        }
+                    };
+                   
+                    break;
+                case 'thisMonth':
+                    date = {
+                        'date': {
+                            $gte: startOfMonth,
+                            $lte: endOfMonth
+                        }
+                    };
+                    
+                    break;
+                case 'thisYear':
+                    date = {
+                        'date': {
+                            $gte: startOfYear,
+                            $lte: endOfYear
+                        }
+                    };
+                   
+                    break;
+                default:
+                    date = {
+                        'date': null
+                    };
+                    console.log('Default case');
+            }
+            
+
+        }
+  
+
+        if (startDate && endDate) {
+            date = {
+                'date': {
+                    $gte: new Date(startDate),
+                    $lte: new Date(endDate)
+                }
+            };
+        
+            console.log('Selected date range:', startDate, 'to', endDate);
+        }
+    
+        const sales = await Order.aggregate([
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'userid',
+                foreignField: '_id',
+                as: 'user'
+              }
+            },
+            {
+              $unwind: '$products'
+            },
+            {
+              $lookup: {
+                from: 'Product',
+                localField: 'products.productid',
+                foreignField: '_id',
+                as: 'product'
+              }
+            },
+            {
+              $match: {
+                'products.status': 'Delivered',
+                ...date
+              }
+            },
+            {
+              $project: {
+                _id: 1,
+                orderid: '$_id',
+                username: { $arrayElemAt: ['$user.name', 0] },
+                productname: '$products.name',
+                price: '$products.price',
+                paymentmethod: '$payment',
+                status: '$products.status',
+                date: '$date'
+                
+              }
+            }
+          ]);
+          
+       
+          
+console.log(date)
+          
+
+        res.render('salesreport',{sales,selected})
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+
+
+
+
+
 module.exports={
     loadlogin,
     loginverify,
@@ -798,6 +1049,7 @@ module.exports={
     submitaddcoupon,
     loadedit,
     editcoupon,
-    deletecoupon
+    deletecoupon,
+    loadsales
 
 }

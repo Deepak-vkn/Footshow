@@ -61,7 +61,7 @@ route.get('/dashboard',admincontroll.laoddashbaord)
 route.get('/users',adminmiddle.islogin,admincontroll.loaduser)
 route.get('/block',adminmiddle.islogin,admincontroll.blockuser)
 route.get('/unblock',adminmiddle.islogin,admincontroll.unblockuser)
-
+route.get('/sales',admincontroll.loadsales)
 //catagory
 route.get('/category',adminmiddle.islogin,admincontroll.loadcategory)
 route.post('/category',admincontroll.addcategory)
@@ -95,10 +95,10 @@ route.post('/returnrequest',admincontroll.returnrequest)
 
 // coupon 
 
-route.get('/coupon',admincontroll.couponload)
-route.get('/addcoupon',admincontroll.addcouponlaod)
+route.get('/coupon',adminmiddle.islogin,admincontroll.couponload)
+route.get('/addcoupon',adminmiddle.islogin,admincontroll.addcouponlaod)
 route.post('/addcoupon',admincontroll.submitaddcoupon)
-route.get('/editcoupon',admincontroll.loadedit)
+route.get('/editcoupon',adminmiddle.islogin,admincontroll.loadedit)
 route.post('/editcoupon',admincontroll.editcoupon)
 route.delete('/deletecoupon',admincontroll.deletecoupon)
 

@@ -28,5 +28,5 @@ app.use('/admin',adminroute)
 
 
 app.listen(port,()=>{
-    console.log("http://localhost:12/admin");
+    console.log("http://localhost:12/admin/sales");
 })
