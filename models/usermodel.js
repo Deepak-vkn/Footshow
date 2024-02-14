@@ -59,6 +59,16 @@ const userschema=new mongoose.Schema({
         type:Number,
         default:0
     },
+    walletHistory:[{
+    amount:{
+        type:Number,
+        default:0
+    },
+    direction:{
+        type:String
+    }
+    }
+    ],
     date:{
         type:Date,
         default:Date.now()

@@ -58,13 +58,17 @@
                         
                         <a href="/wishlist" class="wishlist-link">
                             <i class="icon-heart-o"></i>
-                            <!-- <span class="wishlist-count">3</span> -->
+                            <% if (locals.wishcount){ %>
+                                <span class="wishlist-count"><%= locals.wishcount %></span>
+                                <%}%>
                         </a>
     
                         <div class="dropdown cart-dropdown ">
                             <a href="/cart" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <i class="icon-shopping-cart"></i>
-                                <!-- <span class="cart-count">2</span> -->
+                                <% if (locals.cartcount){ %>
+                                    <span class="cart-count"><%= locals.cartcount %></span>
+                                <%}%>
                             </a>
                         </div><!-- End .cart-dropdown -->
     
@@ -158,7 +162,42 @@
                                                 </h3><!-- End .product-title -->
                                             </div><!-- End .product -->
                                         </td>
-                                        <td class="price-col">₹<%= product.productid.price %></td>
+
+
+                                        <!-- <td class="price-col">₹<%= product.productid.price %></td> -->
+
+                                        <% if(product.productid.offer) {%>
+
+                                            <%
+                                                
+                                                const originalPrice = product.productid.price;
+                                                const discountPercentage = product.productid.offer.percentage;
+                                                const discountAmount = (originalPrice * discountPercentage) / 100;
+                                                const discountedPrice = originalPrice - discountAmount;
+                                                %>
+                                                <td class="price-col">₹<%= discountedPrice %></td>
+                                               
+                                               
+                                          
+                                       <% } else if(product.productid.category.offer) {%>
+    
+                                        <%
+                                                
+                                                const originalPrice = product.productid.price;
+                                                const discountPercentage = product.productid.category.offer.percentage;
+                                                const discountAmount = (originalPrice * discountPercentage) / 100;
+                                                const discountedPrice = originalPrice - discountAmount;
+                                                %>
+                                               
+                                                <td class="price-col">₹<%= discountedPrice %></td>
+                                        <% } else{  %> 
+                                            <td class="price-col">₹<%= product.productid.price %></td>
+    
+                                      <% }%>
+                                        
+
+
+
                                         <% if (product.available===true) { %>
                                             <td class="stock-col"><span class="in-stock">In stock</span></td>
                                             <%} else{ %>

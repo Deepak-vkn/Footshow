@@ -58,13 +58,17 @@
                         
                         <a href="/wishlist" class="wishlist-link">
                             <i class="icon-heart-o"></i>
-                            <!-- <span class="wishlist-count">3</span> -->
+                            <% if (locals.wishcount){ %>
+                                <span class="wishlist-count"><%= locals.wishcount %></span>
+                                <%}%>
                         </a>
     
                         <div class="dropdown cart-dropdown ">
                             <a href="/cart" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <i class="icon-shopping-cart"></i>
-                                <!-- <span class="cart-count">2</span> -->
+                                <% if (locals.cartcount){ %>
+                                    <span class="cart-count"><%= locals.cartcount %></span>
+                                <%}%>
                             </a>
                         </div><!-- End .cart-dropdown -->
     

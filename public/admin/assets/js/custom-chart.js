@@ -20,7 +20,7 @@
         var monthlyUserRegistrations = JSON.parse(document.getElementById('monthlyusers').value);
         var totalUsersMap = Object.fromEntries(allMonths.map(month => [month, 0]));
         monthlyUserRegistrations.forEach(entry => {
-            var monthName = allMonths[entry.day - 1]; // Assuming day in the data is 1-based
+            var monthName = allMonths[entry.day - 1]; 
             totalUsersMap[monthName] = entry.total;
         });
         
@@ -33,7 +33,7 @@
        var totalProductsMap = Object.fromEntries(allMonths.map(month => [month, 0]));
 
        monthlyProductDetails.forEach(entry => {
-       var monthName = allMonths[entry.month - 1]; // Assuming month in the data is 1-based
+       var monthName = allMonths[entry.month - 1]; 
        totalProductsMap[monthName] = entry.total;
        });
 
@@ -96,7 +96,7 @@
                 }
             }
         });
-    } //End if
+    }
 
     /*Sale statistics Chart*/
     if ($('#myChart2').length) {
@@ -133,6 +133,6 @@
                 }
             }
         });
-    }//end if
+    }
     
 })(jQuery);

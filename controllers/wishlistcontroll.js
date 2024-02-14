@@ -19,6 +19,19 @@ const addtowishlist= async(req,res)=>{
         const mail=req.session.userid
         const user=await User.findOne({email:mail,verified:true})
         const pid= req.body.productId
+          
+        //delete expired offer
+        await Product.updateMany(
+            { 'offer.endDate': { $lt: new Date() } },
+            { $set: { 'offer': null } }
+        );
+  
+        await Category.updateMany({
+            'offer.endDate':{$lt:new Date()}},
+            {$set:{'offer':null}}
+        )
+
+
         if(user){
             const uid= user._id
 
@@ -81,32 +94,84 @@ const addtowishlist= async(req,res)=>{
 const loadwishlist= async(req,res)=>{
     try {
 
+      //delte expired offer
+      await Product.updateMany(
+        { 'offer.endDate': { $lt: new Date() } },
+        { $set: { 'offer': null } }
+    );
+
+    await Category.updateMany({
+        'offer.endDate':{$lt:new Date()}},
+        {$set:{'offer':null}}
+    )
+
         const mail= req.session.userid
         const user= await User.findOne({email:mail})
+        let wishcount
+
+         //delete expired offer
+         await Product.updateMany(
+            { 'offer.endDate': { $lt: new Date() } },
+            { $set: { 'offer': null } }
+        );
+  
+        await Category.updateMany({
+            'offer.endDate':{$lt:new Date()}},
+            {$set:{'offer':null}}
+        )
+
+ 
         if(user){
 
             const uid= user._id
-            const wishlist= await Wishlist.findOne({userid:uid}).populate('products.productid')
+            const track=true
+            let cartcount
+            const wishlist = await Wishlist.findOne({ userid: uid })
+            .populate({
+                path: 'products.productid',
+                model: 'Product',
+                populate: [
+                    {
+                        path: 'category',
+                        model: 'Category',
+                        populate: {
+                            path: 'offer',
+                            model: 'Offer',
+                        },
+                    },
+                    { path: 'offer', model: 'Offer' },
+                ],
+            });
+            const cart=await Cart.findOne({userid:uid})
+
+            if(cart){
+                cartcount=cart.products.length
+            }
+            
             if (wishlist) {
-                // Iterate through each product in the wishlist
+                wishcount=wishlist.products.length
+            
                 for (const product of wishlist.products) {
-                  // Find the corresponding product details from the Product model
+                
                   const productDetails = await Product.findById(product.productid);
         
-                  // Update the 'available' field based on the quantity of the product
+                  
                   if (productDetails && productDetails.quantity > 0) {
                     product.available = true;
                   } else {
                     product.available = false;
                   }
                 }
+
+            
+            
         
-                // Save the updated wishlist
+                
                 await wishlist.save();
-                res.render('wishlist', { wishlist });
+                res.render('wishlist', { wishlist,cartcount,track,user,wishcount});
               }
             else{
-                res.render('wishlist')
+                res.render('wishlist',{cartcount,track,user,wishcount})
 
             }
 
@@ -128,15 +193,56 @@ const loadwishlist= async(req,res)=>{
 const addtocart= async(req,res)=>{
     try {
 
+      //delte expired offer
+      await Product.updateMany(
+        { 'offer.endDate': { $lt: new Date() } },
+        { $set: { 'offer': null } }
+    );
+
+    await Category.updateMany({
+        'offer.endDate':{$lt:new Date()}},
+        {$set:{'offer':null}}
+    )
+
+
         const pid= req.query.id 
         const mail= req.session.userid
         const user= await User.findOne({email:mail,verified:true})
         const uid=user._id
-        const product= await Product.findOne({_id:pid})
+        const product= await Product.findOne({_id:pid}).populate({
+          path: 'category',
+          populate: {
+              path: 'offer',
+              model: 'Offer',
+          },
+      })
+      .populate('offer')
+      .lean();
+
+
         const wishlist= await Wishlist.findOne({userid:uid})
         if(product){
+            
             const qtycheck=product.quantity
-            const price = parseInt(product.price, 10);
+
+            let price = product.price;
+
+            if (product.offer) {
+                const originalPrice = product.price;
+                const discountPercentage = product.offer.percentage;
+                const discountAmount = (originalPrice * discountPercentage) / 100;
+                const discountedPrice = originalPrice - discountAmount;
+                price = discountedPrice;
+            } else if (product.category && product.category.offer) {
+                const originalPrice = product.price;
+                const discountPercentage = product.category.offer.percentage;
+                const discountAmount = (originalPrice * discountPercentage) / 100;
+                const discountedPrice = originalPrice - discountAmount;
+                price = discountedPrice;
+            }
+
+            // const price = parseInt(product.price, 10);
+
 
             const cart= await Cart.findOne({userid:uid})
 

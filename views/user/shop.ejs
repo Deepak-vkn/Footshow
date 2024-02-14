@@ -55,13 +55,17 @@
                     
                     <a href="/wishlist" class="wishlist-link">
                         <i class="icon-heart-o"></i>
-                        <!-- <span class="wishlist-count">3</span> -->
+                        <% if (locals.wishcount){ %>
+                            <span class="wishlist-count"><%= locals.wishcount %></span>
+                            <%}%>
                     </a>
 
                     <div class="dropdown cart-dropdown">
                         <a href="/cart" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
                             <i class="icon-shopping-cart"></i>
-                            <!-- <span class="cart-count">2</span> -->
+                            <% if (locals.cartcount){ %>
+                                <span id="cart-count" class="cart-count"><%= locals.cartcount %></span>
+                            <%}%>
                         </a>
                     </div><!-- End .cart-dropdown -->
 
@@ -140,7 +144,7 @@
                                     <label for="sortby">Sort by:</label>
                                     <div class="select-custom">
                                         <select name="sortby" id="sortby" class="form-control">
-                                            <option value="Latest selected">Latest</option>
+                                            <option value="Latest">Latest</option>
                                             <option value="Oldest">Oldest</option>
                                             <option value="Pricelow">Price low to high</option>
                                             <option value="Pricehigh">Price high to low</option>
@@ -229,9 +233,50 @@
                                                             <a href="#"><%= product.category.Category %></a>
                                                         </div><!-- End .product-cat -->
                                                         <h3 class="product-title"><a href="<%=  %>"><%= product.name %></a></h3><!-- End .product-title -->
-                                                        <div class="product-price">
-                                                            ₹<%= product.price %>
-                                                        </div><!-- End .product-price -->
+
+
+
+
+                                                       
+                                                          
+                                                        
+
+
+                                                        <% if(product.offer) {%>
+
+                                                            <%
+                                                                
+                                                                const originalPrice = product.price;
+                                                                const discountPercentage = product.offer.percentage;
+                                                                const discountAmount = (originalPrice * discountPercentage) / 100;
+                                                                const discountedPrice = originalPrice - discountAmount;
+                                                                %>
+                                                                <div class="product-price"> ₹<%= discountedPrice %><br> <span style="text-decoration: line-through; color: gray;"> ₹<%= product.price %></span>(<%=product.offer.percentage%>% OFF)</div>
+                                                               
+                                                               
+                                                               
+                                                      
+                                                       <% } else if(product.category.offer) {%>
+                    
+                                                        <%
+                                                                
+                                                                const originalPrice = product.price;
+                                                                const discountPercentage = product.category.offer.percentage;
+                                                                const discountAmount = (originalPrice * discountPercentage) / 100;
+                                                                const discountedPrice = originalPrice - discountAmount;
+                                                                %>
+                                                                <div class="product-price"> ₹<%= discountedPrice %><br> <span style="text-decoration: line-through; color: gray;"> ₹<%= product.price %></span>
+                                                               
+                                                                    (<%=product.category.offer.percentage%>% OFF)
+                                                                </div><!-- End .product-price -->
+
+                                                       
+                                                        <% } else{  %> 
+                                                            <div class="product-price">  ₹<%= product.price %></div>
+                                                         
+                    
+                                                      <% }%>
+                                                       
                                                        
                                 
                                                         <!-- End .product-nav -->
@@ -722,55 +767,43 @@
 
 
 <script>
-    async function handleSearchInput(searchTerm) {
-       
-           $('#pcard').load(`/shop?search=${searchTerm} #pcard`)
+      async function handleShopChanges() {
+        const searchTerm = document.getElementById('searchInput').value;
+        const selectedCategories = Array.from(document.querySelectorAll('input[name="categories"]:checked'))
+            .map(checkbox => checkbox.value);
+        const selectedSort = document.getElementById('sortby').value;
 
-     
+        const url = `/shop?search=${searchTerm}&filter=${selectedCategories}&sort=${selectedSort} #pcard`;
+        
+        $('#pcard').load(url);
     }
 
-    //filetr produts------
-
     document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
         const categoryCheckboxes = document.querySelectorAll('input[name="categories"]');
         const clearFiltersButton = document.getElementById('clearFilters');
         const clearAllButton = document.getElementById('clearall');
         const sortSelect = document.getElementById('sortby');
 
+        // Search
+        searchInput.addEventListener('input', handleShopChanges);
+
+        // Filter
         categoryCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                const selectedCategories = Array.from(categoryCheckboxes)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => checkbox.value);
-
-                console.log(selectedCategories);
-                
-                $('#pcard').load(`/shop?filter=${selectedCategories} #pcard`)
-
-               
-            });
+            checkbox.addEventListener('change', handleShopChanges);
         });
 
-        //clear
-
+        // Clear All
         clearAllButton.addEventListener('click', function () {
-       
-            $('#pcard').load(`/shop? #pcard`)
- 
-    });
-
-    //sort
-        sortSelect.addEventListener('change', function () {
-            const selectedValue = sortSelect.value;
-
-           console.log(selectedValue)
-           $('#pcard').load(`/shop?sort=${selectedValue} #pcard`)
-
+            searchInput.value = ''; // Clear the search input
+            categoryCheckboxes.forEach(checkbox => checkbox.checked = false); // Uncheck all checkboxes
+            sortSelect.value = ''; // Reset the sort dropdown
+            handleShopChanges(); // Trigger the changes
         });
 
-        })
-
-
+        // Sort
+        sortSelect.addEventListener('change', handleShopChanges);
+    });
 //add to cart
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -827,6 +860,14 @@ setTimeout(() => {
 
 function handleCartResponse(data) {
     if (data.success) {
+
+        if(data.count){
+
+        const cartCountElement = document.getElementById('cart-count');
+        const currentCount = parseInt(cartCountElement.innerHTML);
+        cartCountElement.innerHTML = currentCount + 1;
+
+        }
         showAlert('Success', data.message, 'success');
     } else {
 

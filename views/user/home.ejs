@@ -55,13 +55,18 @@
                         
                         <a href="/wishlist" class="wishlist-link">
                             <i class="icon-heart-o"></i>
-                            <!-- <span class="wishlist-count">3</span> -->
+                            <% if (locals.wishcount){ %>
+                                <span class="wishlist-count"><%= locals.wishcount %></span>
+                                <%}%>
                         </a>
 
                         <div class="dropdown cart-dropdown">
                             <a href="/cart" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <i class="icon-shopping-cart"></i>
-                                <!-- <span class="cart-count">2</span> -->
+                                <% if (locals.cartcount){ %>
+                                    <span  id="cart-count" class="cart-count"><%= locals.cartcount %></span>
+                                <%}%>
+                               
                             </a>
 
                             
@@ -237,9 +242,41 @@
                                                 <a href="#"><%= product.category.Category %></a> 
                                              </div>
                                             <h3 class="product-title"><a href="product.html"><%= product.name %></a></h3>
-                                            <div class="product-price">
-                                                ₹<%= product.price %>
-                                            </div>
+                                            
+                                            <% if(product.offer) {%>
+
+                                                <%
+                                                    
+                                                    const originalPrice = product.price;
+                                                    const discountPercentage = product.offer.percentage;
+                                                    const discountAmount = (originalPrice * discountPercentage) / 100;
+                                                    const discountedPrice = originalPrice - discountAmount;
+                                                    %>
+                                                    <div class="product-price"> ₹<%= discountedPrice %><br> <span style="text-decoration: line-through; color: gray;"> ₹<%= product.price %></span>(<%=product.offer.percentage%>% OFF)</div>
+                                                   
+                                                   
+                                                   
+                                          
+                                           <% } else if(product.category.offer) {%>
+        
+                                            <%
+                                                    
+                                                    const originalPrice = product.price;
+                                                    const discountPercentage = product.category.offer.percentage;
+                                                    const discountAmount = (originalPrice * discountPercentage) / 100;
+                                                    const discountedPrice = originalPrice - discountAmount;
+                                                    %>
+                                                    <div class="product-price"> ₹<%= discountedPrice %><span style="text-decoration: line-through; color: gray;"> ₹<%= product.price %></span>
+                                                   
+                                                        (<%=product.category.offer.percentage%>% OFF)
+                                                    </div><!-- End .product-price -->
+
+                                           
+                                            <% } else{  %> 
+                                                <div class="product-price">  ₹<%= product.price %></div>
+                                             
+        
+                                          <% }%>
                                          <!-- <div class="product-nav product-nav-dots">
                                                 <span class="sr-only"><%= product.color %></span>
                                                 
@@ -903,7 +940,14 @@ setTimeout(() => {
 
 function handleCartResponse(data) {
    if (data.success) {
-       showAlert('Success', data.message, 'success');
+    if(data.count){
+
+    const cartCountElement = document.getElementById('cart-count');
+    const currentCount = parseInt(cartCountElement.innerHTML);
+    cartCountElement.innerHTML = currentCount + 1;
+
+    }
+        showAlert('Success', data.message, 'success');
    } else {
 
        showAlert('Failed', data.message, 'error');

@@ -47,4 +47,114 @@
         text-align:center;
     }
 
+    #offerButton {
+        width: 60px; /* Adjust the width as needed */
+        height: 20px; /* Adjust the height as needed */
+        font-size: 12px; /* Adjust the font size as needed */
+        background-color: hsla(203, 93%, 49%, 0.887); /* Adjust the background color as needed */
+        color: #ffffff; /* Adjust the text color as needed */
+        border: none;
+        cursor: pointer;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: auto; /* Adjust the width as needed */
+        background-color: #f8f8f8; /* Light gray background color */
+        border-radius: 12px;
+        padding: 20px; /* Add padding to create space inside the modal */
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+        text-align: center;
+    }
+    
+    .close-button {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 24px; /* Adjust the font size as needed */
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #34495e; /* Dark Blue color for the close button */
+    }
+    
+    /* Styles for offer container */
+    .offerContainer {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+    
+    /* Styles for offer details */
+    .offerDetails {
+        text-align: center;
+        margin-bottom: 10px; /* Adjust the margin between rows as needed */
+    }
+    
+    .offerName {
+        color: #3498db; /* Blue color for offer name */
+        font-size: 20px; /* Adjust the font size as needed */
+    }
+    
+ 
+    .offerHeading {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #333; /* Adjust the color as needed */
+        margin-bottom: 10px;
+    }
+    
+    .offerPercentage,
+    .offerStartDate {
+        font-size: 1em;
+        color: #555; /* Adjust the color as needed */
+        margin-bottom: 5px;
+    }
+    
+    .offerButton {
+        /* Add any styles you want for the button */
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .offerSeparator {
+        width: 80%;
+        margin: 10px auto;
+        border: 1px solid #ddd;
+    }
+    
    
+    
+    /* Hover effect for the offer button */
+    .offerButton:hover {
+        background-color: #2980b9; /* Darker blue background color on hover */
+    }
+    #offerNameSpan {
+        width: 60px; /* Adjust the width as needed */
+        height: 20px; /* Adjust the height as needed */
+        font-size: 12px; /* Adjust the font size as needed */
+        background-color: hsla(118, 88%, 6%, 0.887); /* Adjust the background color as needed */
+        color: #ffffff; /* Adjust the text color as needed */
+        border: none;
+        cursor: pointer;
+    }
+
+    #removeofferButton{
+        width: 60px; /* Adjust the width as needed */
+        height: 20px; /* Adjust the height as needed */
+        font-size: 12px; /* Adjust the font size as needed */
+        background-color: hsla(0, 100%, 53%, 0.887); /* Adjust the background color as needed */
+        color: #ffffff; /* Adjust the text color as needed */
+        border: none;
+        cursor: pointer;
+    }
+
+
+  

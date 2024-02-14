@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp=require('sharp')
 const Coupon=require('../models/coupon')
+const Offer=require('../models/offer')
 
 
 
@@ -26,16 +27,33 @@ const loadproduct= async(req,res)=>{
        let skip = (currentPage - 1) * limit
        const product = await Product.find({is_delete:false})
        totalpage = Math.ceil(product.length / limit);
-       console.log(totalpage)
+
+        //delete expired offer
+       await Product.updateMany(
+        { 'offer.endDate': { $lt: new Date() } },
+        { $set: { 'offer': null } }
+    );
+
+    await Category.updateMany({
+        'offer.endDate':{$lt:new Date()}},
+        {$set:{'offer':null}}
+    )
+
+
+       const offer = await Offer.find({
+        status: true,
+        endDate: { $gt: new Date() } 
+    });
     
         // const prod= await Product.find({})
-        const prod = await Product.find({is_delete:false}).populate('category')
+        const prod = await Product.find({is_delete:false}).populate('category').populate('offer')
         .skip(skip)
         .limit(limit)
         .lean();
+      
      
         const cata = await Category.find({Status:'Active'})        
-        res.render('productlist',{prod,cata,currentPage,skip,totalpage})
+        res.render('productlist',{prod,cata,currentPage,skip,totalpage,offer})
     } catch (error) {
         res.status(400).send('load product falied');
         console.log(error.message);
@@ -117,6 +135,7 @@ const addproduct=async(req,res)=>{
                 product.image.push(`resized_${imagesToPush[i]}`);
             } 
         }
+        
         const saved = await product.save();
         if(saved){
         
@@ -330,33 +349,33 @@ const deleteimage = async (req, res) => {
     try {
         const index = req.query.index;
 
-        // Assuming you have a product object with an 'image' property
+        
         const product = await Product.findOne({ _id: req.query.id });
 
-        // Check if the product is found
+    
         if (!product) {
             return res.status(404).send('Product not found');
         }
 
-        // Check if the index is valid
+    
         if (index >= 0 && index < product.image.length) {
-            // Get the filename of the image at the specified index
+    
             const filenameToDelete = product.image[index];
 
-            // Construct the file path
+            
             const filePath = path.join(__dirname, '../public/images', filenameToDelete);
 
-            // Delete the file
+        
             fs.unlinkSync(filePath);
 
-            // Update the database to remove the image reference
+            
             await Product.findByIdAndUpdate(product._id, { $pull: { image: filenameToDelete } });
 
-            // Send a success response
+        
             res.redirect(`/admin/editproduct?id=${req.query.id}`);
             
         } else {
-            // Send an error response if the index is out of bounds
+    
             res.status(400).send('Invalid index');
         }
     } catch (error) {

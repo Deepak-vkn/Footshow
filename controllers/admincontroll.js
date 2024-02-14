@@ -7,6 +7,7 @@ const Category=require('../models/category')
 const Cart=require('../models/cart')
 const Order=require('../models/orders')
 const Coupon=require('../models/coupon')
+const Offer=require('../models/offer')
 const bcrypt=require('bcrypt')
 const { checkout, render } = require("../routes/adminroute")
 
@@ -75,17 +76,25 @@ const loginverify=async(req,res)=>{
 const laoddashbaord=async(re,res)=>{
     try {
 
-        const revenue= await Order.aggregate([{
-
-            $group:{
-                _id:null,
-                total:{ $sum:'$total'}
+        const revenue = await Order.aggregate([
+            {
+              $unwind: '$products'
+            },
+            {
+              $match: {
+                'products.status': 'Delivered'
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                total: { $sum: '$total' }
+              }
             }
-
-        }])
-        console.log(revenue)
-        
-
+          ]);
+          
+         
+           
        
         const totalorder=await Order.find().count()
 
@@ -102,34 +111,47 @@ const laoddashbaord=async(re,res)=>{
        
         const monthlySales = await Order.aggregate([
             {
-                $match: {
-                    date: {
-                        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-                        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
-                    }
+              $match: {
+                date: {
+                  $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+                  $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
                 }
+              }
             },
             {
-                $group: {
-                    _id: { $month: '$date' }, // Group by month instead of day
-                    total: { $sum: '$total' },
-                    totalOrders: { $sum: 1 } // Count the number of orders
-                }
+              $unwind: '$products'
             },
             {
-                $project: {
-                    _id: 0,
-                    month: '$_id',
-                    total: 1,
-                    totalOrders: 1
-                }
+              $match: {
+                'products.status': 'Delivered'
+              }
             },
             {
-                $sort: {
-                    month: 1 // Sort the result by month if needed
-                }
+              $group: {
+                _id: { $month: '$date' },
+                total: { $sum: '$total' },
+                totalOrders: { $sum: 1 },
+                productStatus: { $push: '$products.status' }
+              }
+            },
+            {
+              $project: {
+                _id: 0,
+                month: '$_id',
+                total: 1,
+                totalOrders: 1,
+                productStatus: 1
+              }
+            },
+            {
+              $sort: {
+                month: 1
+              }
             }
-        ]);
+          ]);
+          
+          console.log('Monthly sales with product status:', monthlySales);
+          
 
      
         const monthlyUserRegistrations = await User.aggregate([
@@ -189,26 +211,36 @@ const laoddashbaord=async(re,res)=>{
         
         const currentMonthSales = await Order.aggregate([
             {
-                $match: {
-                    date: {
-                        $gte: new Date(new Date().getFullYear(), currentDate.getMonth(), 1),
-                        $lt: new Date(new Date().getFullYear(), currentDate.getMonth() + 1, 1)
-                    }
+              $match: {
+                date: {
+                  $gte: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+                  $lt: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
                 }
+              }
             },
             {
-                $group: {
-                    _id: null,
-                    totalRevenue: { $sum: '$total' }
-                }
+              $unwind: '$products'
             },
             {
-                $project: {
-                    _id: 0,
-                    totalRevenue: 1
-                }
+              $match: {
+                'products.status': 'Delivered'
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                totalRevenue: { $sum: '$total' }
+             
+              }
+            },
+            {
+              $project: {
+                _id: 0,
+                totalRevenue: 1,
+                productStatus: 1
+              }
             }
-        ]);
+          ]);
 
 
         const newusers=await User.find({verified:true}).limit(3).sort({date:-1})
@@ -324,11 +356,31 @@ const loadcategory=async(req,res)=>{
        let skip = (currentPage - 1) * limit
        const ca = await Category.find({ is_delete:false})
        totalpage = Math.ceil(ca.length / limit);
+
+
+        //delte expired offer
+       await Product.updateMany(
+        { 'offer.endDate': { $lt: new Date() } },
+        { $set: { 'offer': null } }
+    );
+
+    await Category.updateMany({
+        'offer.endDate':{$lt:new Date()}},
+        {$set:{'offer':null}}
+    )
+
+
+
+
+       const offer = await Offer.find({
+        status: true,
+        endDate: { $gt: new Date() } 
+    });
        
     
 
-        const category= await Category.find({is_delete:false}).limit(limit).skip(skip)
-        res.render('category',{category,currentPage,skip,totalpage})
+        const category= await Category.find({is_delete:false}).populate('offer').limit(limit).skip(skip)
+        res.render('category',{category,currentPage,skip,totalpage,offer})
     } catch (error) {
         console.log(error.message);
     }
@@ -387,13 +439,25 @@ const addcategory=async(req,res)=>{
 
 const loaddcata=async(req,res)=>{
     try {
+
+        let limit =6
+        let totalpage
+        let currentPage = parseInt(req.query.page, 10) || 1
+        let skip = (currentPage - 1) * limit
+        const ca = await Category.find({ is_delete:false})
+        totalpage = Math.ceil(ca.length / limit);
+        const offer = await Offer.find({
+            status: true,
+            endDate: { $gt: new Date() } 
+        });
+
         const id=req.query.id
 
         const cata= await Category.findOne({_id:id})
         
-        const category= await Category.find({})
+        const category= await Category.find({is_delete:false}).populate('offer').limit(limit).skip(skip)
 
-        res.render('category',{cata,category})
+        res.render('category',{cata,category,currentPage,skip,totalpage,offer})
 
 
 
@@ -606,12 +670,8 @@ const loadorder=async(req,res)=>{
        totalpage = Math.ceil(od.length / limit);
 
 
-
-
-
-
-
         const order= await Order.find().sort({date:-1}).skip(skip).limit(limit)
+        const delted=await Order.deleteMany({payementstatus:'Pending'})
       
         res.render('orders',{order,totalpage,skip,currentPage})
     } catch (error) {
@@ -634,7 +694,7 @@ const orderstatus=async(req,res)=>{
        
         if(order){
             const updatedorder= order.products[productIndex].status = status;
-            order.total=order.total-order.products[productIndex].totalprice
+            // order.total=order.total-order.products[productIndex].totalprice
 
             // Save the updated order
             await order.save();
@@ -686,17 +746,14 @@ const returnrequest= async(req,res)=>{
 
         }
 
-
-
-
-
         //razorpay or wallet managemnt
         else{
 
             const uid=order.userid
             const user= await User.findOne({_id:uid})
-            console.log(user)
-
+            
+           const total=order.products[productIndex].totalprice
+           
             order.products[productIndex].status='Returned'
             order.total=order.total-order.products[productIndex].totalprice
            const updated= await order.save()
@@ -708,8 +765,18 @@ const returnrequest= async(req,res)=>{
 
                 user.wallet= user.wallet+refund
                 const refunded= user.save()
+
+
+
+
                 if(refunded){
                     //sucss refund
+                    user.walletHistory.push({
+                        amount:total,
+                        direction: 'in', 
+                    });
+
+
                     res.json({success:true,message:'Request approved and refund initiated'})
                 }
                 else{
@@ -1039,16 +1106,278 @@ const loadsales=async(req,res)=>{
           ]);
           
        
-          
-console.log(date)
-          
-
         res.render('salesreport',{sales,selected})
         
     } catch (error) {
         console.log(error.message)
     }
 }
+
+
+
+//load offer-----------------------------------------------------------------------------------------------
+
+const offerload=async(req,res)=>{
+    try {
+        const offer= await Offer.find({status:true})
+    
+
+        res.render('offer',{offer})
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+//loadaddoffer-----------------------------------------------------------------------------------------------
+
+const loadaddoffer=async(req,res)=>{
+    
+    try {
+        
+
+        res.render('addoffer')
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+
+
+//offerpost---------------------------------------------------------------------------------------------------------
+
+const offerpost=async(req,res)=>{
+    try {
+        const formdata=req.body
+        const{name,percentage,startDate,endDate}=req.body
+
+        const newoffer= new Offer({
+            name,
+            percentage,
+            startDate,
+            endDate
+        })
+
+        const savedoffer= newoffer.save()
+        if (savedoffer) {
+            res.json({ success: true, message: 'Offer successfully added' });
+        
+        } else {
+            res.json({ success: false, message: 'Failed to add offer' });
+      
+        }
+       
+
+    } catch (error) {
+        res.json({ success: false, message: 'Internal server error' });
+        console.log(error.message)
+    }
+}
+
+
+//edit offer load------------------------------------------------------------------
+
+
+const editofferload=async(req,res)=>{
+    try {
+        const id=req.query.id
+        
+        const offer= await Offer.findOne({_id:id})
+        
+        res.render('editoffer',{offer})
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+// editoffer -----------------------------------------------------------------
+const editoffer = async (req, res) => {
+    try {
+        const { name, percentage, startDate, endDate } = req.body;
+        console.log(name, percentage, startDate, endDate)
+        const id = req.query.id;
+        const existingOffer = await Offer.findOne({
+            name: { $regex: new RegExp(`^${name}$`, 'i') },
+            _id: { $ne: id }
+        });
+        
+           
+        if (existingOffer) {
+    
+            res.json({ success: false, message: 'Offer with the same name already exists' });
+        }else {
+            const offer = await Offer.findByIdAndUpdate(id, {
+                name,
+                percentage,
+                startDate,
+                endDate,
+            });
+
+            console.log(offer);
+
+            if (offer) {
+                res.json({ success: true, message: 'Offer updated successfully' });
+            } else {
+                const offerDetails = await Offer.findOne({ _id: id });
+                res.json({ success: false, message: 'Failed to edit. Please try again.', offer: offerDetails });
+            }
+        }
+    } catch (error) {
+        console.log(error.message);
+        res.json({ success: false, message: 'An error occurred. Please try again.' });
+    }
+};
+
+
+//delete offer-------------------------------------------------------------------------------
+
+const deleteoffer = async (req, res) => {
+    try {
+        const id = req.query.id;
+        console.log(id);
+    const result = await Offer.deleteOne({ _id: id });
+
+        if (result.deletedCount > 0) {
+            
+            res.json({ success: true, message: 'Offer deleted successfully' });
+        } else {
+            
+            res.json({ success: false, message: 'Offer not found or could not be deleted' });
+        }
+    } catch (error) {
+        console.log(error.message);
+        res.json({ success: false, message: 'An error occurred. Please try again.' });
+    }
+};
+
+
+
+
+
+//applyoffer-------------------------------------------------------------------------------------------
+
+const applyoffer=async(req,res)=>{
+
+    try {
+        
+        const{offerId,productId }=req.body
+
+        const offer=await Offer.findOne({_id:offerId})
+
+        const product=await Product.findOne({_id:productId})
+
+        const applyoffer=  await Product.updateOne(
+            { _id: productId },
+            { $set: { offer: offerId } }
+          );
+        if(applyoffer){
+
+            res.json({success:true,message:'Offer applied succesfully'})
+        }
+        else{
+            res.json({success:false,message:'Failed to apply offer'})
+
+        }
+
+    } catch (error) {
+        res.json({success:false,message:'Internal server error'})
+        console.log(error.message)
+    }
+    
+}
+
+
+
+
+///removeoffer--------------------------------------------------------
+
+const removeoffer=async(req,res)=>{
+    try {
+        const pid=req.body.id
+        const product=await Product.findOne({_id:pid})
+        product.offer=null
+        const removeoffer=product.save()
+        if(removeoffer){
+            res.json({success:true,message:'Removed offer succesfully'})
+        }
+        else{
+            res.json({success:false,message:'Failed to remove offer'})
+        }
+
+
+    } catch (error) {
+        res.json({success:false,message:'Internal server error'})
+        console.log(error.message)
+    }
+}
+
+
+
+
+
+//applyoffercata-----------------------------------------------------------------------
+
+const applyoffercata=async(req,res)=>{
+    try {
+
+        const{offerId,cataId }=req.body
+
+        const offer=await Offer.findOne({_id:offerId})
+
+        const catagery=await Category.findOne({_id:cataId})
+
+       const applyoffer=await Category.updateOne({_id:cataId},
+        {$set:{offer:offerId}})
+        if(applyoffer){
+            res.json({success:true,message:'Offer applied successfully'})
+        }
+        else{
+            res.json({success:false,message:"fialed to apply offer"})
+        }
+        
+    } catch (error) {
+        res.json({success:false,message:"Internal server error"})
+        console.log(error.message)
+    }
+}
+
+
+//removecataoffer---------------------------------------------------------------------------------------------
+
+
+
+const removecataoffer=async(req,res)=>{
+    try {
+        const cid= req.body.id
+        const category=await Category.findOne({_id:cid})
+        category.offer=null
+       const removed= category.save()
+       if(removed)
+        {
+            res.json({success:true,message:'Offer removed successfully'})
+
+        }
+        else{
+            res.json({success:false,message:'Failed to remove offer'})
+
+        }
+
+
+
+    } catch (error) {
+        res.json({success:false,message:'Internal server error'})
+        console.log(error.message)
+    }
+}
+
+
+
+
 
 
 
@@ -1081,6 +1410,16 @@ module.exports={
     loadedit,
     editcoupon,
     deletecoupon,
-    loadsales
+    loadsales,
+    offerload,
+    loadaddoffer,
+    offerpost,
+    editofferload,
+    editoffer,
+    deleteoffer,
+    applyoffer,
+    removeoffer,
+    applyoffercata,
+    removecataoffer
 
 }

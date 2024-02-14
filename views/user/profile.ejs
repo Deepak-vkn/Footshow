@@ -52,13 +52,17 @@
                         
                         <a href="/wishlist" class="wishlist-link">
                             <i class="icon-heart-o"></i>
-                            <!-- <span class="wishlist-count">3</span> -->
+                            <% if (locals.wishcount){ %>
+                                <span class="wishlist-count"><%= locals.wishcount %></span>
+                                <%}%>
                         </a>
     
                         <div class="dropdown cart-dropdown">
                             <a href="/cart" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <i class="icon-shopping-cart"></i>
-                                <!-- <span class="cart-count">2</span> -->
+                                <% if (locals.cartcount){ %>
+                                    <span class="cart-count"><%= locals.cartcount %></span>
+                                <%}%>
                             </a>
                         </div><!-- End .cart-dropdown -->
     
@@ -135,6 +139,9 @@
 								    </li>
 								    <li class="nav-item">
 								        <a class="nav-link" id="tab-wallet-link" data-toggle="tab" href="#tab-wallet" role="tab" aria-controls="tab-wallet" aria-selected="false">Wallet</a>
+								    </li>
+                                    <li class="nav-item">
+								        <a class="nav-link" id="tab-coupon-link" data-toggle="tab" href="#tab-coupon" role="tab" aria-controls="tab-coupon" aria-selected="false">Coupon</a>
 								    </li>
 								    <li class="nav-item">
 								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
@@ -302,8 +309,59 @@
                                             </div><!-- End .card-dashboard -->
                                         </div><!-- End .col-lg-6 -->
 
-								    	<a href="#" class="btn btn-outline-primary-2"><span>Add Amount</span><i class="icon-long-arrow-right"></i></a>
+								    	<a href="/wallethistory" class="btn btn-outline-primary-2"><span>Wallet History</span><i class="icon-long-arrow-right"></i></a>
 								    </div><!-- .End .tab-pane -->
+
+
+                                    <!-- ---------------------------coupons----------------------------------- -->
+
+
+                                    <div class="tab-pane fade" id="tab-coupon" role="tabpanel" aria-labelledby="tab-coupon-link">
+								    	
+
+
+                                    
+                                            <% if (coupon.length > 1) { %>
+                                                
+                                                    <div class="row">
+                                                        <% coupon.forEach((coupon, index) => { %>
+                                                            <div class="col-lg-6">
+                                                                <div class="card card-dashboard">
+                                                                    <div class="card-body">
+                                                                        <h3 class="card-title"> Coupon Details</h3><!-- End .card-title -->
+                                            
+                                                                        <p>
+                                                                            Coupon Name: <%= coupon.name %><br>
+                                                                            Coupon Code: <%= coupon.code %> <br>
+                                                                            Minimum Amount for Offer: <%= coupon.minamount %> <br>
+                                                                            Offer: <%= coupon.offeramount %> <br>
+                                                                            Expiry Date: <%= coupon.expireDate.toDateString() %> <br>
+                                                                            <% if (coupon.useduser.some(used => used.userid.toString() === user._id.toString())) { %>
+                                                                                <span style="color: red;">Coupon already used by you</span><br>
+                                                                            <% } else { %>
+                                                                                <span style="color: green;">Coupon not yet used by you</span><br>
+                                                                            <% } %>
+                                                                            
+                                                                            
+                                                                            <!-- Add any other coupon details you want to display -->
+                                            
+                                                                        </p>
+                                                                    </div><!-- End .card-body -->
+                                                                </div><!-- End .card-dashboard -->
+                                                            </div><!-- End .col-lg-6 -->
+                                                        <% }) %>
+                                                    
+                                                
+                                            <% } else { %>
+                                                <p>No coupons available.</p>
+                                            <% } %>
+                                            
+
+                                    </div><!-- .End .tab-pane -->
+
+
+
+
 
 								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
 								    	<!-- <p>The following addresses will be used on the checkout page by default.</p> -->
@@ -317,7 +375,7 @@
                                                         <div class="card card-dashboard">
                                                             <div class="card-body">
                                                                 <h3 class="card-title"> Address</h3><!-- End .card-title -->
-        
+                                                                
                                                                 <p><%= adress.name %><br>
                                                                     <%= adress.buildingname %> <br>
                                                                     <%= adress.street %> <br>
@@ -325,7 +383,8 @@
                                                                     <%= adress.state %><br>
                                                                     <%= adress.mobile %><br>
                                                                     <%= adress.pincode %><br>
-                                                                    <a href="/editaddress?index=<%= index %>&id=<%= user._id %>">Edit <i class="icon-edit"></i></a>
+                                                                    <a href="/editaddress?index=<%= index %>&id=<%= user._id %>">Edit <i class="icon-edit"></i></a><br>
+                                                                    <a href="/deleteaddress?index=<%= index %>&id=<%= user._id %>">Delete <i class="icon-edit"></i></a>
                                                                 </p>
                                                             </div><!-- End .card-body -->
                                                         </div><!-- End .card-dashboard -->

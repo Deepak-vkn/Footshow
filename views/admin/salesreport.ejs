@@ -221,8 +221,9 @@
             </header>
             <div class="card-body" id="salesreload">
                 <div class="table-responsive">
-                    <div class="table-responsive">
-                        <table class="table align-middle table-nowrap mb-0">
+                    <div class="table-responsive" >
+                        <div id="salestable">
+                            <table class="table align-middle table-nowrap mb-0" >
                             <thead class="table-light">
                                 <tr>
                                   
@@ -266,13 +267,25 @@
                                 <%} %>
                                
                             </tbody>
-                        </table>
+                        </table></div>
+                        
                     </div>
                 </div> <!-- table-responsive end// -->
+                <!-- <a class="dropdown-item " href="#" onclick="downloadExcel('salestable')" style="color: green; font-weight: 600;">Download as Excel</a> -->
+                <select id="printOptions" class="btn btn-md rounded font-sm mySelect">
+                    <option value="" disabled selected>Download</option>
+                    <option value="pdf"> PDF</option>
+                    <option value="excel"> Excel</option>
+                </select>
+                  
+
+
             </div>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+
 
 
 
@@ -303,6 +316,39 @@ document.getElementById('applyBtn').addEventListener('click', function () {
         $('#salesreload').load(`/admin/sales?startDate=${startDate}&endDate=${endDate} #salesreload`)
 
     });
+
+
+
+
+    //sales down.dwonlaod
+
+    document.getElementById('printOptions').addEventListener('change', function () {
+    var selectedOption = this.value;
+    var salestable = document.getElementById('salestable');
+
+    if (selectedOption === 'pdf') {
+        // Call function to print PDF
+        downloadPDF(salestable);
+    } else if (selectedOption === 'excel') {
+        // Call function to print Excel
+        downloadExcel(salestable);
+    }
+});
+
+function downloadPDF(table) {
+    const printContents = table.outerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+}
+
+function downloadExcel(table) {
+    const ws = XLSX.utils.table_to_sheet(table);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sales Report");
+    XLSX.writeFile(wb, "sales_report.xlsx");
+}
 
         </script>
 

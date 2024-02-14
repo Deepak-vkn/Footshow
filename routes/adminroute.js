@@ -56,13 +56,13 @@ const upload = multer({ storage: storage });
 
 route.get('/',adminmiddle.islogout,admincontroll.loadlogin)
 route.post('/',admincontroll.loginverify)
-route.get('/dashboard',admincontroll.laoddashbaord)
+route.get('/dashboard',adminmiddle.islogin,admincontroll.laoddashbaord)
 route.get('/users',adminmiddle.islogin,admincontroll.loaduser)
 route.get('/block',adminmiddle.islogin,admincontroll.blockuser)
 route.get('/unblock',adminmiddle.islogin,admincontroll.unblockuser)
 route.get('/sales',admincontroll.loadsales)
 //catagory
-route.get('/category',adminmiddle.islogin,admincontroll.loadcategory)
+route.get('/category',admincontroll.loadcategory)
 route.post('/category',admincontroll.addcategory)
 route.get('/addcata',adminmiddle.islogin,admincontroll.loaddcata)
 route.post('/updatecata',admincontroll.updatecata)
@@ -72,7 +72,7 @@ route.get('/catadelete',admincontroll.catadelete)
 
 
 //product
-route.get('/productlist',adminmiddle.islogin,productcontroll.loadproduct)
+route.get('/productlist',productcontroll.loadproduct)
 route.get('/addproduct',adminmiddle.islogin,productcontroll.loadaddproduct)
 route.post('/addproduct', upload.array('image', 10), productcontroll.addproduct);
 route.get('/productblock',adminmiddle.islogin,productcontroll.blockproduct)
@@ -97,8 +97,28 @@ route.post('/returnrequest',admincontroll.returnrequest)
 route.get('/coupon',adminmiddle.islogin,admincontroll.couponload)
 route.get('/addcoupon',adminmiddle.islogin,admincontroll.addcouponlaod)
 route.post('/addcoupon',admincontroll.submitaddcoupon)
-route.get('/editcoupon',adminmiddle.islogin,admincontroll.loadedit)
+route.get('/editcoupon',adminmiddle.islogin,adminmiddle.islogin,admincontroll.loadedit)
 route.post('/editcoupon',admincontroll.editcoupon)
 route.delete('/deletecoupon',admincontroll.deletecoupon)
+
+
+//offer
+
+route.get('/offer',admincontroll.offerload)
+route.get('/addoffer',admincontroll.loadaddoffer)
+route.post('/addoffer',admincontroll.offerpost)
+route.get('/editoffer',admincontroll.editofferload)
+route.post('/editoffer',admincontroll.editoffer)
+route.get('/deleteoffer',admincontroll.deleteoffer)
+route.post('/offerapply',admincontroll.applyoffer)
+ route.post('/removeoffer',admincontroll.removeoffer)
+ route.post('/cataofferapply',admincontroll.applyoffercata)
+ route.post('/cataremoveoffer',admincontroll.removecataoffer)
+
+
+
+
+
+
 
 module.exports=route

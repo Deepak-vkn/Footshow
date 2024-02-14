@@ -55,7 +55,13 @@ const productschema= new mongoose.Schema({
     createdAt:{
         type:Date,
         required:true
+    },
+    offer:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Offer', 
     }
+
+  
     
 })
  

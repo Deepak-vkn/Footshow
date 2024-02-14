@@ -22,6 +22,10 @@ const categories= mongoose.Schema({
     is_delete:{
         type:Boolean,
         default:false
+    },
+    offer:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Offer', 
     }
 
 

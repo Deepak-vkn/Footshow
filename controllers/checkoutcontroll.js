@@ -5,6 +5,7 @@ const User=require('../models/usermodel')
 const Product=require('../models/product')
 const Category=require('../models/category')
 const Cart=require('../models/cart')
+const Wishlist=require('../models/wishlist')
 const Coupon=require('../models/coupon')
 const Order=require('../models/orders')
 const bcrypt=require('bcrypt')
@@ -18,10 +19,29 @@ require('dotenv').config();
 var instance = new Razorpay({key_id: process.env.key_id, key_secret: process.env.key_secret })
 
 
+//laod checkout--------------------------------------------------------------------------------
+
+
 const loadcheckout=async(req,res)=>{
     try {
         const folow=req.query.uid
+        let cartcount
+        let wishcount
         req.session.folow=folow
+
+
+     //delete expired offer
+        await Product.updateMany(
+            { 'offer.endDate': { $lt: new Date() } },
+            { $set: { 'offer': null } }
+        );
+  
+        await Category.updateMany({
+            'offer.endDate':{$lt:new Date()}},
+            {$set:{'offer':null}}
+        )
+
+
         if( req.session.folow){
             const mail=req.session.userid
             if(mail){
@@ -33,9 +53,13 @@ const loadcheckout=async(req,res)=>{
                 req.session.payment=uid
 
                 const cart= await Cart.findOne({userid:uid}).populate('products.productid').lean();
-
+                cartcount=cart.products.length
                 const wallet= user.wallet
                 const total= cart.total
+                const wishlist=await Wishlist.findOne({userid:uid})
+                if(wishlist){
+                    wishcount=wishlist.products.length
+                }
         
 
 
@@ -57,12 +81,11 @@ const loadcheckout=async(req,res)=>{
 
                 if(wallet>= total){
 
-
-                    res.render('checkout',{user,cart,track,wallet})
+                    res.render('checkout',{user,cart,track,wallet,cartcount,wishcount})
                     
                 }
                 else{
-                    res.render('checkout',{user,cart,track})
+                    res.render('checkout',{user,cart,track,cartcount,wishcount})
 
                 }
 
@@ -102,7 +125,7 @@ const payment=async(req,res)=>{
             const user=await User.findOne({email:mail})
             const cart = await Cart.findById({_id:cid}).populate('products.productid');
             const code=req.body.code
-            
+    
             if(user){
                 //user exist
                 const uid=user._id
@@ -110,8 +133,7 @@ const payment=async(req,res)=>{
                 //console.log(address)
                 const total= req.body.newtotal || cart.total
                 const ordercheck= await Order.findOne({userid:uid})
-    
-                console.log(total)
+           
                 
                     //NewORDER
                     const productlist=  cart.products.map((product)=>({
@@ -160,6 +182,7 @@ const payment=async(req,res)=>{
                         neworder.products.forEach((product) => {
                             product.status = 'Placed';
                         });
+                        neworder.payementstatus='Success'
                         const chek=neworder.save()
                     if(chek){
 
@@ -243,11 +266,16 @@ const payment=async(req,res)=>{
                         neworder.products.forEach((product) => {
                             product.status = 'Placed';
                         });
+                        neworder.payementstatus='Success'
                         const chek=neworder.save()
                     if(chek){
 
                         user.wallet=user.wallet-total
                         user.save()
+                        user.walletHistory.push({
+                            amount: total,
+                            direction: 'out', 
+                        });
 
 
 
@@ -388,6 +416,7 @@ const verifypayment= async(req,res)=>{
                 order.products.forEach((product) => {
                     product.status = 'Placed';
                 });
+                order. payementstatus='Success'
                 const check= await order.save()
             
             if(check){
@@ -448,38 +477,35 @@ const applycoupon=async(req,res)=>{
         const uid=user._id
         const coupon=await Coupon.findOne({code:code,isdelete:false})
 
-        if(coupon){
-            const checkused=await Coupon.findOne({code:code,'useduser.userid':uid})
-           if(checkused){
-            res.json({success:false,message:'Coupon already used by user'})
-
-           }
-           else{
-            const cart=await Cart.findOne({userid:uid})
-            const total=cart.total
-            const couponmini=coupon.minamount
-            const offer=coupon.offeramount
-            if(total<couponmini){
-                //cehchk mini amount
-                res.json({success:false,message:`You need minimum ₹${couponmini} to apply this coupon`})
+        if (coupon) {
+            // Check if the coupon is expired
+            if (coupon.expireDate < Date.now()) {
+                res.json({ success: false, message: 'Coupon has expired' });
             }
-            else{
-            //reduce price
-            console.log('reduced price')
-            const newtotal=total-offer
-            res.json({success:true,newtotal:newtotal,code:code})
+             else {
+                const checkused = await Coupon.findOne({ code: code, 'useduser.userid': uid });
 
+                if (checkused) {
+                    res.json({ success: false, message: 'Coupon already used by user' });
+                } else {
+                    const cart = await Cart.findOne({ userid: uid });
+                    const total = cart.total;
+                    const couponmini = coupon.minamount;
+                    const offer = coupon.offeramount;
+
+                    if (total < couponmini) {
+                        // Check minimum amount
+                        res.json({ success: false, message: `You need minimum ₹${couponmini} to apply this coupon` });
+                    } else {
+                        // Reduce price
+                        console.log('Reduced price');
+                        const newtotal = total - offer;
+                        res.json({ success: true, newtotal: newtotal, code: code });
+                    }
+                }
             }
-            //res.json({success:true})
-
-           }
-
-
-
-        }
-        else{
-            res.json({success:false,message:'Coupon not found'})
-
+        } else {
+            res.json({ success: false, message: 'Coupon not found' });
         }
         
     } catch (error) {

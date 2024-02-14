@@ -205,7 +205,7 @@
                 </header> <!-- card-header end// -->
                 <div class="card mb-4">
                     <div class="container">
-                        <table class="table">
+                        <table class="table"id="producttable">
                             <thead>
                                 <tr>
                                     <th>Index</th>
@@ -218,10 +218,11 @@
 
                                     <th>Status</th>
                                     <th>Images</th>
+                                    <th>Offer</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody >
                                 <% let i=skip+1 %>
                                 
                                 <% if (prod.length > 0) { %>
@@ -244,6 +245,15 @@
                                                     <img src="/images/<%= product.image[j]%>" alt="Product Image" style="width: 30px; height: 30px; margin-left: 5px;">
                                                 <% } %>
                                             </td>
+
+
+                                            <% if (product.offer) { %>
+                                                <td>  <button id="removeofferButton" class="rounded-pill" onclick="removeoffer('<%= product._id %>')">Remove</button><br>
+                                                    <span id="offerNameSpan" ><%= product.offer.name %></span></td>
+                                                
+                                            <% } else { %>
+                                                <td>  <button id="offerButton" class="rounded-pill" onclick="openModal('<%= product._id %>')">Offer</button></td>
+                                            <% } %>
                                             <td class="text-end">
                                                 <a href="/admin/editproduct?id=<%= product._id %>" class="btn btn-sm font-sm btn-dark rounded">
                                                     <i class="material-icons"></i> Edit
@@ -262,6 +272,7 @@
                                                     <i class="material-icons"></i>Delete
                                                 </a>
                                             </td>
+                                            
                                         </tr>
                                     <% }) %>
                                 <% } %>
@@ -325,6 +336,41 @@
             </div>
         </footer>
     </main>
+
+    <% if (locals.offer) { %>
+        <!-- Modal HTML -->
+        <div id="myModal" class="modal">
+            <button onclick="closeModal()" class="close-button">&times;</button><br><br>
+            <div class="modal-header">
+                
+            </div>
+            <div>
+                <% locals.offer.forEach((offer) => { %>
+                    <div class="offerDetails">
+                        <h2 class="offerHeading">Special Offer: <%= offer.name %></h2>
+                        <p class="offerPercentage"><strong>Discount:</strong> <%= offer.percentage %>%</p>
+                        <p class="offerStartDate">
+                            <strong>Valid from:</strong> <%= offer.startDate %> to <%= offer.endDate.toLocaleDateString() %>
+                        </p>
+                        
+                        <!-- Hidden input for offer ID -->
+                        <input type="hidden" class="offerIdInput" value="<%= offer._id %>">
+                        
+                        <input type="hidden" class="productIdInput" value="">
+    
+                        <button class="offerButton" onclick="yourButtonFunction('<%= offer._id %>')">APPLY</button>
+                    </div>
+                    <hr class="offerSeparator">
+                <% }) %>
+            </div>
+        </div>
+    <% } %>
+    
+   
+
+
+
+
     <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="assets/js/vendors/select2.min.js"></script>
@@ -402,6 +448,188 @@ deleteButtons.forEach(function (deleteButton) {
         });
     });
 });
+
+
+
+//offer  modal
+
+
+function openModal(productId) {
+    var modal = document.getElementById("myModal");
+
+console.log(productId)
+// Retrieve the hidden input and set its value
+var productIdInput = modal.querySelector('.productIdInput');
+productIdInput.value = productId // Replace 'your_product_id_value' with the actual product ID value
+
+modal.style.display = "flex";
+
+var productIdSpan = modal.querySelector('.productIdSpan');
+    productIdSpan.textContent = productId;
+}
+
+
+
+
+function closeModal() {
+    var modal = document.getElementById("myModal");
+    modal.style.display = "none";
+}
+
+
+function yourButtonFunction(offerId) {
+    var modal = document.getElementById("myModal");
+
+    
+ 
+    var productId = modal.querySelector('.productIdInput').value;
+
+    console.log(offerId,productId)
+
+    fetch('/admin/offerapply', {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json', 
+        },
+        body: JSON.stringify({
+            offerId: offerId,
+            productId: productId,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            console.log('reched console')
+            
+            Swal.fire({
+            title: 'Success!',
+            text: 'Offer successfully applied',
+            icon: 'success',
+            showCancelButton: false,
+            showConfirmButton: false,
+            timer: 2000,
+   
+        })
+            .then(() => {
+            
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+            title: 'Error!',
+            text: 'Failed to apply offer',
+            icon: 'error',
+            showCancelButton: false,
+            showConfirmButton: false,
+            timer: 2000,
+        
+        })
+
+            .then(() => {
+            
+            location.reload();
+        });
+        }
+        console.log('Response:', data);
+    })
+    .catch(error => {
+       
+        Swal.fire({
+            title: 'Error!',
+            text: 'Failed to apply offer',
+            icon: 'error',
+            showCancelButton: false,
+            showConfirmButton: false,
+            timer: 2000,
+            
+        })
+        .then(() => {
+            
+            location.reload();
+        });
+        console.error('Error:', error);
+    });
+}
+
+
+
+
+//remove offer
+
+function removeoffer(productId) {
+
+    fetch('/admin/removeoffer', {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json', 
+        },
+        body: JSON.stringify({
+            id: productId
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+          
+            
+            Swal.fire({
+            title: 'Success!',
+            text: data.message,
+            icon: 'success',
+            showCancelButton: false,
+            showConfirmButton: false,
+            timer: 2000,
+   
+        })
+            .then(() => {
+            
+                $('#producttable').load(`/admin/productlist #producttable`)
+            });
+        } else {
+            Swal.fire({
+            title: 'Error!',
+            text: data.message,
+            icon: 'success',
+            showCancelButton: false,
+            showConfirmButton: false,
+            timer: 2000,
+        
+        })
+
+            .then(() => {
+            
+                $('#producttable').load(`/admin/productlist #producttable`)
+        });
+        }
+        console.log('Response:', data);
+    })
+    .catch(error => {
+       
+        Swal.fire({
+            title: 'Error!',
+            text: 'Internal server error',
+            icon: 'success',
+            showCancelButton: false,
+            showConfirmButton: false,
+            timer: 2000,
+            
+        })
+        .then(() => {
+            
+            $('#producttable').load(`/admin/productlist #producttable`)
+        });
+        console.error('Error:', error);
+    });
+
+}
+
+
+
+
+
+
+
+
     </script>
 
 <%- include('../layout2/header') -%>

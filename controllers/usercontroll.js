@@ -10,15 +10,24 @@ const OTPgenerator=require('otp-generator')
 const Category=require('../models/category')
 const nodemailer=require('nodemailer')
 const SendmailTransport = require('nodemailer/lib/sendmail-transport')
-
-
+const Coupon=require('../models/coupon')
+const Offer=require('../models/offer')
 
 //home-----------------------------------------------------------------------------
 const home=async(req,res)=>{
     try{
         let track
         let user
-        const products = await Product.find({status:'Active'}).populate('category').lean();
+        let cartcount
+        let wishcount
+        const products = await Product.find({status:'Active'}) .populate({
+            path: 'category',
+            populate: {
+                path: 'offer',
+                model: 'Offer',
+            },
+        })
+        .populate('offer').lean();
         
         const  product= products.filter(product => {
             return (
@@ -30,8 +39,22 @@ const home=async(req,res)=>{
             track=true
             const mail=req.session.userid
             user=await User.findOne({email:mail})
+            const uid=user._id
+
+            const cart=await Cart.findOne({userid:uid})
+            
+            if(cart){
+                 cartcount=cart.products.length
+            }
+            const wishlist=await Wishlist.findOne({userid:uid})
+            if(wishlist){
+                wishcount=wishlist.products.length
+            }
+            
            
-            res.render('home',{track,product,user})
+
+
+            res.render('home',{track,product,user,cartcount,wishcount})
         }
         else{
             track=false
@@ -444,10 +467,14 @@ const logout = async (req, res) => {
 };
 
 //load shop-------------------------------------------------------------------------------------------------
+
+
 const loadshop = async (req, res) => {
     try {
         let track;
         let user;
+        let cartcount
+        let wishcount
         const searchTerm = req.query.search;
         let products;
         let totalproducts
@@ -505,6 +532,7 @@ const loadshop = async (req, res) => {
             track = true;
             const mail = req.session.userid;
             user = await User.findOne({ email: mail });
+            const uid= user._id
 
             if (searchTerm) {
                 products = await Product.find({
@@ -518,7 +546,14 @@ const loadshop = async (req, res) => {
                         },
                     ],
                 })
-                    .populate('category')
+                .populate({
+                    path: 'category',
+                    populate: {
+                        path: 'offer',
+                        model: 'Offer',
+                    },
+                })
+                .populate('offer')
                     .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
@@ -526,7 +561,14 @@ const loadshop = async (req, res) => {
                   
             } else {
                 products = await Product.find(filterquery)
-                    .populate('category')
+                .populate({
+                    path: 'category',
+                    populate: {
+                        path: 'offer',
+                        model: 'Offer',
+                    },
+                })
+                .populate('offer')
                     .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
@@ -540,8 +582,27 @@ const loadshop = async (req, res) => {
             });
             totalproducts=product.length
             totalPages = Math.ceil(totalproducts / 12);
-            res.render('shop', { product, category, user, track, totalPages, currentPage });
-        } else {
+
+
+            const cart=await Cart.findOne({userid:uid})
+
+
+            if(cart){
+
+             cartcount=cart.products.length
+                
+            }
+
+            const wishlist=await Wishlist.findOne({userid:uid})
+            if(wishlist){
+                wishcount=wishlist.products.length
+            }
+           
+            
+            res.render('shop', { product, category, user, track, totalPages, currentPage,cartcount ,wishcount});
+        } 
+        
+        else {
             
             track = false;
 
@@ -558,7 +619,14 @@ const loadshop = async (req, res) => {
                         },
                     ],
                 })
-                    .populate('category')
+                .populate({
+                    path: 'category',
+                    populate: {
+                        path: 'offer',
+                        model: 'Offer',
+                    },
+                })
+                .populate('offer')
                     .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
@@ -566,7 +634,14 @@ const loadshop = async (req, res) => {
                   
             } else {
                 products = await Product.find(filterquery)
-                    .populate('category')
+                .populate({
+                    path: 'category',
+                    populate: {
+                        path: 'offer',
+                        model: 'Offer',
+                    },
+                })
+                .populate('offer')
                     .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
@@ -588,35 +663,77 @@ const loadshop = async (req, res) => {
 };
 
 
-// load single product --------------------------------------------------------------------------------
+// load single product ------------------------------------------------------------------------------------------------------
 
 const loadsingleproduct=async(req,res)=>{
 
     try {
         const id=req.query.id
-          mail=req.session.userid
+        const  mail=req.session.userid
+         let wishcount
+         let cartcount
+
+
+        //delte expired offer
+         await Product.updateMany(
+            { 'offer.endDate': { $lt: new Date() } },
+            { $set: { 'offer': null } }
+        );
+
+        await Category.updateMany({
+            'offer.endDate':{$lt:new Date()}},
+            {$set:{'offer':null}}
+        )
+
         if(mail){
             const user=await User.findOne({email:mail,verified:true})
             const track=true
-            const product = await Product.findOne({_id:id}).populate('category').lean();
+            const product = await Product.findOne({_id: id})
+            .populate({
+                path: 'category',
+                populate: {
+                    path: 'offer',
+                    model: 'Offer',
+                },
+            })
+            .populate('offer')
+            .lean();
 
+   
+            const uid=user._id
             const wishlist =await Wishlist.findOne({'products.productid':id})
+
+            const cart=await Cart.findOne({userid:uid})
+            if(cart){
+                cartcount=cart.products.length
+            }
+            const wish=await Wishlist.findOne({userid:uid})
+            if(wish){
+                wishcount=wish.products.length
+            }
+            
             if(wishlist){
-                res.render('singleproduct',{product,user,track,wishlist})
-console.log(wishlist)
+                
+                res.render('singleproduct',{product,user,track,wishlist,cartcount,wishcount})
             }
             else{
-                res.render('singleproduct',{product,user,track})
+
+
+                res.render('singleproduct',{product,user,track,cartcount,wishcount,cartcount})
             }
 
-        
-          
+
     
         }
         else{ 
-        const product = await Product.findOne({_id:id}).populate('category').lean();
+        const product = await Product.findOne({_id:id}).populate({
+            path: 'category',
+            populate: {
+                path: 'offer'
+            }
+        }).populate('offer').lean();
 
-        
+       
         res.render('singleproduct',{product})
 
         }
@@ -638,6 +755,8 @@ const loadmen=async(req,res)=>{
       
           let track
           let user
+          let cartcount
+          let wishcount
           let totalproducts
           let totalPages
           let sort=req.query.sort
@@ -713,14 +832,28 @@ const loadmen=async(req,res)=>{
                         },
                     ],
                 })
-                    .populate('category')
+                .populate({
+                    path: 'category',
+                    populate: {
+                        path: 'offer',
+                        model: 'Offer',
+                    },
+                })
+                .populate('offer')
                     .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
                     .lean();
                   
             } else {
-                products =await  Product.find(filterquery).populate('category')
+                products =await  Product.find(filterquery) .populate({
+                    path: 'category',
+                    populate: {
+                        path: 'offer',
+                        model: 'Offer',
+                    },
+                })
+                .populate('offer')
                 .sort(sortOptions)
                 .skip(skip)
                 .limit(12)
@@ -734,9 +867,24 @@ const loadmen=async(req,res)=>{
                     product.category.Status === 'Active' 
                 );
             });
+
+
             totalproducts=product.length
             totalPages=Math.ceil(totalproducts/12)
-            res.render('men',{product,category,user,track,currentPage,totalPages})
+            const uid=user._id
+            const cart=await Cart.findOne({userid:uid})
+            if(cart){
+             cartcount=cart.products.length
+            }
+
+            const wishlist=await Wishlist.findOne({userid:uid})
+            if(wishlist){
+                wishcount=wishlist.products.length
+            }
+            
+
+
+            res.render('men',{product,category,user,track,currentPage,totalPages,cartcount,wishcount})
         }
         else{
             
@@ -754,14 +902,28 @@ const loadmen=async(req,res)=>{
                         },
                     ],
                 })
-                    .populate('category')
+                .populate({
+                    path: 'category',
+                    populate: {
+                        path: 'offer',
+                        model: 'Offer',
+                    },
+                })
+                .populate('offer')
                     .sort(sortOptions)
                     .skip(skip)
                     .limit(12)
                     .lean();
                   
             } else {
-                products =await  Product.find(filterquery).populate('category')
+                products =await  Product.find(filterquery) .populate({
+                    path: 'category',
+                    populate: {
+                        path: 'offer',
+                        model: 'Offer',
+                    },
+                })
+                .populate('offer')
                 .sort(sortOptions)
                 .skip(skip)
                 .limit(12)
@@ -798,6 +960,8 @@ const loadwomen=async(req,res)=>{
     try {
         let track
         let user
+        let cartcount
+        let wishcount
         const searchTerm = req.query.search;
         let products;
         let totalproducts
@@ -873,14 +1037,28 @@ const loadwomen=async(req,res)=>{
                     },
                 ],
             })
-                .populate('category')
+            .populate({
+                path: 'category',
+                populate: {
+                    path: 'offer',
+                    model: 'Offer',
+                },
+            })
+            .populate('offer')
                 .sort(sortOptions)
                 .skip(skip)
                 .limit(12)
                 .lean();
               
         } else {
-            products =await  Product.find(filterquery).populate('category')
+            products =await  Product.find(filterquery) .populate({
+                path: 'category',
+                populate: {
+                    path: 'offer',
+                    model: 'Offer',
+                },
+            })
+            .populate('offer')
             .sort(sortOptions)
             .skip(skip)
             .limit(12)
@@ -897,8 +1075,21 @@ const loadwomen=async(req,res)=>{
         });
         totalproducts=product.length
         totalPages=Math.ceil(totalproducts/12)
+        const uid=user._id
+            const cart=await Cart.findOne({userid:uid})
+            if(cart){
+                cartcount=cart.products.length
+            }
+
+            const wishlist=await Wishlist.findOne({userid:uid})
+            if(wishlist){
+                wishcount=wishlist.products.length
+            }
+            
+
+           
        
-          res.render('women',{product,category,user,track,currentPage,totalPages})
+          res.render('women',{product,category,user,track,currentPage,totalPages,cartcount,wishcount})
       }
       else{
 
@@ -915,14 +1106,28 @@ const loadwomen=async(req,res)=>{
                     },
                 ],
             })
-                .populate('category')
+            .populate({
+                path: 'category',
+                populate: {
+                    path: 'offer',
+                    model: 'Offer',
+                },
+            })
+            .populate('offer')
                 .sort(sortOptions)
                 .skip(skip)
                 .limit(12)
                 .lean();
               
         } else {
-            products =await  Product.find(filterquery).populate('category')
+            products =await  Product.find(filterquery) .populate({
+                path: 'category',
+                populate: {
+                    path: 'offer',
+                    model: 'Offer',
+                },
+            })
+            .populate('offer')
             .sort(sortOptions)
             .skip(skip)
             .limit(12)
@@ -1070,7 +1275,7 @@ const resetpassword = async (req, res) => {
 };
 
 
-//Profile load 
+//Profile load ---------------------------------------------------------------------
 
 const profileload =async(req,res)=>{
     try {
@@ -1079,13 +1284,33 @@ const profileload =async(req,res)=>{
             const user=await User.findOne({email:id,verified:true})
             const uid=user._id
             const track=true
-            const order=await Order.find({userid:uid})
+            let cartcount
+            let wishcount
+            let coupon
+            const order=await Order.find({userid:uid,  'products.status': { $ne: 'Pending' }})
+            const delted=await Order.deleteMany({payementstatus:'Pending'})
+            const cart=await Cart.findOne({userid:uid})
+            coupon= await Coupon.find({isdelete:false})
+
+            
+            
+
+
+            if(cart){
+             cartcount=cart.products.length
+            }
+
+            const wishlist=await Wishlist.findOne({userid:uid})
+            if(wishlist){
+                wishcount=wishlist.products.length
+            }
+            
                 if(order){
-                    res.render('profile',{user,order,track})
+                    res.render('profile',{user,order,track,cartcount,wishcount,coupon})
                     
                 }
                 else{
-                    res.render('profile',{user,track})
+                    res.render('profile',{user,track,cartcount,wishcount,coupon})
                 }
 
         }
@@ -1545,6 +1770,60 @@ const returnproduct= async(req,res)=>{
 
 
 
+//deleteaddress---------------------------------------------------------------------
+
+
+const deleteaddress= async(req,res)=>{
+try {
+    
+    const ind=req.query.index
+    const id=req.query.id
+   
+    const user= await User.findOne({_id:id,verified:true})
+   
+    const adress=user.address[ind]
+    const deleted = await User.findOneAndUpdate(
+        { _id: id, verified: true },
+        { $pull: { address: { _id: user.address[ind]._id } } },
+        { new: true }
+    );
+    
+    res.redirect('/profile')
+
+
+} catch (error) {
+    console.log(error.message)
+}
+
+
+}
+
+
+//wallethistory----------------------------------------------------
+
+const wallethistory=async(req,res)=>{
+    try {
+
+        const mail= req.session.userid
+
+        if(mail){
+            const user= await User.findOne({email:mail,verified:true})
+            console.log(user)
+
+            res.render('wallethistory',{user})
+        }
+        else{
+            res.redirect('/login')
+        }
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+
+
 module.exports={
     home,
     loadlogin,
@@ -1572,6 +1851,8 @@ module.exports={
     addaddress,
     addaddresspost,
     cancelorder,
-    returnproduct
+    returnproduct,
+    deleteaddress,
+    wallethistory
 
 }

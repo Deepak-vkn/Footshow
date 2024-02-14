@@ -49,14 +49,17 @@ route.post('/profile',usermiddle.islogin,usercontroll.profileedit)
 route.post('/updatepassword',usermiddle.islogin,usercontroll.updatepassword)
 route.post('/createaddress',usermiddle.islogin,usercontroll.createaddress)
 route.get('/editaddress',usermiddle.islogin,usercontroll.editaddress)
-route.post('/editaddress',usermiddle.islogin,usercontroll.editaddresspost)
+route.get('/deleteaddress',usermiddle.islogin,usercontroll.deleteaddress)
+route.post('/returnproduct',usercontroll.returnproduct)
 route.get('/addaddress',usermiddle.islogin,usercontroll.addaddress)
 route.post('/addaddress',usermiddle.islogin,usercontroll.addaddresspost)
 route.get('/cancelorder',usermiddle.islogin,usercontroll.cancelorder)
 route.post('/returnproduct',usercontroll.returnproduct)
+route.get('/wallethistory',usermiddle.islogin,usercontroll.wallethistory)
+
+
 
 //cart
-
 route.post('/addtocart',cartcontroll.addtocart)
 route.get('/cart',usermiddle.islogin,cartcontroll.loadcart)
 route.post('/cartupdate',usermiddle.islogin,cartcontroll.updateacart)
@@ -69,17 +72,17 @@ route.post('/stockcheck',usermiddle.islogin,cartcontroll.stockcheck)
 
 route.get('/checkout',usermiddle.islogin,checkoutcontroll.loadcheckout)
 route.post('/checkout',usermiddle.islogin,checkoutcontroll.payment)
-route.get('/success',checkoutcontroll.ordersuccess)
+route.get('/success',usermiddle.islogin,checkoutcontroll.ordersuccess)
 route.post('/verifypayment',checkoutcontroll.verifypayment)
-route.get('/applycoupon',checkoutcontroll.applycoupon)
+route.get('/applycoupon',usermiddle.islogin,checkoutcontroll.applycoupon)
 
 
 // wishlist
 
 route.post('/addtowishlist',wishlistcontroll.addtowishlist)
-route.get('/wishlist',wishlistcontroll.loadwishlist)
-route.get('/addtocartwish',wishlistcontroll.addtocart)
-route.get('/removewishlist',wishlistcontroll.removewishlist)
+route.get('/wishlist',usermiddle.islogin,wishlistcontroll.loadwishlist)
+route.get('/addtocartwish',usermiddle.islogin,wishlistcontroll.addtocart)
+route.get('/removewishlist',usermiddle.islogin,wishlistcontroll.removewishlist)
 
 
 

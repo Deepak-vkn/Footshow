@@ -120,3 +120,9 @@
 .btn-wishlist.active i {
     color: green;  /* Add your desired color for both text and icon */
 }
+
+.offer-text {
+    font-size: 15px; /* Adjust the font size as needed */
+    color: hsla(35, 87%, 62%, 0.889); /* Change the color as needed */
+    font-weight: bold; 
+  }
