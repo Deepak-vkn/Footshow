@@ -12,6 +12,9 @@ const nodemailer=require('nodemailer')
 const SendmailTransport = require('nodemailer/lib/sendmail-transport')
 const Coupon=require('../models/coupon')
 const Offer=require('../models/offer')
+const Banner=require('../models/banner')
+const puppeteer = require('puppeteer');
+const ejs = require('ejs');
 
 //home-----------------------------------------------------------------------------
 const home=async(req,res)=>{
@@ -20,6 +23,14 @@ const home=async(req,res)=>{
         let user
         let cartcount
         let wishcount
+        const home1=await Banner.findOne({name:'Home1'})
+        const home2=await Banner.findOne({name:'Home2'})
+        const ladies=await Banner.findOne({name:'Ladies'})
+        const mens=await Banner.findOne({name:'Mens'})
+        const football=await Banner.findOne({name:'Football'})
+        const sports=await Banner.findOne({name:'Sports'})
+
+        
         const products = await Product.find({status:'Active'}) .populate({
             path: 'category',
             populate: {
@@ -54,11 +65,11 @@ const home=async(req,res)=>{
            
 
 
-            res.render('home',{track,product,user,cartcount,wishcount})
+            res.render('home',{track,product,user,cartcount,wishcount,home1,home2,ladies,mens,football,sports})
         }
         else{
             track=false
-            res.render('home',{track,product,user})
+            res.render('home',{track,product,user,home1,home2,ladies,mens,football,sports})
         }
        
 
@@ -101,7 +112,10 @@ const loadlogin=async(req,res)=>{
 const loadregister=async(req,res)=>{
     try {
         let message
-        res.render('register',{message})
+        let code
+        code=req.query.referralCode
+ 
+        res.render('register',{message,code})
     } catch (error) {
         console.log(error.message);
         
@@ -111,9 +125,10 @@ const loadregister=async(req,res)=>{
 //register--------------------------------------------------------------------------------
 const register = async (req, res) => {
     try {
+        let code
         const mail = req.body.email;
         const confirmpass= req.body.password2
-        console.log(req.body.password)
+        code=req.body.code
         const userExist = await User.findOne({ email: mail });
         // console.log(`user ${userExist}`)
 
@@ -146,7 +161,9 @@ const register = async (req, res) => {
     
                     const userData = await user.save();
                     const id = userData._id;
-                  
+                    if(code){
+                        req.session.code=code
+                    }
                     // Redirect to OTP page
                     //return res.redirect(`/otp?id=${id}&mail=${mail}`);
                     return res.redirect(`/otpgenerte?id=${id}&mail=${mail}`);
@@ -333,14 +350,38 @@ const verifyotp=async(req,res)=>{
             else{
                         
                 const verify=await Otp.findOne({userid:id})
-                const dbotp=await verify.otp;
+                const dbotp= await verify.otp;
                 const finalcheck= await bcrypt.compare(otp,dbotp)
             
 
                 if(finalcheck){
                 await Otp.deleteMany({userid:id})
-                await User.updateOne({_id:id},{ $set: { verified: true } })
+
+                //refererl
+                const code=generateReferralCode()
+
+                function generateReferralCode() {
+                    return Math.random().toString(36).substring(2, 8).toUpperCase();
+                  }
+
+
+
+
+              await User.updateOne({_id:id},{ $set: { verified: true ,referral:code} })
                 console.log("user regster success");
+
+                if(req.session.code){
+                console.log('raeched code walleta dding')
+                console.log('code is',req.session.code)
+                    const user= await User.findOne({referral:req.session.code})
+
+                    user.wallet=user.wallet+100
+                    await user.save()
+                    const newuser= await User.findOne({_id:id,verified: true})
+                    newuser.wallet=newuser.wallet+50
+                    await newuser.save()
+                    req.session.code=null
+                }
                 //res.render('login',{message})
                 res.json({success:true,message:'User succesfully registerd'})
                 }
@@ -401,7 +442,7 @@ const verifylogin=async(req,res)=>{
                 //console.log(req.session.userdata);
                 const track=req.session.userid
          
-                res.redirect('/')
+                res.redirect('/profile')
 
 
             }
@@ -497,6 +538,8 @@ const loadshop = async (req, res) => {
          filterquery = { 'status': 'Active' };
  
         }
+        const shop=await Banner.findOne({name:'Shop'})
+
    
 
          //sort----------
@@ -599,7 +642,7 @@ const loadshop = async (req, res) => {
             }
            
             
-            res.render('shop', { product, category, user, track, totalPages, currentPage,cartcount ,wishcount});
+            res.render('shop', { product, category, user, track, totalPages, currentPage,cartcount ,wishcount,shop});
         } 
         
         else {
@@ -654,7 +697,7 @@ const loadshop = async (req, res) => {
             totalproducts=product.length
             totalPages = Math.ceil(totalproducts / 12);
             const category = await Category.find({'Status':'Active'});
-            res.render('shop', { product, category, user, track, totalPages, currentPage });
+            res.render('shop', { product, category, user, track, totalPages, currentPage,shop });
             
         }
     } catch (error) {
@@ -770,7 +813,7 @@ const loadmen=async(req,res)=>{
           let sortOptions
          
 
-
+          const men=await Banner.findOne({name:'Men'})
           if(filtercata.length>0){
            filterquery={
                'category': { $in: filtercata },
@@ -884,7 +927,7 @@ const loadmen=async(req,res)=>{
             
 
 
-            res.render('men',{product,category,user,track,currentPage,totalPages,cartcount,wishcount})
+            res.render('men',{product,category,user,track,currentPage,totalPages,cartcount,wishcount,men})
         }
         else{
             
@@ -941,7 +984,7 @@ const loadmen=async(req,res)=>{
             totalproducts=product.length
             totalPages=Math.ceil(totalproducts/12)
            
-            res.render('men',{product,category,user,track,totalPages,currentPage})
+            res.render('men',{product,category,user,track,totalPages,currentPage,men})
            
             
         }
@@ -970,7 +1013,7 @@ const loadwomen=async(req,res)=>{
         let sortOptions
         let currentPage = parseInt(req.query.page, 10) || 1;
         const skip=(currentPage-1)*12
-
+        const women=await Banner.findOne({name:'Women'})
         let filter=req.query.filter
           const filtercata=filter?filter.split(','):[]
           let filterquery={}
@@ -1089,7 +1132,7 @@ const loadwomen=async(req,res)=>{
 
            
        
-          res.render('women',{product,category,user,track,currentPage,totalPages,cartcount,wishcount})
+          res.render('women',{product,category,user,track,currentPage,totalPages,cartcount,wishcount,women})
       }
       else{
 
@@ -1143,7 +1186,7 @@ const loadwomen=async(req,res)=>{
         });
         totalproducts=product.length
         totalPages=Math.ceil(totalproducts/12)
-          res.render('women',{product,category,user,track,currentPage,totalPages})
+          res.render('women',{product,category,user,track,currentPage,totalPages,women})
          
           
       }
@@ -1749,7 +1792,7 @@ const returnproduct= async(req,res)=>{
     try {
         const{reason,index,orderId}=req.body
         const order=await Order.findOne({_id:orderId})
-        console.log(order)
+        
         order.products[index].status='Return Request'
         order.products[index].return=reason
         const updated= await order.save()
@@ -1822,6 +1865,49 @@ const wallethistory=async(req,res)=>{
 }
 
 
+//createinvoice-------------------------------------------------------------
+
+
+
+const createinvoice=async(req,res)=>{
+
+    try {
+     
+        const oid=req.query.id
+        const order= await Order.findOne({_id:oid})
+        if(order.payementstatus==='Cash on delivery'){
+            order.products = order.products.filter(product => product.status === 'Delivered');
+        }
+        
+        const html = await ejs.renderFile('views/user/invoice.ejs', {order});
+
+        // Generate PDF using puppeteer
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setContent(html);
+
+        // Adjust options as needed
+        const pdfBuffer = await page.pdf({ format: 'A4' });
+        await browser.close();
+
+        // Send PDF as a response
+        res.contentType('application/pdf');
+        res.send(pdfBuffer);
+
+
+        
+    } catch (error) {
+
+        console.log(error.message)
+    }
+
+
+}
+
+
+
+
+
 
 
 module.exports={
@@ -1853,6 +1939,7 @@ module.exports={
     cancelorder,
     returnproduct,
     deleteaddress,
-    wallethistory
+    wallethistory,
+    createinvoice
 
 }

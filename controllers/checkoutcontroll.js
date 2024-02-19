@@ -42,6 +42,8 @@ const loadcheckout=async(req,res)=>{
         )
 
 
+
+
         if( req.session.folow){
             const mail=req.session.userid
             if(mail){
@@ -52,7 +54,81 @@ const loadcheckout=async(req,res)=>{
                 const uid=user._id
                 req.session.payment=uid
 
-                const cart= await Cart.findOne({userid:uid}).populate('products.productid').lean();
+
+
+                    const cart = await Cart.findOne({ userid: uid })
+                    .populate({
+                        path: 'products.productid',
+                        model: 'Product',
+                        populate: [
+                            {
+                                path: 'category',
+                                model: 'Category',
+                                populate: {
+                                    path: 'offer',
+                                    model: 'Offer',
+                                },
+                            },
+                            { path: 'offer', model: 'Offer' },
+                        ],
+                    });
+                    
+
+                    //update the cart according to the offer---------------------------------
+
+                    for (const cartProduct of cart.products) {
+                        const product = cartProduct.productid;
+      
+                        if (product.offer) {
+                            const productOfferEndDate = new Date(product.offer.endDate);
+      
+                            if (productOfferEndDate < new Date()) {
+                                await Product.findByIdAndUpdate(product._id, { $set: { offer: null } });
+                            }
+                        }
+      
+                        if (product.category && product.category.offer) {
+                            const categoryOfferEndDate = new Date(product.category.offer.endDate);
+      
+                            if (categoryOfferEndDate < new Date()) {
+                                await Category.findByIdAndUpdate(product.category._id, { $set: { offer: null } });
+                            }
+                        }
+                    }
+      
+                    cart.products.forEach((product) => {
+                        if (product.productid.offer && product.productid.offer.status) {
+                            const originalPrice = product.productid.price;
+                            const discountPercentage = product.productid.offer.percentage;
+                            const discountAmount = (originalPrice * discountPercentage) / 100;
+                            const discountedPrice = originalPrice - discountAmount;
+      
+                            product.price = discountedPrice;
+                            product.totalprice = discountedPrice * product.quantity;
+                        } else if (product.productid.category && product.productid.category.offer  && product.productid.category.offer.status) {
+                            const originalPrice = product.productid.price;
+                            const discountPercentage = product.productid.category.offer.percentage;
+                            const discountAmount = (originalPrice * discountPercentage) / 100;
+                            const discountedPrice = originalPrice - discountAmount;
+      
+                            product.price = discountedPrice;
+                            product.totalprice = discountedPrice * product.quantity;
+                        } else {
+                            product.price = product.productid.price;
+                            product.totalprice = product.price * product.quantity;
+                        }
+                    });
+      
+                    await cart.save();
+                    cart.total = cart.products.reduce((total,product) => {
+                      
+                      return total + product.totalprice;
+                  }, 0);
+                  await cart.save()
+                  //--------------------------------------------------------------------------------//
+
+
+
                 cartcount=cart.products.length
                 const wallet= user.wallet
                 const total= cart.total
@@ -149,7 +225,6 @@ const payment=async(req,res)=>{
                     //coupon management
 
                     if(code){
-                        console.log('raehed code')
                         const coupon=await Coupon.findOne({code:code})
 
                         const offer=coupon.offeramount
@@ -182,7 +257,7 @@ const payment=async(req,res)=>{
                         neworder.products.forEach((product) => {
                             product.status = 'Placed';
                         });
-                        neworder.payementstatus='Success'
+                        neworder.payementstatus='Cash on delivery'
                         const chek=neworder.save()
                     if(chek){
 

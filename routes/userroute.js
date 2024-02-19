@@ -87,6 +87,10 @@ route.get('/removewishlist',usermiddle.islogin,wishlistcontroll.removewishlist)
 
 
 
+//invoice
+
+route.get('/createinvoice',usercontroll.createinvoice)
+
 
 
 

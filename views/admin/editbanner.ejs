@@ -1,0 +1,51 @@
+<%- include('../layout2/header') -%>
+<section class="content-main mt-80 mb-80">
+    <div class="card mx-auto card-login">
+        <div class="card-body">
+            <h4 class="card-title mb-4" style="text-align: center">Add a new Banner</h4>
+            <form action="/admin/editbanner?id=<%= banner._id %>" method="POST" id="bannerForm" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input class="form-control" placeholder="Your name" type="text" name="name" value="<%= banner.name %>" required disabled>
+                </div> <!-- form-group// -->
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea placeholder="Type here" class="form-control" id="description" name="description" required><%= banner.description %></textarea>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div>
+                            <label class="form-label">Image</label>
+                            <img src="/images/<%= banner.image %>" alt="Product Image" style="width: 30px; height: 30px; margin-right: 5px;">
+                            <input type="file" class="form-control" name="image" accept="image/*"  id="addimage">
+                        </div>
+                    </div>
+                </div> <!-- card end// -->
+                <div id="alert"></div>
+                <div id="alert-containersucess"></div>
+                <div class="mb-3">
+                    <p class="small text-center text-muted">Enter the details to edit the banner</p>
+                </div> <!-- form-group .// -->
+                <% if (locals.message) { %>
+                    <p id="alert"><%= message %></p>
+                <% } %>
+                <div class="mb-4">
+                    <!-- Change type to "submit" -->
+                    <button type="submit" class="btn btn-primary w-100">EDIT</button>
+                </div> <!-- form-group// -->
+                <!-- form-group// -->
+            </form>
+            
+            <div class="mb-4">
+                <a href="/admin/banner" class="btn btn-secondary w-100">Cancel</a>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<script>
+   
+    </script>
+
+<%- include('../layout2/footer') -%>

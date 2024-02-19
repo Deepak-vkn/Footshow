@@ -1,0 +1,85 @@
+<%- include('../layout2/header') -%>
+<section class="content-main mt-80 mb-80">
+    <div class="card mx-auto card-login">
+        <div class="card-body">
+            <h4 class="card-title mb-4" style="text-align: center">Add a new Banner</h4>
+            <form action="/admin/addbanner" method="POST" id="bannerForm" enctype="multipart/form-data">
+                
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input class="form-control" placeholder="Your name" type="text" name="name" required>
+                </div> <!-- form-group// -->
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea placeholder="Type here" class="form-control"  id="description"  name="description" required></textarea>
+                </div>
+              
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div>
+                            <label class="form-label">Image</label>
+                            <input type="file" class="form-control" name="image" accept="image/*" required id="addimage">
+
+                        </div>
+                    </div>
+                </div> <!-- card end// -->
+                
+                <div id="alert"></div>
+                <div id="alert-containersucess"></div>
+                <div class="mb-3">
+                    <p class="small text-center text-muted">Enter the detailes to add a new banner</p>
+                </div> <!-- form-group  .// -->
+                <div class="mb-4">
+                    <button type="button" onclick="submitForm()" class="btn btn-primary w-100">ADD</button>
+                </div> <!-- form-group// -->
+                 <!-- form-group// -->
+            </form>
+            <div class="mb-4">
+                <a href="/admin/banner" class="btn btn-secondary w-100">Back</a>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<script>
+   function submitForm() {
+    const form = document.getElementById('bannerForm');
+    const formData = new FormData(form);
+    const alert=document.getElementById('alert')
+    const alert_containersucess=document.getElementById('alert-containersucess')
+    fetch('/admin/addbanner', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json(); 
+        })
+        .then(data => {
+           
+            if(data.success){
+                console.log('raeched sucess')
+                alert_containersucess.innerHTML=data.message
+                form.reset();
+            }
+            else{
+                alert.innerHTML=data.message
+            }
+            
+        })
+        .catch(error => {
+            alert.innerHTML='internal server error'
+            console.error('Error:', error);
+            // Handle errors here
+        });
+    }
+    </script>
+
+<%- include('../layout2/footer') -%>

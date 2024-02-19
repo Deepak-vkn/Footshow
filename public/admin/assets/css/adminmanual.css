@@ -155,6 +155,16 @@
         border: none;
         cursor: pointer;
     }
+    
+    .even-row {
+        background-color: #f2f2f2; /* Light background color for even rows */
+    }
+
+    .odd-row {
+        background-color: #ffffff; /* Background color for odd rows */
+    }
+
+
 
 
   

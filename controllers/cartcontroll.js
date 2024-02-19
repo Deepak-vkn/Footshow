@@ -13,7 +13,7 @@ const path = require('path');
 const sharp=require('sharp')
 const Coupon=require('../models/coupon')
 const Offer=require('../models/offer')
-
+const Banner=require('../models/banner')
 //add to cart ----------------------------
 
 const addtocart=async(req,res)=>{
@@ -68,13 +68,13 @@ const addtocart=async(req,res)=>{
             const cartcheck=await Cart.findOne({userid:uid})
             let price = prdct.price; // Default to the original price
 
-        if (prdct.offer) {
+        if (prdct.offer && prdct.offer.status) {
             const originalPrice = prdct.price;
             const discountPercentage = prdct.offer.percentage;
             const discountAmount = (originalPrice * discountPercentage) / 100;
             const discountedPrice = originalPrice - discountAmount;
             price = discountedPrice;
-        } else if (prdct.category && prdct.category.offer) {
+        } else if (prdct.category && prdct.category.offer && prdct.category.offer.status) {
             const originalPrice = prdct.price;
             const discountPercentage = prdct.category.offer.percentage;
             const discountAmount = (originalPrice * discountPercentage) / 100;
@@ -215,7 +215,7 @@ const loadcart = async (req, res) => {
       const usermail = req.session.userid;
       let wishcount;
       let cartcount;
-
+      const cartbanner=await Banner.findOne({name:'Cart'})
       // Delete expired offer
       await Product.updateMany(
           { 'offer.endDate': { $lt: new Date() } },
@@ -277,7 +277,7 @@ const loadcart = async (req, res) => {
               }
 
               cart.products.forEach((product) => {
-                  if (product.productid.offer) {
+                  if (product.productid.offer && product.productid.offer.status) {
                       const originalPrice = product.productid.price;
                       const discountPercentage = product.productid.offer.percentage;
                       const discountAmount = (originalPrice * discountPercentage) / 100;
@@ -285,7 +285,7 @@ const loadcart = async (req, res) => {
 
                       product.price = discountedPrice;
                       product.totalprice = discountedPrice * product.quantity;
-                  } else if (product.productid.category && product.productid.category.offer) {
+                  } else if (product.productid.category && product.productid.category.offer && product.productid.category.offer.status) {
                       const originalPrice = product.productid.price;
                       const discountPercentage = product.productid.category.offer.percentage;
                       const discountAmount = (originalPrice * discountPercentage) / 100;
@@ -309,7 +309,7 @@ const loadcart = async (req, res) => {
               const total = cart.total;
               const cartcount = cart.products.length;
 
-              res.render('cart', { cart, total, track, user, cartcount, wishcount });
+              res.render('cart', { cart, total, track, user, cartcount, wishcount,cartbanner });
           } else {
               res.render('cart', { track, user, wishcount });
           }
@@ -325,7 +325,7 @@ const loadcart = async (req, res) => {
 };
 
 
-//cart update-------------------------------------------------
+//cart update-----------------------------------------------------------------------------------------------
 
 
 const updateacart=async(req,res)=>{
@@ -373,14 +373,14 @@ const updateacart=async(req,res)=>{
            }
            else{
             
-            if(product.offer){
+            if(product.offer && product.offer.status){
               const originalPrice = product.price;
               const discountPercentage = product.offer.percentage;
               const discountAmount = (originalPrice * discountPercentage) / 100;
               const discountedPrice = originalPrice - discountAmount;
               price=discountedPrice
             }
-            else if(product.category.offer){
+            else if(product.category.offer && product.category.offer){
               const originalPrice = product.price;
               const discountPercentage = product.category.offer.percentage;
               const discountAmount = (originalPrice * discountPercentage) / 100;

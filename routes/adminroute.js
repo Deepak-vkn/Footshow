@@ -2,6 +2,10 @@ const express=require('express')
 const route=express()
 const admincontroll=require('../controllers/admincontroll')
 const productcontroll=require('../controllers/productcontroll')
+const catagorycontroll=require('../controllers/catagorycontroll')
+const ordercontroll=require('../controllers/ordercontroll')
+const couponcontroll=require('../controllers/couponcontroll')
+const offercontroll=require('../controllers/offercontroll')
 const bodyparser=require('body-parser')
 const path = require('path')
 const adminmiddle=require('../middleware/adminmiddle')
@@ -48,6 +52,20 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
+const storages = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '../public/images'));
+    // cb(null, join(__dirname, '..', 'public', 'uploads')); // it is also applicable but that time enable {join} upward.
+  },
+  filename: function (req, file, cb) {
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().replace(/:/g, '-').replace(/\..+/, '');
+    const name = formattedDate + '_' + file.originalname;
+    cb(null, name);
+  },
+});
+
+const uploads = multer({ storage: storage });
 
 
 
@@ -61,14 +79,18 @@ route.get('/users',adminmiddle.islogin,admincontroll.loaduser)
 route.get('/block',adminmiddle.islogin,admincontroll.blockuser)
 route.get('/unblock',adminmiddle.islogin,admincontroll.unblockuser)
 route.get('/sales',admincontroll.loadsales)
+
+
 //catagory
-route.get('/category',admincontroll.loadcategory)
-route.post('/category',admincontroll.addcategory)
-route.get('/addcata',adminmiddle.islogin,admincontroll.loaddcata)
-route.post('/updatecata',admincontroll.updatecata)
-route.get('/catablock',adminmiddle.islogin,admincontroll.catablock)
-route.get('/cataunblock',adminmiddle.islogin,admincontroll.cataunblock)
-route.get('/catadelete',admincontroll.catadelete)
+route.get('/category',catagorycontroll.loadcategory)
+route.post('/category',catagorycontroll.addcategory)
+route.get('/addcata',adminmiddle.islogin,catagorycontroll.loaddcata)
+route.post('/updatecata',catagorycontroll.updatecata)
+route.get('/catablock',adminmiddle.islogin,catagorycontroll.catablock)
+route.get('/cataunblock',adminmiddle.islogin,catagorycontroll.cataunblock)
+route.get('/catadelete',catagorycontroll.catadelete)
+
+
 
 
 //product
@@ -85,39 +107,52 @@ route.post('/editproduct', upload.fields([{ name: 'newImages', maxCount: 4 }, { 
 route.get('/deleteimage',adminmiddle.islogin,productcontroll.deleteimage)
 route.get('/logout',admincontroll.logout)
 
+
+
+
 //orders
 
-route.get('/orders',adminmiddle.islogin,admincontroll.loadorder)
-route.post('/orderstatus',admincontroll.orderstatus)
-route.post('/returnrequest',admincontroll.returnrequest)
+route.get('/orders',adminmiddle.islogin,ordercontroll.loadorder)
+route.post('/orderstatus',ordercontroll.orderstatus)
+route.post('/returnrequest',ordercontroll.returnrequest)
+
+
 
 
 // coupon 
 
-route.get('/coupon',adminmiddle.islogin,admincontroll.couponload)
-route.get('/addcoupon',adminmiddle.islogin,admincontroll.addcouponlaod)
-route.post('/addcoupon',admincontroll.submitaddcoupon)
-route.get('/editcoupon',adminmiddle.islogin,adminmiddle.islogin,admincontroll.loadedit)
-route.post('/editcoupon',admincontroll.editcoupon)
-route.delete('/deletecoupon',admincontroll.deletecoupon)
+route.get('/coupon',adminmiddle.islogin,couponcontroll.couponload)
+route.get('/addcoupon',adminmiddle.islogin,couponcontroll.addcouponlaod)
+route.post('/addcoupon',couponcontroll.submitaddcoupon)
+route.get('/editcoupon',adminmiddle.islogin,couponcontroll.loadedit)
+route.post('/editcoupon',couponcontroll.editcoupon)
+route.delete('/deletecoupon',couponcontroll.deletecoupon)
+
 
 
 //offer
 
-route.get('/offer',admincontroll.offerload)
-route.get('/addoffer',admincontroll.loadaddoffer)
-route.post('/addoffer',admincontroll.offerpost)
-route.get('/editoffer',admincontroll.editofferload)
-route.post('/editoffer',admincontroll.editoffer)
-route.get('/deleteoffer',admincontroll.deleteoffer)
-route.post('/offerapply',admincontroll.applyoffer)
- route.post('/removeoffer',admincontroll.removeoffer)
- route.post('/cataofferapply',admincontroll.applyoffercata)
- route.post('/cataremoveoffer',admincontroll.removecataoffer)
+route.get('/offer',offercontroll.offerload)
+route.get('/addoffer',offercontroll.loadaddoffer)
+route.post('/addoffer',offercontroll.offerpost)
+route.get('/editoffer',offercontroll.editofferload)
+route.post('/editoffer',offercontroll.editoffer)
+route.get('/deleteoffer',offercontroll.deleteoffer)
+route.post('/offerapply',offercontroll.applyoffer)
+ route.post('/removeoffer',offercontroll.removeoffer)
+ route.post('/cataofferapply',offercontroll.applyoffercata)
+ route.post('/cataremoveoffer',offercontroll.removecataoffer)
 
 
 
+//banner
 
+route.get('/banner',admincontroll.loadbanner)
+route.get('/addbanner',admincontroll.loadaddbanner)
+route.post('/addbanner', uploads.single('image'), admincontroll.addbanner);
+route.get('/editbanner',admincontroll.loadeditbanner)
+route.post('/editbanner',uploads.single('image'),admincontroll.editbanner)
+route.delete('/deletebanner',admincontroll.deletebanner)
 
 
 
