@@ -241,14 +241,14 @@ const addtocart= async(req,res)=>{
                 price = discountedPrice;
             }
 
-            // const price = parseInt(product.price, 10);
+    
 
 
             const cart= await Cart.findOne({userid:uid})
 
             
             if(cart){
-                //cart exist
+        
 
                 const pcheck=await Cart.findOne({'products.productid':pid})
                 if(pcheck){
@@ -293,7 +293,7 @@ const addtocart= async(req,res)=>{
                 }
 
                 else{
-                        //console.log('proct dont exist in cart')
+                        
                         const cartnew =await Cart.updateOne({userid:uid},{ $push:{
                         products: {
                         productid: pid,
@@ -320,18 +320,18 @@ const addtocart= async(req,res)=>{
                         await Wishlist.deleteOne({ userid: uid })
                     }
                     res.json({ success: true, message: 'Product added to cart' });
-                   //console.log('added to extsing crt')
+                   
                    }
                    else{
                     res.json({ success: false, message: 'Failed to add to cart' });
-                  //console.log('failed to add to exsting cart')
+        
                    }
                 }
 
 
             }
             else{
-                //no cart
+            
 
                 const cartnew= new Cart({
                     userid:uid,
@@ -360,18 +360,18 @@ const addtocart= async(req,res)=>{
                         await Wishlist.deleteOne({ userid: uid })
                     }
                     res.json({ success: true, message: 'Product added to cart' });
-                    //console.log('addto cart')
+                
                   }
                   else{
                     res.json({ success: false, message: 'Failed to add to cart' });
-                    //console.log('failed to add cart'
+                    
                   }
                 
             }
         }
         else{
             res.json({ success: false, message: 'Product not found' });
-            //no product
+    
         }
 
         
@@ -396,7 +396,7 @@ const removewishlist = async (req, res) => {
             const product = await Product.findOne({ _id: pid })
             const wishlist = await Wishlist.findOne({ userid: uid })
             if (wishlist) {
-                //wishlist found
+        
 
                 const update = await Wishlist.updateOne(
                     { userid: uid },
@@ -414,7 +414,7 @@ const removewishlist = async (req, res) => {
 
             } else {
                 res.json({ success: false, message: 'Wishlist not found' })
-                //wishlist not found
+            
             }
 
         } else {

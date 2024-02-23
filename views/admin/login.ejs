@@ -2,9 +2,10 @@
     <main>
        
         <section class="content-main mt-100 mb-100" >
+       
             <div class="card mx-auto card-login" style="height: 400px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);">
                 <div class="card-body text-center">
-                    <h3 class="card-title mb-4">SIGN IN</h3>
+                    <h3 class="card-title mb-4">ADMIN SIGN IN</h3>
                     <form href="'/admin" method="POST">
                         <div class="mb-3">
                             <input class="form-control" placeholder="Username or email" type="text" name="email">
@@ -45,23 +46,23 @@
             var email = document.getElementsByName('email')[0].value;
             var password = document.getElementsByName('password')[0].value;
     
-            // Basic name validation
+        
             if (name.trim() === '') {
                 alert('Name cannot be empty');
                 return false;
             }
     
-            // Basic email format validation
+    
             var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 alert('Invalid email format');
                 return false;
             }
     
-            // Basic password length validation
+    
             
     
-            return true; // Form will be submitted if all validations pass
+            return true; 
         }
     </script>
     <%- include('../layout2/footer') -%>

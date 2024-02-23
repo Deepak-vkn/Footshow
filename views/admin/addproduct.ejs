@@ -314,68 +314,67 @@
         var category = document.getElementById('product-cat').value;
         var images = document.getElementsByName('image')[0].files;
 
-        // Basic name validation
+        
         if (productName.trim() === '') {
             alert('Product Name cannot be empty');
             return false;
         }
 
-        // Gender validation
+
         if (!gender) {
             alert('Please select a gender');
             return false;
         }
 
-        // Basic color validation
+        
         if (color.trim() === '') {
             alert('Color cannot be empty');
             return false;
         }
 
-        // Basic size validation
+
         if (size.trim() === '') {
             alert('Size cannot be empty');
             return false;
         }
 
-        // Basic brand validation
+    
         if (brand.trim() === '') {
             alert('Brand cannot be empty');
             return false;
         }
 
-        // Basic description validation
+    
         if (description.trim() === '') {
             alert('Description cannot be empty');
             return false;
         }
 
-        // Price validation - Check if it is a valid number
+    
         if (isNaN(parseFloat(price)) || !isFinite(price)) {
             alert('Please enter a valid price');
             return false;
         }
 
-        // Basic status validation
+        
         if (status.trim() === '') {
             alert('Please select a status');
             return false;
         }
 
-        // Basic category validation
+        
         if (category.trim() === '' || category === '<% category._id %>') {
             alert('Please select a category');
             return false;
         }
 
-        // Images validation - Check if at least one image is selected
+        
         if (images.length === 0) {
             alert('Please select at least one image');
             return false;
         }
         
-        // Basic category validation
-        // Basic category validation
+       
 if (category.trim() === '' || category === '<%= category[0]._id %>') {
     alert('Please select a category');
     return false;
@@ -383,11 +382,11 @@ if (category.trim() === '' || category === '<%= category[0]._id %>') {
 
 
 
-        return true; // Form will be submitted if all validations pass
+        return true; 
     }
    
 
-    //previe
+    //preview
     document.getElementById('addimage').addEventListener('change', function () {
         var maxImages = 4;
         var selectedImages = this.files.length;
@@ -404,17 +403,16 @@ if (category.trim() === '' || category === '<%= category[0]._id %>') {
             this.value = '';
         }
         else {
-        // If within the limit, call the preview function
+
         previewImages();
     }
     });
 
-    //sweet alert 
 function previewImages() {
     const inputFile = document.getElementById('addimage');
     const imagePreview = document.getElementById('image-preview');
     
-    imagePreview.innerHTML = ''; // Clear previous previews
+    imagePreview.innerHTML = ''; 
 
     for (const file of inputFile.files) {
         const reader = new FileReader();
@@ -423,10 +421,8 @@ function previewImages() {
             const imgContainer = document.createElement('div');
             const img = document.createElement('img');
             img.src = e.target.result;
-            img.style.width = '100px'; // Set a desired width for the preview
-            img.style.height = '100px'; // Set a desired height for the preview
-
-            // Attach click event to open SweetAlert when clicking on the previewed image
+            img.style.width = '100px'; 
+            img.style.height = '100px'; 
             imgContainer.addEventListener('click', () => {
                 openSweetAlert(img.src);
             });

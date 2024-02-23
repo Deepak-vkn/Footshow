@@ -37,25 +37,6 @@
 #txt{
     color:white
 }
-.dropdown-toggle {
-    position: relative;
-}
-
-.dropdown-toggle::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: -18px;
-    transform: translateY(-50%);
-    border: 5px solid transparent; /* Reduce size */
-    border-top-color:white; /* Change color as needed */
-}
-.dropdown-logout a.btn {
-    background-color: #fff; /* Set background color to white */
-    color: #000; /* Set text color to black */
-    font-size: 14px; /* Adjust font size as needed */
-    padding: 8px 16px; /* Adjust padding as needed */
-}
 
   #home-image{
     height: 377px;
@@ -127,5 +108,11 @@
     font-weight: bold; 
   }
 
-
+  .banner img {
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* This ensures that the aspect ratio is maintained while covering the area */
+}
   /* invoice */
+
+  

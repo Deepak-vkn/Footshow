@@ -96,7 +96,7 @@ route.get('/catadelete',catagorycontroll.catadelete)
 //product
 route.get('/productlist',productcontroll.loadproduct)
 route.get('/addproduct',adminmiddle.islogin,productcontroll.loadaddproduct)
-route.post('/addproduct', upload.array('image', 10), productcontroll.addproduct);
+route.post('/addproduct',adminmiddle.islogin, upload.array('image', 10), productcontroll.addproduct);
 route.get('/productblock',adminmiddle.islogin,productcontroll.blockproduct)
 route.get('/productunblock',adminmiddle.islogin,productcontroll.productunblock)
 route.get('/deleteproduct',productcontroll.deleteproduct)
@@ -132,12 +132,12 @@ route.delete('/deletecoupon',couponcontroll.deletecoupon)
 
 //offer
 
-route.get('/offer',offercontroll.offerload)
-route.get('/addoffer',offercontroll.loadaddoffer)
+route.get('/offer',adminmiddle.islogin,offercontroll.offerload)
+route.get('/addoffer',adminmiddle.islogin,offercontroll.loadaddoffer)
 route.post('/addoffer',offercontroll.offerpost)
-route.get('/editoffer',offercontroll.editofferload)
+route.get('/editoffer',adminmiddle.islogin,offercontroll.editofferload)
 route.post('/editoffer',offercontroll.editoffer)
-route.get('/deleteoffer',offercontroll.deleteoffer)
+route.get('/deleteoffer',adminmiddle.islogin,offercontroll.deleteoffer)
 route.post('/offerapply',offercontroll.applyoffer)
  route.post('/removeoffer',offercontroll.removeoffer)
  route.post('/cataofferapply',offercontroll.applyoffercata)
@@ -147,12 +147,14 @@ route.post('/offerapply',offercontroll.applyoffer)
 
 //banner
 
-route.get('/banner',admincontroll.loadbanner)
-route.get('/addbanner',admincontroll.loadaddbanner)
+route.get('/banner',adminmiddle.islogin,admincontroll.loadbanner)
+route.get('/addbanner',adminmiddle.islogin,admincontroll.loadaddbanner)
 route.post('/addbanner', uploads.single('image'), admincontroll.addbanner);
-route.get('/editbanner',admincontroll.loadeditbanner)
+route.get('/editbanner',adminmiddle.islogin,admincontroll.loadeditbanner)
 route.post('/editbanner',uploads.single('image'),admincontroll.editbanner)
 route.delete('/deletebanner',admincontroll.deletebanner)
+
+
 
 
 

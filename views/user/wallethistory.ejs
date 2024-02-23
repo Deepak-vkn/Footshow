@@ -14,32 +14,91 @@
                             
                 
                             <!-- Display wallet history -->
-                            <div class="order-details">
-                                <h3>Wallet History</h3>
-                                <% if (locals.user && locals.user.walletHistory.length > 0) { %>
-                                    <ul>
-                                        <% 
-                                            // Reverse the walletHistory array to display the latest transactions first
-                                            locals.user.walletHistory.slice().reverse().forEach(transaction => { %>
-                                            <li>
-                                                Amount: <%= transaction.amount %>, 
-                                                Direction: 
-                                                <% if (transaction.direction === 'in') { %>
-                                                    <span style="color: green;"><i class="icon-arrow-right"></i></span>
-                                                <% } else if (transaction.direction === 'out') { %>
-                                                    <span style="color: red;"><i class="icon-arrow-left"></i></span>
-                                                <% } %>
-                                            </li>
+                            <div class="wallet-history-page">
+                                <div class="wallet-history-header bg-transparent text-white">
+                                    <h5 class="wallet-history-title">Wallet History</h5>
+                                </div>
+                                <div class="wallet-history-body p-5">
+                                    <% if (locals.walletHistory) { %>
+                                        <% locals.walletHistory.forEach((transaction, index) => { %>
+                                            <div class="wallet-history-item alert alert-transparent border mb-3" role="alert">
+                                                <% const dateObj = new Date(transaction.date); %>
+                                                <h5 class="wallet-history-date mb-3"><%= index + 1 %>)
+                                                    <span class="month">
+                                                        <%= dateObj.toLocaleString('default', { month: 'long' }) %>
+                                                    </span>
+                                                    <span class="day"><%= dateObj.getDate() %>,</span>
+                                                    <span class="year"><%= dateObj.getFullYear() %></span>
+                                                    <span class="time"><%= dateObj.toLocaleTimeString() %></span>
+                                                </h5>
+                                
+                                                <!-- Display index along with the content -->
+                                                <p class="wallet-history-amount mb-1">
+                                                   
+                                                    <% if (transaction.direction === 'in') { %>
+                                                        <h4 class="text-success fs-5">+<%= transaction.amount %></h4>
+                                                    <% } else { %>
+                                                        <h4 class="text-danger fs-5">-<%= transaction.amount %></h4>
+                                                    <% } %>
+                                                </p>
+                                            </div>
                                         <% }); %>
+                                    <% } else { %>
+                                        <h1>No wallet history available</h1>
+                                    <% } %>
+                                </div>
+                                
+
+
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center">
+                                        <% if (currentPage > 1) { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="/wallethistory?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                    <span class="sr-only">Previous</span>
+                                                </a>
+                                            </li>
+                                        <% } else { %>
+                                            <li class="page-item disabled">
+                                                <span class="page-link" aria-hidden="true">&laquo;</span>
+                                            </li>
+                                        <% } %>
+                                
+                                        <% for (let page = 1; page <= totalPages; page++) { %>
+                                            <li class="page-item <%= currentPage === page ? 'active' : '' %>">
+                                                <a class="page-link" href="/profile?page=<%= page %>"><%= page %></a>
+                                            </li>
+                                        <% } %>
+                                
+                                        <li class="page-item-total">of <%= totalPages %></li>
+                                
+                                        <% if (currentPage < totalPages) { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="/wallethistory?page=<%= currentPage + 1 %>" aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                    <span class="sr-only">Next</span>
+                                                </a>
+                                            </li>
+                                        <% } else { %>
+                                            <li class="page-item disabled">
+                                                <span class="page-link" aria-hidden="true">&raquo;</span>
+                                            </li>
+                                        <% } %>
                                     </ul>
+                                </nav>
+
+
+
+                                
+                                <div class="wallet-history-footer">
                                     <a href="/profile" class="btn btn-outline-primary">
                                         <span>Back to Home</span>
                                         <i class="icon-long-arrow-left"></i>
                                     </a>
-                                <% } else { %>
-                                    <h1>No wallet history available</h1>
-                                <% } %>
+                                </div>
                             </div>
+                            
                             
                         </div>
                     </div><!-- End .form-box -->
@@ -56,7 +115,7 @@
 	            	<div class="row">
 	            		<div class="col-sm-6 col-lg-3">
 	            			<div class="widget widget-about">
-	            				<img src="assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
+	            				<img src="assets/images/icons/footshow3-removebg-preview.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
 	            				<p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
 	            				<div class="social-icons">
@@ -328,5 +387,7 @@
     <script src="assets/js/superfish.min.js"></script>
     <script src="assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
+    <script src="path/to/moment.js"></script>
+
     <script src="assets/js/main.js"></script>
     <%- include('../layout/footer') -%>

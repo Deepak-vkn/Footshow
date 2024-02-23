@@ -7,47 +7,55 @@
             	<div class="container">
             		<div class="form-box">
             			<!-- OTP Verification Heading -->
-                        <a class="nav-link "  href="" id="otp"  >OTP</a>
+                    
 
 <!-- OTP Verification Form -->
-                <div class="tab-pane " id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
-                <form action="/otp" method="POST" id="otpform">
-                    <div class="form-group">
-                        <label for="register-email-2">Enter your otp*</label>
-                        <input type="text" class="form-control" id="register-name-2" name="otp" required>
-                        <p id="alert"></p>
-                        <input type="hidden" name="id" value="<%= locals.id %>" >
-                        <input type="hidden" name="mail" value="<%= locals.mail %>" >
-                    </div>
+<div class="tab-pane" id="register-2" role="tabpanel" aria-labelledby="register-tab-2" style="text-align: center;">
+    <form action="/otp" method="POST" id="otpform">
+        <div class="form-group" style="display: flex; flex-direction: column; align-items: center;">
+            <label for="register-email-2" style="display: block; margin-bottom: 15px; font-weight: bold; font-size: 20px;">Enter your OTP</label>
+            <p style="margin-bottom: 10px; font-size: 14px;">OTP has been sent to your email.</p>
+            <div style="display: flex; max-width: 300px; margin: auto;"> <!-- Adjusted for proper alignment -->
+                <input type="text" style="width: 60px; text-align: center; margin: 5px; font-size: 18px;" maxlength="1" class="form-control otp-input" id="otp-part-1" required>
+                <input type="text" style="width: 60px; text-align: center; margin: 5px; font-size: 18px;" maxlength="1" class="form-control otp-input" id="otp-part-2" required>
+                <input type="text" style="width: 60px; text-align: center; margin: 5px; font-size: 18px;" maxlength="1" class="form-control otp-input" id="otp-part-3" required>
+                <input type="text" style="width: 60px; text-align: center; margin: 5px; font-size: 18px;" maxlength="1" class="form-control otp-input" id="otp-part-4" required>
+                <!-- Hidden field to store the combined OTP value -->
+                <input type="hidden" id="combined-otp" name="otp" required>
+            </div>
+            <input type="hidden" name="code" value="<%= locals.code %>" required>
+            <p id="alert"></p>
+            <input type="hidden" name="id" value="<%= locals.id %>" >
+            <input type="hidden" name="mail" value="<%= locals.mail %>" >
 
-                    <!-- ---------------timer---------------------- -->
+            <!-- ---------------timer---------------------- -->
+            <div id="timer-container">
+                <p id="timer">OTP will expire in: <span id="timer-value"></span></p>
+            </div>
+            <!-- --------------timer end------------------- -->
 
-                    <div id="timer-container">
-                        <p id="timer">OTP will expire in: <span id="timer-value"></span></p>
-                    </div>
-<!-- --------------timer end------------------- -->
+          
 
+            <!-- Verify button -->
+            <div class="form-footer">
+                <% if (!locals.c) { %>
+                    <button type="submit" class="btn btn-primary btn-rounded">
+                        <span>Verify</span>
+                        
+                    </button><br><br>
+                <% } %>
+            </div>
+             <!-- Resend link -->
+<p><span>If the OTP is not send click to</span><a  href="/otpgenerte?id=<%= locals.id %>&mail=<%= locals.mail %>&code=<%=locals.code %>" id="resendBtn" style="display: none;" >
+    Resend
+    <i class="icon-long-arrow-right" style="font-size: 14px;"></i>
+</a></p>
 
-                    <button  class="btn btn-outline-primary-2" id="resendBtn" disabled>
-                        <a class="nav-link" href='#' id="otplink" disabled>Resend</a>
-                        <i class="icon-long-arrow-right"></i>
-                    </button>
-                    
-                    
+            
+        </div>
+    </form>
+</div>
 
-                    <div class="form-footer">
-                        <% if (!locals.c) { %>
-                            <button type="submit" class="btn btn-outline-primary-2">
-                                <span>Verify</span>
-                                <i class="icon-long-arrow-right"></i>
-                            </button>
-                        <% } %>
-
-                       
-                    </div><!-- End .form-footer -->
-                </form>
-               
-            </div><!-- .End .tab-pane -->
         </div><!-- End .tab-content -->
 
             		</div><!-- End .form-box -->
@@ -55,80 +63,80 @@
             </div><!-- End .login-page section-bg -->
        
             
-        <footer class="footer">
-        	<div class="footer-middle">
-	            <div class="container">
-	            	<div class="row">
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget widget-about">
-	            				<img src="assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
-	            				<p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
-
-	            				<div class="social-icons">
-	            					<a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Pinterest"><i class="icon-pinterest"></i></a>
-	            				</div><!-- End .soial-icons -->
-	            			</div><!-- End .widget about-widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget">
-	            				<h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
-
-	            				<ul class="widget-list">
-	            					<li><a href="about.html">About Molla</a></li>
-	            					<li><a href="#">How to shop on Molla</a></li>
-	            					<li><a href="#">FAQ</a></li>
-	            					<li><a href="contact.html">Contact us</a></li>
-	            					<li><a href="login.html">Log in</a></li>
-	            				</ul><!-- End .widget-list -->
-	            			</div><!-- End .widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget">
-	            				<h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
-
-	            				<ul class="widget-list">
-	            					<li><a href="#">Payment Methods</a></li>
-	            					<li><a href="#">Money-back guarantee!</a></li>
-	            					<li><a href="#">Returns</a></li>
-	            					<li><a href="#">Shipping</a></li>
-	            					<li><a href="#">Terms and conditions</a></li>
-	            					<li><a href="#">Privacy Policy</a></li>
-	            				</ul><!-- End .widget-list -->
-	            			</div><!-- End .widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget">
-	            				<h4 class="widget-title">My Account</h4><!-- End .widget-title -->
-
-	            				<ul class="widget-list">
-	            					<li><a href="#">Sign In</a></li>
-	            					<li><a href="cart.html">View Cart</a></li>
-	            					<li><a href="#">My Wishlist</a></li>
-	            					<li><a href="#">Track My Order</a></li>
-	            					<li><a href="#">Help</a></li>
-	            				</ul><!-- End .widget-list -->
-	            			</div><!-- End .widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-	            	</div><!-- End .row -->
-	            </div><!-- End .container -->
-	        </div><!-- End .footer-middle -->
-
-	        <div class="footer-bottom">
-	        	<div class="container">
-	        		<p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
-	        		<figure class="footer-payments">
-	        			<img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
-	        		</figure><!-- End .footer-payments -->
-	        	</div><!-- End .container -->
-	        </div><!-- End .footer-bottom -->
-        </footer><!-- End .footer -->
+   
+            <footer class="footer">
+                <div class="footer-middle">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget widget-about">
+                                    <img src="assets/images/icons/footshow3-removebg-preview.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
+                                    <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
+        
+                                    <div class="social-icons">
+                                        <a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Pinterest"><i class="icon-pinterest"></i></a>
+                                    </div><!-- End .soial-icons -->
+                                </div><!-- End .widget about-widget -->
+                            </div><!-- End .col-sm-6 col-lg-3 -->
+        
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                    <h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
+        
+                                    <ul class="widget-list">
+                                        <li><a href="/about">About Footshow</a></li>
+                                        <li><a href="/shop">Shop on Footshow</a></li>
+                                        <li><a href="/resgister">Register</a></li>
+                                        <li><a href="/login">Log in</a></li>
+                                    </ul><!-- End .widget-list -->
+                                </div><!-- End .widget -->
+                            </div><!-- End .col-sm-6 col-lg-3 -->
+        
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                    <h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
+        
+                                    <ul class="widget-list">
+                                        <li><a href="#">Payment Methods</a></li>
+                                        <li><a href="#">Money-back guarantee!</a></li>
+                                        <li><a href="#">Returns</a></li>
+                                        <li><a href="#">Shipping</a></li>
+                                        <li><a href="#">Terms and conditions</a></li>
+                                        <li><a href="#">Privacy Policy</a></li>
+                                    </ul><!-- End .widget-list -->
+                                </div><!-- End .widget -->
+                            </div><!-- End .col-sm-6 col-lg-3 -->
+        
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                    <h4 class="widget-title">My Account</h4><!-- End .widget-title -->
+        
+                                    <ul class="widget-list">
+                                        <li><a href="/login">Sign In</a></li>
+                                            <li><a href="/cart">View Cart</a></li>
+                                            <li><a href="/wishlist">My Wishlist</a></li>
+                                            <li><a href="/profile">Track My Order</a></li>
+                                            <li><a href="/profile">Profile</a></li>
+                                    </ul><!-- End .widget-list -->
+                                </div><!-- End .widget -->
+                            </div><!-- End .col-sm-6 col-lg-3 -->
+                        </div><!-- End .row -->
+                    </div><!-- End .container -->
+                </div><!-- End .footer-middle -->
+        
+                <div class="footer-bottom">
+                    <div class="container">
+                        <p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
+                        <figure class="footer-payments">
+                            <img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
+                        </figure><!-- End .footer-payments -->
+                    </div><!-- End .container -->
+                </div><!-- End .footer-bottom -->
+            </footer><!-- End .footer -->
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
@@ -435,12 +443,13 @@
         function updateTimer(timeRemaining) {
             document.getElementById('timer-value').innerText = timeRemaining;
         }
+
+
         function enableResendButton() {
-        const resendButton = document.getElementById('resendBtn');
-        const resendLink = document.getElementById('otplink');
-        resendButton.removeAttribute('disabled');
-        resendLink.setAttribute('href', "/otpgenerte?id=<%= locals.id %>&mail=<%= locals.mail %>"); 
-        resendLink.style.cursor = 'pointer';
+            console.log('reched resend')
+    
+        const resendLink = document.getElementById('resendBtn');
+        resendLink.style.display = 'inline-block'
     
         
     }
@@ -472,15 +481,24 @@
                 formData= new FormData(form)
                 const alert= document.getElementById('alert')
 
+                const otp1 = document.getElementById('otp-part-1').value;
+                const otp2 = document.getElementById('otp-part-2').value;
+                const otp3 = document.getElementById('otp-part-3').value;
+                const otp4 = document.getElementById('otp-part-4').value;
+
+        
+                const combinedOtp = otp1 + otp2 + otp3 + otp4;
+
                 const response= await  fetch('/otp',{
                     method:'POST',
                     headers:{
                         'Content-type':'application/json'
                     },
                     body:JSON.stringify({
-                        otp:formData.get('otp'),
+                        otp:combinedOtp,
                         id:formData.get('id'),
-                        mail:formData.get('mail')
+                        mail:formData.get('mail'),
+                        code:formData.get('code')
                     })
                 })
 
@@ -507,7 +525,7 @@
 
                 }
                 else{
-                    console.log('reached here 3')
+            
                     alert.innerHTML=data.message
                     //failed
                 }
@@ -516,7 +534,7 @@
 
             }
             catch (error) {
-                console.log('reached here 4')
+            
                 alert.innerHTML = 'An error occurred during form submission';
                 console.log(error.message)
             }
@@ -533,7 +551,7 @@
         // Start the timer when the page loads
         window.addEventListener('DOMContentLoaded', () => {
 
-            const otpExpirationTime = 66; 
+            const otpExpirationTime = 10; 
             startTimer(otpExpirationTime);
         });
 

@@ -66,7 +66,7 @@ const addtocart=async(req,res)=>{
   
             const uid=user._id.toString()
             const cartcheck=await Cart.findOne({userid:uid})
-            let price = prdct.price; // Default to the original price
+            let price = prdct.price; 
 
         if (prdct.offer && prdct.offer.status) {
             const originalPrice = prdct.price;
@@ -111,7 +111,7 @@ const addtocart=async(req,res)=>{
                         existingProduct.totalprice = Number(existingProduct.totalprice) + totalprice;
                         cartcheck.total=cartcheck.total+totalprice 
                         const updatedCart = await cartcheck.save();
-
+                    
                 if (updatedCart) {
                     res.json({ success: true, message: 'Product details updated in the cart' });
                 } else {
@@ -119,7 +119,7 @@ const addtocart=async(req,res)=>{
                 }
                 }
                 else{
-                        //console.log('reached cart exist')
+                    
                         const cartnew =await Cart.updateOne({userid:uid},{ $push:{
                         products: {
                         productid: id,
@@ -138,11 +138,11 @@ const addtocart=async(req,res)=>{
                  
                    if(cartnew){
                     res.json({ success: true, message: 'Product added to cart',count });
-                   //console.log('added to extsing crt')
+            
                    }
                    else{
                     res.json({ success: false, message: 'Failed to add to cart' });
-                  //console.log('failed to add to exsting cart')
+                
                    }
                 }
                 
@@ -152,8 +152,8 @@ const addtocart=async(req,res)=>{
 
             }
             else{
-                //console.log('cart not found')
-               //no cart for the crnt user
+            
+               
                 const cartnew= new Cart({
                 userid:uid,
                 products:[
@@ -171,11 +171,11 @@ const addtocart=async(req,res)=>{
               const c= await cartnew.save()
               if(c){
                 res.json({ success: true, message: 'Product added to cart' });
-                //console.log('addto cart')
+                
               }
               else{
                 res.json({ success: false, message: 'Failed to add to cart' });
-                //console.log('failed to add cart')
+            
               }
                
             }
@@ -186,22 +186,22 @@ const addtocart=async(req,res)=>{
 
         else{
             res.json({ success: false, message: 'Product not found' });
-           //console.log('product not found')
+    
         }
          
         
       }
 
       else{
-        console.log('user not login')
+        
         res.json({ success: false, message: 'User not login' });
 
-        //console.log('rediercted to login')
+        
         
       }
 
     } catch (error) {
-      console.log('error in catch')
+    
         res.json({ success: false, message: 'Failed to add cart' });
         console.log(error.message)
     }
@@ -216,7 +216,7 @@ const loadcart = async (req, res) => {
       let wishcount;
       let cartcount;
       const cartbanner=await Banner.findOne({name:'Cart'})
-      // Delete expired offer
+    
       await Product.updateMany(
           { 'offer.endDate': { $lt: new Date() } },
           { $set: { 'offer': null } }
@@ -232,6 +232,42 @@ const loadcart = async (req, res) => {
           const track = true;
           const user = await User.findOne({ email: usermail });
           const id = user._id.toString();
+
+        const cartcheck=await Cart.findOne({ userid: id})
+        if(cartcheck){
+            const cart1 = await Cart.findOne({ userid: id })
+            .populate({
+                path: 'products.productid',
+                model: 'Product',
+                populate: [
+                    {
+                        path: 'category',
+                        model: 'Category',
+                        populate: {
+                            path: 'offer',
+                            model: 'Offer',
+                        },
+                    },
+                    { path: 'offer', model: 'Offer' },
+                ],
+            });
+
+
+            for (const product of cart1.products) {
+
+            const dbProduct = await Product.findById(product.productid);
+
+
+            if (dbProduct && dbProduct.is_delete) {
+                
+                cart1.products.pull(product);
+
+
+                await cart1.save();
+            }
+}
+        }
+           
 
           const cart = await Cart.findOne({ userid: id })
               .populate({
@@ -319,7 +355,7 @@ const loadcart = async (req, res) => {
 
   } catch (error) {
       console.log(error.message);
-      // Handle the error as needed
+      
       res.status(500).send('Internal Server Error');
   }
 };
@@ -362,7 +398,7 @@ const updateacart=async(req,res)=>{
         .populate('offer')
         .lean();
 
-        //console.log(product)
+    
         if(product){
             const dbproduct= await Product.findOne({_id:pid})
 
@@ -407,7 +443,7 @@ const updateacart=async(req,res)=>{
                 },
                 { new: true } 
               );
-              //console.log('Updated Cart:', updatedCart);
+              
 
               if(updatedCart){
                 const cart=await Cart.findOne({_id:id})
@@ -419,7 +455,7 @@ const updateacart=async(req,res)=>{
 
                     const editedProduct = updatedCart.products.find(p => p.productid.toString() === pid);
 
-                   // console.log(editedProduct )
+            
                     res.status(200).json({ success: true, editedProduct, total });
 
               }
@@ -453,14 +489,13 @@ const removecart=async(req,res)=>{
 
         const pid= req.query.id
         const uid=req.query.uid
-        // console.log(pid)
-        // console.log(uid)
+        
         const user=await Cart.findOne({_id:uid})
-        //console.log(user)
+    
 
         const updatedcart= await Cart.findOneAndUpdate({_id:uid,},{$pull:{products:{productid:pid}}},{ new: true })
-        //console.log(updatedcart)
-        console.log(updatedcart.products.length)
+    
+    
         if(updatedcart && updatedcart.products.length<1){
             const deletedCart = await Cart.findOneAndDelete({ _id: uid });
 
@@ -473,10 +508,10 @@ const removecart=async(req,res)=>{
             0
           );
         
-          // Update the total price in the cart
+
           updatedcart.total = newTotalPrice;
         
-          // Save the updated cart
+        
           await updatedcart.save();
         
             res.redirect('/cart')
@@ -500,11 +535,10 @@ const stockcheck=async(req,res)=>{
         
         const newqty= req.body.newQuantity
         const pid=req.query.pid
-        // console.log(qty)
-        // console.log(pid)
+        
         const product= await Product.findOne({_id:pid})
         const oldquantity=product.quantity -1
-        //console.log(oldquantity)
+        
         if(oldquantity<newqty ){
         res.json({success:false})
         }

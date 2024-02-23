@@ -137,7 +137,7 @@ const editoffer = async (req, res) => {
                 endDate,
             });
 
-            console.log(offer);
+            
 
             if (offer) {
                 res.json({ success: true, message: 'Offer updated successfully' });
@@ -158,7 +158,7 @@ const editoffer = async (req, res) => {
 const deleteoffer = async (req, res) => {
     try {
         const id = req.query.id;
-        console.log(id);
+    
     const result = await Offer.deleteOne({ _id: id });
 
         if (result.deletedCount > 0) {

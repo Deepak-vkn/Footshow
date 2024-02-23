@@ -12,13 +12,13 @@
                     </button>
 
                     <a href="index.html" class="logo">
-                        <img src="assets/images/logo.png" alt="Molla Logo" width="105" height="25">
+                        <img src="assets/images/icons/footshow3-removebg-preview.png" alt="Molla Logo" width="105" height="25">
                     </a>
 
                     <nav class="main-nav">
                         <ul class="menu sf-arrows">
                             <li class="megamenu-container ">
-                                <a href="/" class="sf-with-ul">HOME</a>
+                                <a href="/" >HOME</a>
 
                             </li>
                             <li class="active">
@@ -33,6 +33,7 @@
                                 <a href="/women" >WOMEN</a>
 
                             </li>
+                            
                           
                             
                         </ul><!-- End .menu -->
@@ -40,7 +41,7 @@
                 </div><!-- End .header-left -->
 
                 <div class="header-right">
-                    <div class="header-search header-search-extended header-search-visible">
+                    <div class="header-search header-search-extended header-search-visible" style="width:200px">
                         <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
                         <form action="#" method="get">
                             <div class="header-search-wrapper">
@@ -75,37 +76,32 @@
                             <i class="icon-user"></i>
                         </a>
                     </div> -->
-                    <div id="box">
-                        <% if (locals.track) { %>
-                            <div class="dropdown">
-                                <!-- Dropdown button/link -->
-                                <a href="#" class="dropdown-toggle" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <!-- You can use an icon or any other element here -->
-                                    <!-- <img src="assets/images/icons/sample-profile.png" alt="Profile"> -->
-                                    <a id="txt"   style="color:black;">
-                                        <%= user.name %>
-                                    </a>
-                                </a>
+                    <% if (locals.track) { %>
+                        <div class="dropdown compare-dropdown">
+
+                            <a href="#" class="sf-with-ul" role="button"    aria-haspopup="true" aria-expanded="false"  style="color:black; " data-display="static" >
                             
-                                <!-- Dropdown menu -->
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                    <!-- Only login link -->
-                                    <div class="dropdown-logout">
-                                        <a href="/logout" class="btn btn-primary">Logout</a>
-                                    </div>
-                                    <div class="dropdown-logout">
-                                        <a href="/profile?id=<%= user.email %>" class="btn btn-primary">Profile</a>
-                                    </div>
-                                </div>
-                            </div>
+                                    <%= user.name %>
+                        
+                            </a>
+                      
+                            <div class="dropdown-menu dropdown-menu-right" style="width: 150px;">
+                                <ul class="compare-products">
+                                    <li class="compare-product">
+                                        <h4 class="compare-product-title">  <a href="/profile?id=<%= user.email %>" >Profile</a></h4>
+                                    </li>
+                                    <li class="compare-product">
+                                        <a href="/logout" >Logout</a>
+                                    </li>
+                                </ul>
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .compare-dropdown -->
 
                         <% } else { %>
-                            <a id="txt" href="/login" style="color:black;">
+                            <a id="txt" href="/login" style="margin-left: 30px;color:black;">
                                 LOGIN
                             </a>
                         <% } %>
-                        
-                    </div>
                     
                 </div><!-- End .header-right -->
             </div><!-- End .container -->
@@ -121,7 +117,7 @@
         <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
             <div class="container">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
                     <li class="breadcrumb-item"><a href="#">Shop</a></li>
                     <!-- <li class="breadcrumb-item active" aria-current="page">Grid 4 Columns</li> -->
                 </ol>
@@ -151,49 +147,7 @@
                                         </select>
                                     </div>
                                 </div><!-- End .toolbox-sort -->
-                                <div class="toolbox-layout">
-                                    <a href="category-list.html" class="btn-layout">
-                                        <svg width="16" height="10">
-                                            <rect x="0" y="0" width="4" height="4" />
-                                            <rect x="6" y="0" width="10" height="4" />
-                                            <rect x="0" y="6" width="4" height="4" />
-                                            <rect x="6" y="6" width="10" height="4" />
-                                        </svg>
-                                    </a>
-
-                                    <a href="category-2cols.html" class="btn-layout">
-                                        <svg width="10" height="10">
-                                            <rect x="0" y="0" width="4" height="4" />
-                                            <rect x="6" y="0" width="4" height="4" />
-                                            <rect x="0" y="6" width="4" height="4" />
-                                            <rect x="6" y="6" width="4" height="4" />
-                                        </svg>
-                                    </a>
-
-                                    <a href="category.html" class="btn-layout">
-                                        <svg width="16" height="10">
-                                            <rect x="0" y="0" width="4" height="4" />
-                                            <rect x="6" y="0" width="4" height="4" />
-                                            <rect x="12" y="0" width="4" height="4" />
-                                            <rect x="0" y="6" width="4" height="4" />
-                                            <rect x="6" y="6" width="4" height="4" />
-                                            <rect x="12" y="6" width="4" height="4" />
-                                        </svg>
-                                    </a>
-
-                                    <a href="category-4cols.html" class="btn-layout active">
-                                        <svg width="22" height="10">
-                                            <rect x="0" y="0" width="4" height="4" />
-                                            <rect x="6" y="0" width="4" height="4" />
-                                            <rect x="12" y="0" width="4" height="4" />
-                                            <rect x="18" y="0" width="4" height="4" />
-                                            <rect x="0" y="6" width="4" height="4" />
-                                            <rect x="6" y="6" width="4" height="4" />
-                                            <rect x="12" y="6" width="4" height="4" />
-                                            <rect x="18" y="6" width="4" height="4" />
-                                        </svg>
-                                    </a>
-                                </div><!-- End .toolbox-layout -->
+                               
                             </div><!-- End .toolbox-right -->
                         </div><!-- End .toolbox -->
 
@@ -213,9 +167,8 @@
                                                         </a>
                                 
                                                         <div class="product-action-vertical">
-                                                            <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                            <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                                            <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                                                     
+                                                            
                                                         </div><!-- End .product-action-vertical -->
                                 
                                                         <div class="product-action">
@@ -393,7 +346,7 @@
                 <div class="row">
                     <div class="col-sm-6 col-lg-3">
                         <div class="widget widget-about">
-                            <img src="assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
+                            <img src="assets/images/icons/footshow3-removebg-preview.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
                             <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
                             <div class="social-icons">
@@ -411,11 +364,10 @@
                             <h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
 
                             <ul class="widget-list">
-                                <li><a href="about.html">About Molla</a></li>
-                                <li><a href="#">How to shop on Molla</a></li>
-                                <li><a href="#">FAQ</a></li>
-                                <li><a href="contact.html">Contact us</a></li>
-                                <li><a href="login.html">Log in</a></li>
+                                <li><a href="/about">About Footshow</a></li>
+                                <li><a href="/shop">Shop on Footshow</a></li>
+                                <li><a href="/resgister">Register</a></li>
+                                <li><a href="/login">Log in</a></li>
                             </ul><!-- End .widget-list -->
                         </div><!-- End .widget -->
                     </div><!-- End .col-sm-6 col-lg-3 -->
@@ -440,11 +392,11 @@
                             <h4 class="widget-title">My Account</h4><!-- End .widget-title -->
 
                             <ul class="widget-list">
-                                <li><a href="#">Sign In</a></li>
-                                <li><a href="cart.html">View Cart</a></li>
-                                <li><a href="#">My Wishlist</a></li>
-                                <li><a href="#">Track My Order</a></li>
-                                <li><a href="#">Help</a></li>
+                                <li><a href="/login">Sign In</a></li>
+                                    <li><a href="/cart">View Cart</a></li>
+                                    <li><a href="/wishlist">My Wishlist</a></li>
+                                    <li><a href="/profile">Track My Order</a></li>
+                                    <li><a href="/profile">Profile</a></li>
                             </ul><!-- End .widget-list -->
                         </div><!-- End .widget -->
                     </div><!-- End .col-sm-6 col-lg-3 -->
@@ -479,8 +431,8 @@
         
         <nav class="mobile-nav">
             <ul class="mobile-menu">
-                <li class="active">
-                    <a href="#">Home</a>
+                <li >
+                    <a href="/">Home</a>
                 </li>
                 <li>
                     <a href="/shop">Shop</a>
@@ -508,7 +460,7 @@
                         </li>
                         <li><a href="/login">Login</a></li>
                         <li><a href="/profile">Profile</a></li>
-                        <li><a href="#">About</a></li>
+                        <li><a href="/about">About</a></li>
                         
                     </ul>
                 </li>
@@ -676,25 +628,28 @@
         const clearAllButton = document.getElementById('clearall');
         const sortSelect = document.getElementById('sortby');
 
-        // Search
+        
         searchInput.addEventListener('input', handleShopChanges);
 
-        // Filter
+    
         categoryCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', handleShopChanges);
         });
 
-        // Clear All
+        
         clearAllButton.addEventListener('click', function () {
-            searchInput.value = ''; // Clear the search input
-            categoryCheckboxes.forEach(checkbox => checkbox.checked = false); // Uncheck all checkboxes
-            sortSelect.value = ''; // Reset the sort dropdown
-            handleShopChanges(); // Trigger the changes
+            searchInput.value = ''; 
+            categoryCheckboxes.forEach(checkbox => checkbox.checked = false);
+            sortSelect.value = '';
+            handleShopChanges(); 
         });
 
-        // Sort
+
         sortSelect.addEventListener('change', handleShopChanges);
     });
+
+
+
 //add to cart
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -748,26 +703,25 @@ setTimeout(() => {
 });
 
 
-
 function handleCartResponse(data) {
+    console.log('Data:', data);
+
     if (data.success) {
+        if (data.count) {
+            const cartCountElement = document.getElementById('cart-count');
+            console.log('Current count:', cartCountElement.innerHTML);
 
-        if(data.count){
+            const currentCount = parseInt(cartCountElement.innerHTML);
+            console.log('Parsed count:', currentCount);
 
-        const cartCountElement = document.getElementById('cart-count');
-        const currentCount = parseInt(cartCountElement.innerHTML);
-        cartCountElement.innerHTML = currentCount + 1;
-
+            cartCountElement.innerHTML = currentCount + 1;
         }
         showAlert('Success', data.message, 'success');
     } else {
-
         showAlert('Failed', data.message, 'error');
-
-        
-
     }
 }
+
 function showAlert(title, message, icon) {
     Swal.fire({
         title: title,

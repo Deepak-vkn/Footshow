@@ -94,37 +94,15 @@
             <div class="col-nav">
                 <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
                 <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link btn-icon" href="#">
-                            <i class="material-icons md-notifications animation-shake"></i>
-                            <span class="badge rounded-pill">3</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
-                    </li>
-                    <li class="dropdown nav-item">
-                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
-                            <a class="dropdown-item text-brand" href="#"><img src="assets/imgs/theme/flag-us.png" alt="English">English</a>
-                            <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-fr.png" alt="Français">Français</a>
-                            <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-jp.png" alt="Français">日本語</a>
-                            <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-cn.png" alt="Français">中国人</a>
-                        </div>
-                    </li>
+                  
+                 
+                   
+                   
                     <li class="dropdown nav-item">
                         <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="assets/imgs/people/avatar2.jpg" alt="User"></a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                            <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account Settings</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-account_balance_wallet"></i>Wallet</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                            
+                            <a class="dropdown-item text-danger" href="/admin/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
                         </div>
                     </li>
                 </ul>
@@ -170,7 +148,7 @@
                                                 
                                                     <!-- Empty cells for subsequent product rows -->
                                                     <td><%= i++ %></td>
-                                                    <td><b><%= order.userid %></b></td>
+                                                    <td><a href="#" class="fw-bold"><%= Math.floor(Math.random() * (99999 - 10000 + 1) + 10000) %></a></td>
                                                     <td><%= product.name %>  <%= product.quantity %> x <%= product.price %></td>
                                                     <td>₹<%= product.totalprice %></td>
                                                     <td><%= order.payment %></td>
@@ -306,8 +284,7 @@ selectElements.forEach(selectElement => {
                 throw new Error('Order ID not found in select element.');
             }
 
-            console.log('Selected Order ID:', orderId);
-            console.log('Selected Status:', status);
+            
 
             statuschange(status, orderId,productIndex);
         } catch (error) {
@@ -318,7 +295,7 @@ selectElements.forEach(selectElement => {
 
 
   async  function statuschange(status,orderId,productIndex){
-        //console.log(orderId)
+
 
         try {
             
@@ -335,13 +312,13 @@ selectElements.forEach(selectElement => {
             if(response.ok){
 
                 const data= await response.json()
-                console.log(data)
+        
                 if(data.success){
 
 
                     location.reload();
                     
-                console.log(data.message)
+    
                 }
                 else{
                     Swal.fire({
@@ -349,7 +326,7 @@ selectElements.forEach(selectElement => {
                     title: 'Error',
                     text: data.message||'updation failed',
                 });
-                    console.log(data.message)
+                
                 }
 
             }
@@ -382,9 +359,7 @@ document.querySelectorAll(".returnButton").forEach(function(button) {
         const productIndex = this.getAttribute('data-product-index');
         const reason = this.getAttribute('data-product-reason');
 
-        console.log(orderId);
-        console.log(productIndex);
-        console.log(reason);
+      
 
         Swal.fire({
             title: 'Return Reason',
@@ -399,7 +374,7 @@ document.querySelectorAll(".returnButton").forEach(function(button) {
             },
         }).then((result) => {
             if (result.isConfirmed) {
-                // Proceed with the fetch request
+                
                 fetch('/admin/returnrequest', {
                     method: 'POST',
                     headers: {
@@ -427,10 +402,10 @@ document.querySelectorAll(".returnButton").forEach(function(button) {
 
 
 
-                        console.log('Request successful:', data.message);
+            
                     } else {
                         // Handle failure
-                        console.log('Request failed:', data.message);
+                        console.log('Request failed:', data.message)
                     }
                 })
                 .catch(error => {

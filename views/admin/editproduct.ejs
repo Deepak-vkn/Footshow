@@ -281,28 +281,18 @@
                             <option value="Active" <%= item.status === 'Active' ? 'selected' : '' %>>Active</option>
                             <option value="Blocked" <%= item.status === 'Blocked' ? 'selected' : '' %>>Blocked</option>
                             </select>
-
                         </div>
                         <h5 class="mb-3">Categories</h5>
                         <select class="form-select" id="product-cat" name="category">
-                            <option value='' disabled>Select Category</option>
                             <% categories.forEach((cata) => { %>
-                                <option value='<%= cata._id %>' 
-                                    <% if (product.category && product.category._id.toString() === cata._id.toString()) { %>
-                                        selected
-                                    <% } %>
-                                >
+                            
+                                <option value='<%= cata._id.toString() %>' <%= item.category && item.category._id && item.category._id.toString() === cata._id.toString() ? 'selected' : '' %>>
                                     <%= cata.Category %>
                                 </option>
-
-
-
                             <% }) %>
                         </select>
-
-
                        <!-- Inside your EJS template -->
-                       
+
                        <% if (item.image.length < 4) { %>
                         <div class="mb-4">
                             <label class="form-label">New Image</label>
@@ -386,49 +376,49 @@
        
         var images = document.getElementsByName('image')[0].files;
 
-        // Basic name validation
+
         if (productName.trim() === '') {
             alert('Product Name cannot be empty');
             return false;
         }
 
-        // Gender validation
+    
         if (!gender) {
             alert('Please select a gender');
             return false;
         }
 
-        // Basic color validation
+        
         if (color.trim() === '') {
             alert('Color cannot be empty');
             return false;
         }
 
-        // Basic size validation
+        
         if (size.trim() === '') {
             alert('Size cannot be empty');
             return false;
         }
 
-        // Basic brand validation
+    
         if (brand.trim() === '') {
             alert('Brand cannot be empty');
             return false;
         }
 
-        // Basic description validation
+    
         if (description.trim() === '') {
             alert('Description cannot be empty');
             return false;
         }
 
-        // Price validation - Check if it is a valid number
+
         if (isNaN(parseFloat(price)) || !isFinite(price)) {
             alert('Please enter a valid price');
             return false;
         }
 
-        // Basic status validation
+
         if (status.trim() === '') {
             alert('Please select a status');
             return false;
@@ -436,25 +426,24 @@
 
        
 
-        // Images validation - Check if at least one image is selected
+        
         if (images.length === 0) {
             alert('Please select at least one image');
             return false;
         }
         
     }
-     // Add an event listener to the file input
+     
      document.getElementById('newImagesInput').addEventListener('change', function () {
         var currentImageLength = parseInt(document.getElementById('currentImageLength').value);
-        console.log(`length is${currentImageLength}`)
-        console.log('helo')
+        
             var maxImages = 4;
             var selectedImages = this.files.length;
 
-            // Check if the number of selected images exceeds the limit
+        
             if (selectedImages> maxImages) {
                
-                // Display a SweetAlert
+        
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
@@ -463,7 +452,7 @@
                     confirmButtonText: 'OK'
                 });
 
-                // Clear the selected files
+            
                 this.value = '';
             }
             else if(selectedImages+currentImageLength>maxImages) {
@@ -475,7 +464,7 @@
                     confirmButtonText: 'OK'
                 });
 
-                // Clear the selected files
+        
                 this.value = '';
                 
             }
@@ -501,13 +490,13 @@
     });
     var deleteButtons = document.querySelectorAll('.deleteButton');
 
-    // Add a click event listener to each delete button
+    
     deleteButtons.forEach(function (deleteButton) {
         deleteButton.addEventListener('click', function (event) {
-            // Prevent the default behavior of the link
+        
             event.preventDefault();
 
-            // Show a SweetAlert confirmation dialog
+    
             Swal.fire({
                 title: 'Are you sure?',
                 text: 'Do you want to delete this item?',
@@ -517,7 +506,7 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
-                // If the user confirms, proceed with the deletion action
+        
                 if (result.isConfirmed) {
                     window.location.href = deleteButton.getAttribute('href');
                 }

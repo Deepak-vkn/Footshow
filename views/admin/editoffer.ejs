@@ -62,12 +62,12 @@
 
         if (data.success) {
      
-            console.log(data.message);
+            
 
             window.location.href = '/admin/offer';
         } else {
             alertContainer2.innerHTML = data.message;
-            console.log(data.message);
+            
         }
     } catch (error) {
         alertContainer2.innerHTML = 'Internal server error';

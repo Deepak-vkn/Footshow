@@ -11,7 +11,7 @@
                     </button>
 
                     <a href="index.html" class="logo">
-                        <img src="assets/images/logo.png" alt="Molla Logo" width="105" height="25">
+                        <img src="assets/images/icons/footshow3-removebg-preview.png" alt="Molla Logo" width="105" height="25">
                     </a>
 
                     <nav class="main-nav">
@@ -32,17 +32,14 @@
                                 <a href="/women" >WOMEN</a>
 
                             </li>
-                            <li>
-                                <a href="category.html" class="sf-with-ul">CHILDREN</a>
-
-                            </li>
+                          
                             
                         </ul><!-- End .menu -->
                     </nav><!-- End .main-nav -->
                 </div><!-- End .header-left -->
 
                 <div class="header-right">
-                    <div class="header-search header-search-extended header-search-visible">
+                    <div class="header-search header-search-extended header-search-visible" style="width:200px">
                         <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
                         <form action="#" method="get">
                             <div class="header-search-wrapper">
@@ -76,38 +73,32 @@
                             <i class="icon-user"></i>
                         </a>
                     </div> -->
-                    <div id="box">
-                        <% if (locals.track) { %>
-                            <div class="dropdown">
-                                <!-- Dropdown button/link -->
-                                <a href="#" class="dropdown-toggle" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <!-- You can use an icon or any other element here -->
-                                    <!-- <img src="assets/images/icons/sample-profile.png" alt="Profile"> -->
-                                    <a id="txt"   style="color:black;">
-                                        <%= user.name %>
-                                    </a>
-                                </a>
+                    <% if (locals.track) { %>
+                        <div class="dropdown compare-dropdown">
+
+                            <a href="#" class="sf-with-ul" role="button"    aria-haspopup="true" aria-expanded="false"  style="color:black; " data-display="static" >
                             
-                                <!-- Dropdown menu -->
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                    <!-- Only login link -->
-                                    <div class="dropdown-logout">
-                                        <a href="/logout" class="btn btn-primary">Logout</a>
-                                    </div>
-                                    <div class="dropdown-logout">
-                                        <a href="/profile?id=<%= user.email %>" class="btn btn-primary">Profile</a>
-                                    </div>
-                                </div>
-                            </div>
+                                    <%= user.name %>
+                        
+                            </a>
+                      
+                            <div class="dropdown-menu dropdown-menu-right" style="width: 150px;">
+                                <ul class="compare-products">
+                                    <li class="compare-product">
+                                        <h4 class="compare-product-title">  <a href="/profile?id=<%= user.email %>" >Profile</a></h4>
+                                    </li>
+                                    <li class="compare-product">
+                                        <a href="/logout" >Logout</a>
+                                    </li>
+                                </ul>
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .compare-dropdown -->
 
                         <% } else { %>
-                            <a id="txt" href="/login" style="color:black;">
+                            <a id="txt" href="/login" style="margin-left: 30px;color:black;">
                                 LOGIN
                             </a>
                         <% } %>
-                        
-                    </div>
-                    
                 </div><!-- End .header-right -->
             </div><!-- End .container -->
         </div><!-- End .header-middle -->
@@ -123,15 +114,7 @@
                 </ol>
 
                 <nav class="product-pager ml-auto" aria-label="Product">
-                    <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
-                        <i class="icon-angle-left"></i>
-                        <span>Prev</span>
-                    </a>
-
-                    <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
-                        <span>Next</span>
-                        <i class="icon-angle-right"></i>
-                    </a>
+                   
                 </nav><!-- End .pager-nav -->
             </div><!-- End .container -->
         </nav><!-- End .breadcrumb-nav -->
@@ -238,7 +221,7 @@
                                         </select>
                                     </div><!-- End .select-custom -->
 
-                                    <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a>
+                                   
                                 </div><!-- End .details-filter-row -->
 
                                 <div class="details-filter-row details-row-size">
@@ -263,7 +246,7 @@
 
                                      
 
-                                        <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+                                      
                                     </div><!-- End .details-action-wrapper -->
                                 </div><!-- End .product-details-action -->
 
@@ -277,11 +260,7 @@
                                     </div><!-- End .product-cat -->
 
                                     <div class="social-icons social-icons-sm">
-                                        <span class="social-label">Share:</span>
-                                        <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
-                                        <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
-                                        <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
-                                        <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+                                        
                                     </div>
                                 </div><!-- End .product-details-footer -->
                             </div><!-- End .product-details -->
@@ -431,216 +410,83 @@
                             }
                         }
                     }'>
+                    <% product4.forEach((product,index) => { %>
                     <div class="product product-7 text-center">
                         <figure class="product-media">
-                            <span class="product-label label-new">New</span>
-                            <a href="product.html">
-                                <img src="assets/images/products/product-4.jpg" alt="Product image" class="product-image">
+                           
+                            <a href="/singleproduct?id=<%=product._id %>">
+                                <img src="/images/<%= product.image[0]%>" alt="<%= product.name %>" class="product-image img-fluid" id="shop-image">
+                                <img src="/images/<%= product.image[1]%>" alt="<%= product.name %>"alt="Product image" class="product-image-hover">
                             </a>
 
                             <div class="product-action-vertical">
                                 <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                              
                             </div><!-- End .product-action-vertical -->
 
-                            <div class="product-action">
-                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                            </div><!-- End .product-action -->
+                      
                         </figure><!-- End .product-media -->
 
                         <div class="product-body">
                             <div class="product-cat">
-                                <a href="#">Women</a>
+                                <a href="#"><%= product.category.Category %></a>
                             </div><!-- End .product-cat -->
-                            <h3 class="product-title"><a href="product.html">Brown paperbag waist <br>pencil skirt</a></h3><!-- End .product-title -->
+                            <h3 class="product-title"><a href="#"><%= product.name %></a></h3><!-- End .product-title -->
                             <div class="product-price">
-                                $60.00
+                             
+                                <% if(product.offer  && product.offer.status) {%>
+
+                                    <%
+                                        
+                                        const originalPrice = product.price;
+                                        const discountPercentage = product.offer.percentage;
+                                        const discountAmount = (originalPrice * discountPercentage) / 100;
+                                        const discountedPrice = originalPrice - discountAmount;
+                                        %>
+                                        <div class="product-price"> ₹<%= discountedPrice %><br> <span style="text-decoration: line-through; color: gray;"> ₹<%= product.price %></span>(<%=product.offer.percentage%>% OFF)</div>
+                                       
+                                       
+                                       
+                              
+                               <% } else if(product.category.offer && product.category.offer.status) {%>
+
+                                <%
+                                        
+                                        const originalPrice = product.price;
+                                        const discountPercentage = product.category.offer.percentage;
+                                        const discountAmount = (originalPrice * discountPercentage) / 100;
+                                        const discountedPrice = originalPrice - discountAmount;
+                                        %>
+                                        <div class="product-price"> ₹<%= discountedPrice %><br> <span style="text-decoration: line-through; color: gray;"> ₹<%= product.price %></span>
+                                       
+                                            (<%=product.category.offer.percentage%>% OFF)
+                                        </div><!-- End .product-price -->
+
+                               
+                                <% } else{  %> 
+                                    <div class="product-price">  ₹<%= product.price %></div>
+                                 
+
+                              <% }%>
                             </div><!-- End .product-price -->
-                            <div class="ratings-container">
-                                <div class="ratings">
-                                    <div class="ratings-val" style="width: 20%;"></div><!-- End .ratings-val -->
-                                </div><!-- End .ratings -->
-                                <span class="ratings-text">( 2 Reviews )</span>
-                            </div><!-- End .rating-container -->
-
-                            <div class="product-nav product-nav-thumbs">
-                                <a href="#" class="active">
-                                    <img src="assets/images/products/product-4-thumb.jpg" alt="product desc">
-                                </a>
-                                <a href="#">
-                                    <img src="assets/images/products/product-4-2-thumb.jpg" alt="product desc">
-                                </a>
-
-                                <a href="#">
-                                    <img src="assets/images/products/product-4-3-thumb.jpg" alt="product desc">
-                                </a>
-                            </div><!-- End .product-nav -->
                         </div><!-- End .product-body -->
                     </div><!-- End .product -->
+                    <% }); %>
+                   
 
-                    <div class="product product-7 text-center">
-                        <figure class="product-media">
-                            <span class="product-label label-out">Out of Stock</span>
-                            <a href="product.html">
-                                <img src="assets/images/products/product-6.jpg" alt="Product image" class="product-image">
-                            </a>
-
-                            <div class="product-action-vertical">
-                                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                            </div><!-- End .product-action-vertical -->
-
-                            <div class="product-action">
-                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                            </div><!-- End .product-action -->
-                        </figure><!-- End .product-media -->
-
-                        <div class="product-body">
-                            <div class="product-cat">
-                                <a href="#">Jackets</a>
-                            </div><!-- End .product-cat -->
-                            <h3 class="product-title"><a href="product.html">Khaki utility boiler jumpsuit</a></h3><!-- End .product-title -->
-                            <div class="product-price">
-                                <span class="out-price">$120.00</span>
-                            </div><!-- End .product-price -->
-                            <div class="ratings-container">
-                                <div class="ratings">
-                                    <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                </div><!-- End .ratings -->
-                                <span class="ratings-text">( 6 Reviews )</span>
-                            </div><!-- End .rating-container -->
-                        </div><!-- End .product-body -->
-                    </div><!-- End .product -->
-
-                    <div class="product product-7 text-center">
-                        <figure class="product-media">
-                            <span class="product-label label-top">Top</span>
-                            <a href="product.html">
-                                <img src="assets/images/products/product-11.jpg" alt="Product image" class="product-image">
-                            </a>
-
-                            <div class="product-action-vertical">
-                                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                            </div><!-- End .product-action-vertical -->
-
-                            <div class="product-action">
-                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                            </div><!-- End .product-action -->
-                        </figure><!-- End .product-media -->
-
-                        <div class="product-body">
-                            <div class="product-cat">
-                                <a href="#">Shoes</a>
-                            </div><!-- End .product-cat -->
-                            <h3 class="product-title"><a href="product.html">Light brown studded Wide fit wedges</a></h3><!-- End .product-title -->
-                            <div class="product-price">
-                                $110.00
-                            </div><!-- End .product-price -->
-                            <div class="ratings-container">
-                                <div class="ratings">
-                                    <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                </div><!-- End .ratings -->
-                                <span class="ratings-text">( 1 Reviews )</span>
-                            </div><!-- End .rating-container -->
-
-                            <div class="product-nav product-nav-thumbs">
-                                <a href="#" class="active">
-                                    <img src="assets/images/products/product-11-thumb.jpg" alt="product desc">
-                                </a>
-                                <a href="#">
-                                    <img src="assets/images/products/product-11-2-thumb.jpg" alt="product desc">
-                                </a>
-
-                                <a href="#">
-                                    <img src="assets/images/products/product-11-3-thumb.jpg" alt="product desc">
-                                </a>
-                            </div><!-- End .product-nav -->
-                        </div><!-- End .product-body -->
-                    </div><!-- End .product -->
-
-                    <div class="product product-7 text-center">
-                        <figure class="product-media">
-                            <a href="product.html">
-                                <img src="assets/images/products/product-10.jpg" alt="Product image" class="product-image">
-                            </a>
-
-                            <div class="product-action-vertical">
-                                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                            </div><!-- End .product-action-vertical -->
-
-                            <div class="product-action">
-                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                            </div><!-- End .product-action -->
-                        </figure><!-- End .product-media -->
-
-                        <div class="product-body">
-                            <div class="product-cat">
-                                <a href="#">Jumpers</a>
-                            </div><!-- End .product-cat -->
-                            <h3 class="product-title"><a href="product.html">Yellow button front tea top</a></h3><!-- End .product-title -->
-                            <div class="product-price">
-                                $56.00
-                            </div><!-- End .product-price -->
-                            <div class="ratings-container">
-                                <div class="ratings">
-                                    <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->
-                                </div><!-- End .ratings -->
-                                <span class="ratings-text">( 0 Reviews )</span>
-                            </div><!-- End .rating-container -->
-                        </div><!-- End .product-body -->
-                    </div><!-- End .product -->
-
-                    <div class="product product-7 text-center">
-                        <figure class="product-media">
-                            <a href="product.html">
-                                <img src="assets/images/products/product-7.jpg" alt="Product image" class="product-image">
-                            </a>
-
-                            <div class="product-action-vertical">
-                                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                            </div><!-- End .product-action-vertical -->
-
-                            <div class="product-action">
-                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                            </div><!-- End .product-action -->
-                        </figure><!-- End .product-media -->
-
-                        <div class="product-body">
-                            <div class="product-cat">
-                                <a href="#">Jeans</a>
-                            </div><!-- End .product-cat -->
-                            <h3 class="product-title"><a href="product.html">Blue utility pinafore denim dress</a></h3><!-- End .product-title -->
-                            <div class="product-price">
-                                $76.00
-                            </div><!-- End .product-price -->
-                            <div class="ratings-container">
-                                <div class="ratings">
-                                    <div class="ratings-val" style="width: 20%;"></div><!-- End .ratings-val -->
-                                </div><!-- End .ratings -->
-                                <span class="ratings-text">( 2 Reviews )</span>
-                            </div><!-- End .rating-container -->
-                        </div><!-- End .product-body -->
-                    </div><!-- End .product -->
                 </div><!-- End .owl-carousel -->
             </div><!-- End .container -->
         </div><!-- End .page-content -->
     </main><!-- End .main -->
 
+ 
     <footer class="footer">
         <div class="footer-middle">
             <div class="container">
                 <div class="row">
                     <div class="col-sm-6 col-lg-3">
                         <div class="widget widget-about">
-                            <img src="assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
+                            <img src="assets/images/icons/footshow3-removebg-preview.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
                             <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
                             <div class="social-icons">
@@ -658,11 +504,10 @@
                             <h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
 
                             <ul class="widget-list">
-                                <li><a href="about.html">About Molla</a></li>
-                                <li><a href="#">How to shop on Molla</a></li>
-                                <li><a href="#">FAQ</a></li>
-                                <li><a href="contact.html">Contact us</a></li>
-                                <li><a href="login.html">Log in</a></li>
+                                <li><a href="/about">About Footshow</a></li>
+                                <li><a href="/shop">Shop on Footshow</a></li>
+                                <li><a href="/resgister">Register</a></li>
+                                <li><a href="/login">Log in</a></li>
                             </ul><!-- End .widget-list -->
                         </div><!-- End .widget -->
                     </div><!-- End .col-sm-6 col-lg-3 -->
@@ -687,11 +532,11 @@
                             <h4 class="widget-title">My Account</h4><!-- End .widget-title -->
 
                             <ul class="widget-list">
-                                <li><a href="#">Sign In</a></li>
-                                <li><a href="cart.html">View Cart</a></li>
-                                <li><a href="#">My Wishlist</a></li>
-                                <li><a href="#">Track My Order</a></li>
-                                <li><a href="#">Help</a></li>
+                                <li><a href="/login">Sign In</a></li>
+                                    <li><a href="/cart">View Cart</a></li>
+                                    <li><a href="/wishlist">My Wishlist</a></li>
+                                    <li><a href="/profile">Track My Order</a></li>
+                                    <li><a href="/profile">Profile</a></li>
                             </ul><!-- End .widget-list -->
                         </div><!-- End .widget -->
                     </div><!-- End .col-sm-6 col-lg-3 -->
@@ -730,32 +575,45 @@
                 <li class="active">
                     <a href="index.html">Home</a>
 
-                    <ul>
-                        <li><a href="index-1.html">01 - furniture store</a></li>
-                        <li><a href="index-2.html">02 - furniture store</a></li>
-                        <li><a href="index-3.html">03 - electronic store</a></li>
-                        <li><a href="index-4.html">04 - electronic store</a></li>
-                        <li><a href="index-5.html">05 - fashion store</a></li>
-                        <li><a href="index-6.html">06 - fashion store</a></li>
-                        <li><a href="index-7.html">07 - fashion store</a></li>
-                        <li><a href="index-8.html">08 - fashion store</a></li>
-                        <li><a href="index-9.html">09 - fashion store</a></li>
-                        <li><a href="index-10.html">10 - shoes store</a></li>
-                        <li><a href="index-11.html">11 - furniture simple store</a></li>
-                        <li><a href="index-12.html">12 - fashion simple store</a></li>
-                        <li><a href="index-13.html">13 - market</a></li>
-                        <li><a href="index-14.html">14 - market fullwidth</a></li>
-                        <li><a href="index-15.html">15 - lookbook 1</a></li>
-                        <li><a href="index-16.html">16 - lookbook 2</a></li>
-                        <li><a href="index-17.html">17 - fashion store</a></li>
-                        <li><a href="index-18.html">18 - fashion store (with sidebar)</a></li>
-                        <li><a href="index-19.html">19 - games store</a></li>
-                        <li><a href="index-20.html">20 - book store</a></li>
-                        <li><a href="index-21.html">21 - sport store</a></li>
-                        <li><a href="index-22.html">22 - tools store</a></li>
-                        <li><a href="index-23.html">23 - fashion left navigation store</a></li>
-                        <li><a href="index-24.html">24 - extreme sport store</a></li>
-                    </ul>
+                    <nav class="mobile-nav">
+                        <ul class="mobile-menu">
+                            <li class="active">
+                                <a href="#">Home</a>
+                            </li>
+                            <li>
+                                <a href="/shop">Shop</a>
+                                
+                            </li>\<li class="active">
+                                <a href="/men">MEN</a>
+                            </li>
+                            <li>
+                                <a href="/women">WOMEN</a>
+                                
+                            </li>
+                            
+                            <li>
+                                <a href="#">Pages</a>
+                                <ul>
+                                    <li>
+                                        <a href="/cart">Cart</a>
+            
+                                      
+                                    </li>
+                                    <li>
+                                        <a href="/wishlist">Wishlist</a>
+            
+                                        
+                                    </li>
+                                    <li><a href="/login">Login</a></li>
+                                    <li><a href="/profile">Profile</a></li>
+                                    <li><a href="/about">About</a></li>
+                                    
+                                </ul>
+                            </li>
+                           
+                           
+                        </ul>
+                    </nav><!-- End .mobile-nav -->
                 </li>
                 <li>
                     <a href="category.html">Shop</a>
@@ -1055,9 +913,9 @@ document.getElementById('addToCartBtn').addEventListener('click',function(event)
 
 function handleCartResponse(data) {
     if (data.success) {
-        console.log('reached sucss')
+        
         if(data.count){
-            console.log('reached count')
+            
          const cartCountElement = document.getElementById('cart-count');
         const currentCount = parseInt(cartCountElement.innerHTML);
         cartCountElement.innerHTML = currentCount + 1;
@@ -1116,7 +974,7 @@ quantityInput.addEventListener('input', function () {
             })
             .then(data => {
                 if (data.success) {
-                    console.log('Quantity updated successfully');
+                
                     
                 } else {
                    
@@ -1164,7 +1022,7 @@ document.getElementById('addToWishlistBtn').addEventListener('click', function (
     }).then((result) => {
 
         const wishlistCountElement = document.getElementById('wishlist-count');
-        const currentCount = parseInt(wishlistCountElement.innerHTML);
+        const currentCount = parseInt(wishlistCountElement.innerHTML, 10);
         wishlistCountElement.innerHTML = currentCount + 1;
 
         //location.reload()
@@ -1174,7 +1032,7 @@ document.getElementById('addToWishlistBtn').addEventListener('click', function (
     });
 
             
-            console.log('Product added to wishlist:', data.message);
+            
         } else {
 
         Swal.fire({

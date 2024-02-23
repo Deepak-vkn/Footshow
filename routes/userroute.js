@@ -39,7 +39,7 @@ route.get('/forgetpassword',usercontroll.forgetpassword)
 route.post('/forgetpassword',usercontroll.forgetpasswordmailsend)
 route.get('/resetpassword',usercontroll.resetpasswordload) 
 route.post('/resetpassword',usercontroll.resetpassword)   
-
+route.get('/about',usercontroll.about)
 
 
 //profile
@@ -47,6 +47,7 @@ route.post('/resetpassword',usercontroll.resetpassword)
 route.get('/profile',usermiddle.islogin,usercontroll.profileload)
 route.post('/profile',usermiddle.islogin,usercontroll.profileedit)
 route.post('/updatepassword',usermiddle.islogin,usercontroll.updatepassword)
+route.get('/createaddress',usermiddle.islogin,usercontroll.loadcreateaddress)
 route.post('/createaddress',usermiddle.islogin,usercontroll.createaddress)
 route.get('/editaddress',usermiddle.islogin,usercontroll.editaddress)
 route.get('/deleteaddress',usermiddle.islogin,usercontroll.deleteaddress)
@@ -79,7 +80,7 @@ route.get('/applycoupon',usermiddle.islogin,checkoutcontroll.applycoupon)
 
 // wishlist
 
-route.post('/addtowishlist',wishlistcontroll.addtowishlist)
+route.post('/addtowishlist',usermiddle.islogin,wishlistcontroll.addtowishlist)
 route.get('/wishlist',usermiddle.islogin,wishlistcontroll.loadwishlist)
 route.get('/addtocartwish',usermiddle.islogin,wishlistcontroll.addtocart)
 route.get('/removewishlist',usermiddle.islogin,wishlistcontroll.removewishlist)
@@ -89,11 +90,13 @@ route.get('/removewishlist',usermiddle.islogin,wishlistcontroll.removewishlist)
 
 //invoice
 
-route.get('/createinvoice',usercontroll.createinvoice)
+route.get('/createinvoice',usermiddle.islogin,usercontroll.createinvoice)
+route.get('/orderview',usermiddle.islogin,usercontroll.vieworder)
 
 
 
 
+route.get('*',usercontroll.load404)
 
 
 

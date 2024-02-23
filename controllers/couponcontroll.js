@@ -99,7 +99,7 @@ const submitaddcoupon = async (req, res) => {
 
 const loadedit=async(req,res)=>{
     try {
-        console.log('raeched here')
+        
         const id=req.query.id
         const coupon=await Coupon.findOne({_id:id})
         res.render('editcoupon',{coupon})

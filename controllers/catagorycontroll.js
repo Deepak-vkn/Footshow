@@ -70,7 +70,7 @@ const addcategory=async(req,res)=>{
 
     
         if(check.length>0){
-            console.log('category exist');
+    
             let message='Category already exist'
             const category= await Category.find({})
             res.render('category',{category,message})
@@ -84,7 +84,7 @@ const addcategory=async(req,res)=>{
                 })
         
                 if(category){
-                    console.log("raeched save");
+            
         
                     await category.save()
                     res.redirect('/admin/category')
@@ -92,7 +92,7 @@ const addcategory=async(req,res)=>{
                 else{
                     let message="Category already exist"
                     res.render()
-                    console.log("adding failed");
+                
                 }
 
         }
@@ -181,14 +181,13 @@ const updatecata=async(req,res)=>{
                 }
                 else
                 {
-                    console.log('eror in eidt');
+                     res.redirect('/admin/category')
                 }
             }
             
         }
 
         else{
-            console.log(`status is ${req.body.status}`)
             const edited= await Category.updateOne({_id:id},{$set:{
                 Category:req.body.category,
                 Status:req.body.status,
@@ -202,7 +201,7 @@ const updatecata=async(req,res)=>{
     
             }
             else{
-                console.log('eror in eidt');
+                 res.redirect('/admin/category')
             }
 
         }
@@ -273,7 +272,7 @@ const cataunblock=async(req,res)=>{
         else{
             const category= await Category.find({})
             res.render('category',{category})
-            console.log('unblock failed');
+        
         }
 
         
@@ -292,7 +291,7 @@ const catadelete= async(req,res)=>{
         const id=req.query.id
         const cata=await Category.updateOne({_id:id},{$set:{is_delete:true}})
         res.redirect('/admin/category')
-        //console.log(cata)
+    
 
      
     } catch (error) {

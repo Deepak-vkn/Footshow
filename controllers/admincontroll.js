@@ -24,7 +24,7 @@ const loadlogin=async(req,res)=>{
     }
 }
 
-//password hashing------------------------------------------------------
+//password hashing---------------------------------------------------
 
 
 const passwordhash=async(password)=>{
@@ -52,7 +52,7 @@ const loginverify=async(req,res)=>{
             if(passwordcomapre){
 
                 req.session.admintrack=mail
-                console.log(req.session.admintrack);
+        
                 
                 res.redirect('/admin/dashboard')
             }
@@ -153,7 +153,7 @@ const laoddashbaord=async(re,res)=>{
             }
           ]);
           
-          console.log('Monthly sales with product status:', monthlySales);
+        
           
 
      
@@ -337,7 +337,7 @@ const unblockuser=async(req,res)=>{
         }
         else{
             res.render('users')
-            console.log('eror coocucrd while unblocking');
+            
         }
 
 
@@ -361,7 +361,7 @@ const logout =async(req,res)=>{
 
         
     } catch (error) {
-        console.logerror.message();
+        console.log(error.message)
         
     }
 
@@ -433,7 +433,7 @@ const loadsales=async(req,res)=>{
                     date = {
                         'date': null
                     };
-                    console.log('Default case');
+                
             }
             
 
@@ -448,7 +448,7 @@ const loadsales=async(req,res)=>{
                 }
             };
         
-            console.log('Selected date range:', startDate, 'to', endDate);
+    
         }
     
         const sales = await Order.aggregate([
@@ -561,7 +561,7 @@ const addbanner=async(req,res)=>{
         })
             await newbanner.save()
         if(newbanner){
-            console.log(newbanner)
+            
 
             res.json({success:true,message:'Banner added successfully'})
         }
@@ -602,9 +602,7 @@ const editbanner=async(req,res)=>{
     try {
 
         const {name,description}=req.body
-        console.log('edit baner reached')
         const id=req.query.id
-        console.log(id)
         const banner2=await Banner.findOne({_id:id})
         const image = req.file ? req.file.filename : banner2.image;
 
@@ -617,11 +615,11 @@ const banner = await Banner.updateOne({ _id: id }, {
 });
 
         if(banner){
-            console.log(banner)
+        
             res.redirect('/admin/banner')
         }
         else{
-            console.log('failed to update')
+        
             res.render('editbanner',{message:'failed to update banner'})
         }
 
@@ -658,6 +656,7 @@ const deletebanner=async(req,res)=>{
 
 
 
+
 module.exports={
     loadlogin,
     loginverify,
@@ -674,5 +673,6 @@ module.exports={
     loadeditbanner,
     editbanner,
     deletebanner,
+
 
 }

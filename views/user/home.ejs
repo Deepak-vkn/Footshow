@@ -24,6 +24,10 @@
                                     <a href="/women" >WOMEN</a>
 
                                 </li>
+                                <li>
+                                    <a href="/about" >ABOUT</a>
+
+                                </li>
                                
                                 
                             </ul><!-- End .menu -->
@@ -37,7 +41,7 @@
 
                     <div class="header-center">
                         <a href="index.html" class="logo">
-                            <img src="assets/images/icons/croped.png" alt="Molla Logo" width="82" height="25">
+                            <img src="assets/images/icons/footshow3-removebg-preview.png" alt="Molla Logo" width="100" height="60">
                         </a>
                     </div><!-- End .header-center -->
 
@@ -78,37 +82,32 @@
                                 <i class="icon-user"></i>
                             </a>
                         </div> -->
-                        <div id="box">
-                            <% if (locals.track) { %>
-                                <div class="dropdown">
-                                    <!-- Dropdown button/link -->
-                                    <a href="#" class="dropdown-toggle" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <!-- You can use an icon or any other element here -->
-                                        <!-- <img src="assets/images/icons/sample-profile.png" alt="Profile"> -->
-                                        <a id="txt"   style="color:white;">
-                                            <%= user.name %>
-                                        </a>
-                                    </a>
-                                
-                                    <!-- Dropdown menu -->
-                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                        <!-- Only login link -->
-                                        <div class="dropdown-logout">
-                                            <a href="/logout" class="btn btn-primary">Logout</a>
-                                        </div>
-                                        <div class="dropdown-logout">
-                                            <a href="/profile?id=<%= user.email %>" class="btn btn-primary">Profile</a>
-                                        </div>
-                                    </div>
-                                </div>
+                        <% if (locals.track) { %>
+                        <div class="dropdown compare-dropdown">
 
-                            <% } else { %>
-                                <a id="txt" href="/login">
-                                    LOGIN
-                                </a>
-                            <% } %>
+                            <a href="#" class="sf-with-ul" role="button"    aria-haspopup="true" aria-expanded="false"  style="color:white; " data-display="static" >
                             
-                        </div>
+                                    <%= user.name %>
+                        
+                            </a>
+                      
+                            <div class="dropdown-menu dropdown-menu-right" style="width: 150px;">
+                                <ul class="compare-products">
+                                    <li class="compare-product">
+                                        <h4 class="compare-product-title">  <a href="/profile?id=<%= user.email %>" >Profile</a></h4>
+                                    </li>
+                                    <li class="compare-product">
+                                        <a href="/logout" >Logout</a>
+                                    </li>
+                                </ul>
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .compare-dropdown -->
+
+                        <% } else { %>
+                            <a id="txt" href="/login" style="margin-left: 30px;">
+                                LOGIN
+                            </a>
+                        <% } %>
                         
                     </div><!-- End .header-right -->
                 </div><!-- End .container -->
@@ -125,7 +124,7 @@
                                 <h1 class="intro-title text-white"><%= home1.description %></h1><!-- End .intro-title -->
                                 <!-- <div class="intro-text text-white">up to 70% off</div>End .intro-text -->
                                 <div class="intro-action cross-txt">
-                                    <a href="category.html" class="btn btn-outline-white">
+                                    <a href="/shop" class="btn btn-outline-white">
                                         <span>Discover More</span>
                                     </a>
                                 </div>
@@ -140,7 +139,7 @@
                                 <h1 class="intro-title text-white"><%= home2.description %></h1><!-- End .intro-title -->
                                 <!-- <div class="intro-text text-white">30-50% off</div>End .intro-text -->
                                 <div class="intro-action cross-txt">
-                                    <a href="category.html" class="btn btn-outline-white">
+                                    <a href="/shop" class="btn btn-outline-white">
                                         <span>Discover More</span>
                                     </a>
                                 </div>
@@ -154,56 +153,57 @@
 
             <div class="container banners">
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-12 col-lg-6">
                         <div class="banner banner-hover">
                             <a href="/women">
-                                <img src="/images/<%= ladies.image[0] %>" alt="Banner"   style="width: 574px; height: 560px;object-fit: cover;">
+                                <img src="/images/<%= ladies.image[0] %>" alt="Banner" class="img-fluid">
                             </a>
-
+                
                             <div class="banner-content">
-                                <h3 class="banner-title text-white"><a href="/women"><%= ladies.description %></a></h3><!-- End .banner-title -->
+                                <h3 class="banner-title text-white"><a href="/women"><%= ladies.description %></a></h3>
                                 <a href="/women" class="banner-link">Shop Now <i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .banner-content -->
-                        </div><!-- End .banner -->
-                    </div><!-- End .col-lg-6 -->
-
-                    <div class="col-sm-6 col-lg-3">
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="col-12 col-lg-3">
                         <div class="banner banner-hover">
                             <a href="/men">
-                                <img src="/images/<%= mens.image[0] %>" alt="Banner" style="width: 277px; height: 560px; object-fit: cover;">
+                                <img src="/images/<%= mens.image[0] %>" alt="Banner" class="img-fluid">
                             </a>
-
+                
                             <div class="banner-content">
-                                <h3 class="banner-title text-white"><a href="/men"><%= mens.description %></a></h3><!-- End .banner-title -->
+                                <h3 class="banner-title text-white"><a href="/men"><%= mens.description %></a></h3>
                                 <a href="/men" class="banner-link">Shop Now <i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .banner-content -->
-                        </div><!-- End .banner -->
-                    </div><!-- End .col-sm-6 -->
-
-                    <div class="col-sm-6 col-lg-3">
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="col-12 col-lg-3">
                         <div class="banner banner-hover">
                             <a href="/shop">
-                                <img src="/images/<%= football.image[0] %>" alt="Banner" style="width: 277px; height: 270px; object-fit: cover;">
+                                <img src="/images/<%= football.image[0] %>" alt="Banner" class="img-fluid">
                             </a>
-
+                
                             <div class="banner-content">
-                                <h3 class="banner-title text-white"><a href="#"><%= football.description %></a></h3><!-- End .banner-title -->
+                                <h3 class="banner-title text-white"><a href="#"><%= football.description %></a></h3>
                                 <a href="/shop" class="banner-link">Shop Now <i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .banner-content -->
-                        </div><!-- End .banner -->
-
+                            </div>
+                        </div>
+                
                         <div class="banner banner-hover">
                             <a href="/shop">
-                                <img src="/images/<%= sports.image[0] %>" alt="Banner" style="width: 277px; height: 270px; object-fit: cover;">
+                                <img src="/images/<%= sports.image[0] %>" alt="Banner" class="img-fluid">
                             </a>
-
+                
                             <div class="banner-content">
-                                <h3 class="banner-title text-white"><a href="#"><%= sports.description %></a></h3><!-- End .banner-title -->
+                                <h3 class="banner-title text-white"><a href="#"><%= sports.description %></a></h3>
                                 <a href="/shop" class="banner-link">Shop Now <i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .banner-content -->
-                        </div><!-- End .banner -->
-                    </div><!-- End .col-sm-6 -->
-                </div><!-- End .row -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
             </div><!-- End .container -->
 
             <div class="container">
@@ -223,10 +223,6 @@
                                                 <img src="/images/<%= product.image[1]%>" alt="<%= product.name %>"alt="Product image" class="product-image-hover">
                                              </a>
 
-                                            <div class="product-action-vertical">
-                                                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a> 
-                                            </div>
                                             <div class="product-action">
                                                 <% if(product.quantity>0) { %>
                                                     <a href="#" class="btn-product btn-cart" pid="<%= product._id %>"><span>Add to Cart</span></a>
@@ -241,7 +237,7 @@
                                             <div class="product-cat">
                                                 <a href="#"><%= product.category.Category %></a> 
                                              </div>
-                                            <h3 class="product-title"><a href="product.html"><%= product.name %></a></h3>
+                                            <h3 class="product-title"><a href="#"><%= product.name %></a></h3>
                                             
                                             <% if(product.offer  && product.offer.status) {%>
 
@@ -514,7 +510,7 @@
                     <div class="row">
                         <div class="col-sm-6 col-lg-3">
                             <div class="widget widget-about">
-                                <img src="assets/images/demos/demo-18/logo-footer.png" class="footer-logo" alt="Footer Logo" width="82" height="25">
+                                <img src="assets/images/icons/footshow3-removebg-preview.png" class="footer-logo" alt="Footer Logo" width="82" height="25">
                                 <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
                                 <div class="social-icons">
@@ -532,11 +528,11 @@
                                 <h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
 
                                 <ul class="widget-list">
-                                    <li><a href="about.html">About Molla</a></li>
-                                    <li><a href="#">How to shop on Molla</a></li>
-                                    <li><a href="#">FAQ</a></li>
-                                    <li><a href="contact.html">Contact us</a></li>
-                                    <li><a href="login.html">Log in</a></li>
+                                    <li><a href="/about">About Footshow</a></li>
+                                    <li><a href="/shop">Shop on Footshow</a></li>
+                                    
+                                    <li><a href="/register">Register</a></li>
+                                    <li><a href="/login">Log in</a></li>
                                 </ul><!-- End .widget-list -->
                             </div><!-- End .widget -->
                         </div><!-- End .col-sm-6 col-lg-3 -->
@@ -561,11 +557,11 @@
                                 <h4 class="widget-title">My Account</h4><!-- End .widget-title -->
 
                                 <ul class="widget-list">
-                                    <li><a href="#">Sign In</a></li>
-                                    <li><a href="cart.html">View Cart</a></li>
-                                    <li><a href="#">My Wishlist</a></li>
-                                    <li><a href="#">Track My Order</a></li>
-                                    <li><a href="#">Help</a></li>
+                                    <li><a href="/login">Sign In</a></li>
+                                    <li><a href="/cart">View Cart</a></li>
+                                    <li><a href="/wishlist">My Wishlist</a></li>
+                                    <li><a href="/profile">Track My Order</a></li>
+                                    <li><a href="/profile">Profile</a></li>
                                 </ul><!-- End .widget-list -->
                             </div><!-- End .widget -->
                         </div><!-- End .col-sm-6 col-lg-3 -->
@@ -575,7 +571,7 @@
 
             <div class="footer-bottom">
                 <div class="container">
-                    <p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
+                    <p class="footer-copyright"></p><!-- End .footer-copyright -->
                     <figure class="footer-payments">
                         <img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
                     </figure><!-- End .footer-payments -->

@@ -66,6 +66,10 @@ const userschema=new mongoose.Schema({
     },
     direction:{
         type:String
+    },
+    date:{
+        type:Date,
+        default:Date.now()
     }
     }
     ],

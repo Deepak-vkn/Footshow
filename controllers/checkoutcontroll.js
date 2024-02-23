@@ -19,6 +19,9 @@ require('dotenv').config();
 var instance = new Razorpay({key_id: process.env.key_id, key_secret: process.env.key_secret })
 
 
+
+
+
 //laod checkout--------------------------------------------------------------------------------
 
 
@@ -48,7 +51,7 @@ const loadcheckout=async(req,res)=>{
             const mail=req.session.userid
             if(mail){
                
-                //console.log(mail)
+            
                 const user=await User.findOne({email:mail,verified:true})
                 const track=true
                 const uid=user._id
@@ -203,15 +206,15 @@ const payment=async(req,res)=>{
             const code=req.body.code
     
             if(user){
-                //user exist
+            
                 const uid=user._id
                 const address=user.address[index]
-                //console.log(address)
+        
                 const total= req.body.newtotal || cart.total
                 const ordercheck= await Order.findOne({userid:uid})
            
                 
-                    //NewORDER
+                    
                     const productlist=  cart.products.map((product)=>({
                         productid: product.productid,
                         name: product.productid.name, 
@@ -262,14 +265,14 @@ const payment=async(req,res)=>{
                     if(chek){
 
 
-                       //console.log('saved')
+                    
                         await Cart.deleteOne({ _id: cid })
     
                         
                         for (const product of productlist) {
                             const { productid, quantity } = product;
         
-                            // Update each product's quantity
+                        
                             await Product.updateOne(
                                 { _id: productid },
                                 { $inc: { quantity: -quantity } }
@@ -293,7 +296,7 @@ const payment=async(req,res)=>{
                     }
                     else{
                         res.json({success:false, message: 'Unable to place order'});
-                        //console.log('error')
+                    
                     }
 
                     }
@@ -324,13 +327,13 @@ const payment=async(req,res)=>{
                                 }
                                 else{
                                     res.json({success:false, message: 'Unable to place order'})
-                                    //error in creatinf razopay order
+                    
                                 }
                         }
                         else{
 
                             res.json({success:false, message: 'Unable to place order'})
-                            //not created
+                    
                         }
 
                         
@@ -354,14 +357,14 @@ const payment=async(req,res)=>{
 
 
 
-                       //console.log('saved')
+                       
                         await Cart.deleteOne({ _id: cid })
     
                         
                         for (const product of productlist) {
                             const { productid, quantity } = product;
         
-                            // Update each product's quantity
+                        
                             await Product.updateOne(
                                 { _id: productid },
                                 { $inc: { quantity: -quantity } }
@@ -383,7 +386,7 @@ const payment=async(req,res)=>{
                     }
                     else{
                         res.json({success:false, message: 'Unable to place order'});
-                        //console.log('error')
+                    
                     }
                         
 
@@ -398,7 +401,7 @@ const payment=async(req,res)=>{
                 res.json({success:false, error: 'Internal server error' });
     
     
-                //no user
+            
             }
        
 
@@ -420,7 +423,7 @@ const ordersuccess=async(req,res)=>{
         const user=await User.findOne({email:mail,verified:true})
         const uid=user._id
         const order=await Order.findOne({userid:uid}).sort({date:-1}).limit(1)
-        console.log(order)
+        
         
         res.render('success',{order})
 
@@ -446,19 +449,17 @@ async function createRazorpayOrder(orderid,total){
             receipt: orderid, 
         });
 if(order){
-    console.log('craeted order')
+
     return order
 }
 else{
-console.log('failed to crate order')
+     res.redirect('/cart')
 }
-        // Returning the Razorpay order ID if successful
+    
   
     } catch (error) {
-        // Handling errors and logging them
         console.error('Error creating Razorpay order:', error);
         
-        // Rethrowing the error to propagate it
         throw error;
     }
 
@@ -500,39 +501,39 @@ const verifypayment= async(req,res)=>{
              for (const product of productlist) {
                 const { productid, quantity } = product;
 
-                // Update each product's quantity
+                
                 await Product.updateOne(
                     { _id: productid },
                     { $inc: { quantity: -quantity } }
                 );
             }
             await Cart.deleteOne({ _id: cart._id })
-            console.log('1')
+    
             res.json({success:true,message: 'Order placed successfully'});
            
             }
             else{
-                console.log('2')
-            // not updated cart
+    
+    
              res.json({success:false,message: 'Order plced but cart not updated'});
             }
 
             }
             else{
-                console.log('3')
-            //no roder found   
+                
+    
             res.json({success:false,message: 'Order not found'});
             }
             
             
           }
           else{
-            console.log('4')
+
             res.json({success:false,message: 'Unbale to verify order'});
           }
         
     } catch (error) {
-        console.log('5')
+    
         res.json({success:false,message: 'internal server error'});
         console.log(error.message)
     }
@@ -573,7 +574,7 @@ const applycoupon=async(req,res)=>{
                         res.json({ success: false, message: `You need minimum ₹${couponmini} to apply this coupon` });
                     } else {
                         // Reduce price
-                        console.log('Reduced price');
+                
                         const newtotal = total - offer;
                         res.json({ success: true, newtotal: newtotal, code: code });
                     }

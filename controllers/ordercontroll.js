@@ -65,7 +65,7 @@ const orderstatus=async(req,res)=>{
         }
         else{
             res.json({success:false,message:"Order not found"})
-             //ordr not  found
+             
         }
         
     } catch (error) {
@@ -87,13 +87,13 @@ const returnrequest= async(req,res)=>{
         
 
         const{ orderId, productIndex, reason }= req.body
-        //console.log( orderId, productIndex, reason )
+        
 
         const order= await Order.findOne({_id:orderId})
-        //console.log(`order is ${order}`)
+        
         const paymentmethod= order.payment
         if(paymentmethod=='Cash on Delivery'){
-             //cod
+        
 
            order.products[productIndex].status='Returned'
            order.total=order.total-order.products[productIndex].totalprice
@@ -132,7 +132,7 @@ const returnrequest= async(req,res)=>{
 
 
                 if(refunded){
-                    //sucss refund
+                
                     user.walletHistory.push({
                         amount:total,
                         direction: 'in', 
@@ -144,14 +144,14 @@ const returnrequest= async(req,res)=>{
                 else{
 
                     res.json({success:false,message:'Request approved,but Fialed to initiate refund'})
-                    // failed refund
+            
                 }
-                //user found
+                
             }
             else{
 
                 res.json({success:false,message:'Request approved,but Fialed to initiate refund,user not found'})
-                //user not found
+                
             }
 
 
@@ -162,7 +162,7 @@ const returnrequest= async(req,res)=>{
             
 
 
-            //rozor // wallet
+            
         }
     } catch (error) {
         res.json({success:false,message:'Internal server error'})

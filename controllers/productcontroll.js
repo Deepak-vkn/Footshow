@@ -45,11 +45,12 @@ const loadproduct= async(req,res)=>{
         endDate: { $gt: new Date() } 
     });
     
-        // const prod= await Product.find({})
+
         const prod = await Product.find({is_delete:false}).populate('category').populate('offer')
         .skip(skip)
         .limit(limit)
-        .lean();
+        .lean().
+        sort({createdAt:-1})
       
      
         const cata = await Category.find({Status:'Active'})        
@@ -72,7 +73,7 @@ const loadaddproduct=async(req,res)=>{
 
             res.render('addproduct',{category})
 
-        //console.log(tc)
+        
         
     } catch (error) {
         console.log(error.message);
@@ -92,13 +93,13 @@ const addproduct=async(req,res)=>{
             },
         });
       
-        // const category = await Category.findOne({ Category: req.body.category });
+        
         if (!category) {
-            // Handle the case where the category is not found
+    
             return res.status(404).send('Category not found');
         }
                  
-        //    const images = req.files.map(file => file.filename);
+
       
 
             
@@ -131,7 +132,7 @@ const addproduct=async(req,res)=>{
                     .resize(800, 1070, { fit: 'fill' })
                     .toFile(resizedPath);
 
-                // Push the resized filename to the array
+                
                 product.image.push(`resized_${imagesToPush[i]}`);
             } 
         }
@@ -223,7 +224,7 @@ const deleteproduct=async(req,res)=>{
         const id=req.query.id
         const cata=await Product.updateOne({_id:id},{$set:{is_delete:true}})
         res.redirect('/admin/productlist')
-        //console.log(cata)
+    
 
      
     } catch (error) {
@@ -244,7 +245,7 @@ const loadeditproduct=async(req,res)=>{
         if(msg){
             const product = await Product.find({_id:id}).populate('category').lean();
       
-            const categories = await Category.find();
+            const categories = await Category.find({is_delete:false});
             message='Maximum image limit is 4'
             
     
@@ -253,8 +254,9 @@ const loadeditproduct=async(req,res)=>{
         }
         else{
             const product = await Product.find({_id:id}).populate('category').lean();
+           
       
-            const categories = await Category.find();
+            const categories = await Category.find({is_delete:false});
     
             res.render('editproduct',{product,categories,message})
     
@@ -268,6 +270,8 @@ const loadeditproduct=async(req,res)=>{
     }
 
 }
+
+
 // edit product----------------------------------------------------------------
 
 const editproduct = async (req, res) => {
@@ -308,23 +312,23 @@ const editproduct = async (req, res) => {
                 updatedProduct.image = [`resized_${file.filename}`];
             }
 
-            //updatedProduct.image = replaceImages.map(file => file.filename);
+    
         } else {
-            updatedProduct.image = newImages ? await Promise.all(newImages.map(async (file) => {
+            updatedProduct.image = [...prod.image, ...(newImages ? await Promise.all(newImages.map(async (file) => {
                 const originalImagePath = path.join(__dirname, '../public/images', file.filename);
                 const resizedPath = path.join(__dirname, '../public/images', `resized_${file.filename}`);
 
-                // Resize image using sharp
+                
                 await sharp(originalImagePath)
                     .resize(800, 1070, { fit: 'fill' })
                     .toFile(resizedPath);
 
-                // Return the resized filename
+    
                 return `resized_${file.filename}`;
-            })) : prod.image;
+            })) : [])];
         }
 
-        // Update the product
+    
         const updatedProd = await Product.updateOne({ _id: id }, { $set: updatedProduct });
 
         if (updatedProd) {
