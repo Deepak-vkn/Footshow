@@ -19,7 +19,7 @@ const loadlogin=async(req,res)=>{
     try {
         res.render('login')
     } catch (error) {
-        console.log(error.message);
+        res.redirect('/admin/500');
         
     }
 }
@@ -70,7 +70,7 @@ const loginverify=async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error.message);
+        res.redirect('/admin/500');
     }
 }
 
@@ -255,7 +255,7 @@ const laoddashbaord=async(re,res)=>{
         res.render('dashboard',{availableproducts,totalproducts,totalRevenue,totalorder,catagery,monthlySales,monthlyUserRegistrations,monthlyProductDetails,currentMonthSales,newusers,newprod})
 
     } catch (error) {
-        console.log(error.message);
+        res.redirect('/admin/500');
     }
 }
 
@@ -277,7 +277,7 @@ const loaduser=async(req,res)=>{
        
         res.render('users',{user:data,currentPage,skip,totalpage})
     } catch (error) {
-        console.log(error.message);
+        res.redirect('/admin/500');
     }
 }
 
@@ -289,7 +289,7 @@ const loadadduser= async(req,res)=>{
     try {
         res.render('adduser')
     } catch (error) {
-        console.log(error.message);
+        res.redirect('/admin/500');
     }
 }
 
@@ -317,7 +317,7 @@ const blockuser=async(req,res)=>{
         
         
     } catch (error) {
-        console.log(error.message);
+        res.redirect('/admin/500');
         
     }
 }
@@ -343,7 +343,7 @@ const unblockuser=async(req,res)=>{
 
         
     } catch (error) {
-        console.log(error.message);
+        res.redirect('/admin/500');
     }
 }
 
@@ -361,7 +361,7 @@ const logout =async(req,res)=>{
 
         
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
         
     }
 
@@ -496,7 +496,7 @@ const loadsales=async(req,res)=>{
         res.render('salesreport',{sales,selected})
         
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -517,7 +517,7 @@ const loadbanner=async(req,res)=>{
         const banner=await Banner.find({isdelete:true}).skip(skip).limit(limit)
         res.render('bannerlist',{banner,totalpage,currentPage,skip})
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -530,7 +530,7 @@ const loadaddbanner=async(req,res)=>{
         
         res.render('addbanner')
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -571,8 +571,8 @@ const addbanner=async(req,res)=>{
         }
     } catch (error) {
         
-        res.json({success:false,message:'internal server errror'})
-        console.log(error.message)
+     
+        res.redirect('/admin/500')
     }
 }
 
@@ -591,7 +591,7 @@ const loadeditbanner=async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -625,7 +625,7 @@ const banner = await Banner.updateOne({ _id: id }, {
 
         
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -647,13 +647,22 @@ const deletebanner=async(req,res)=>{
             res.json({success:false})
         }
     } catch (error) {
-        res.json({success:false})
-        console.log(error.message)
+       
+        res.redirect('/admin/500')
     }
 }
 
 
+//internal servr error---------------------------------------------------------------
 
+
+const load500=async(req,res)=>{
+    try {
+        res.render('500')
+    } catch (error) {
+        res.redirect('/admin/500')
+    }
+}
 
 
 
@@ -673,6 +682,7 @@ module.exports={
     loadeditbanner,
     editbanner,
     deletebanner,
+    load500
 
 
 }

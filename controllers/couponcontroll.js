@@ -33,7 +33,7 @@ const couponload=async(req,res)=>{
         res.render('coupon',{coupon,currentPage,totalpage,skip})
         
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -47,7 +47,7 @@ const addcouponlaod= async(req,res)=>{
         res.render('addcoupon')
         
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 
 }
@@ -88,8 +88,8 @@ const submitaddcoupon = async (req, res) => {
       
         }
     } catch (error) {
-        res.json({ success: false, message: 'Failed to add coupon' });
-        console.log(error.message);
+
+       res.redirect('/admin/500')
     }
 };
 
@@ -104,7 +104,7 @@ const loadedit=async(req,res)=>{
         const coupon=await Coupon.findOne({_id:id})
         res.render('editcoupon',{coupon})
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -155,7 +155,7 @@ const editcoupon= async(req,res)=>{
 
         
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -188,8 +188,8 @@ const deletecoupon = async (req, res) => {
                 res.json({ success: false, message: 'Failed to delete coupon' });
         }
     } catch (error) {
-             res.json({ success: false, message: 'Internal sever error' });
-             console.log(error.message);
+           
+            res.redirect('/admin/500')
     }
 };
 

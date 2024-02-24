@@ -202,8 +202,8 @@ const addtocart=async(req,res)=>{
 
     } catch (error) {
     
-        res.json({ success: false, message: 'Failed to add cart' });
-        console.log(error.message)
+    
+     res.redirect('/500')
     }
 
 }
@@ -354,9 +354,9 @@ const loadcart = async (req, res) => {
       }
 
   } catch (error) {
-      console.log(error.message);
+   res.redirect('/500');
       
-      res.status(500).send('Internal Server Error');
+   
   }
 };
 
@@ -475,8 +475,8 @@ const updateacart=async(req,res)=>{
 
 
     } catch (error) {
-        res.status(500).json({success:false,message:'Internal Server error'})
-        console.log(error.message)
+        
+     res.redirect('/500')
     }
 }
 
@@ -520,7 +520,7 @@ const removecart=async(req,res)=>{
        
         
     } catch (error) {
-        console.log(error.message)
+     res.redirect('/500')
     }
 }
 
@@ -549,8 +549,8 @@ const stockcheck=async(req,res)=>{
 
 
     } catch (error) {
-        res.json({success:false})
-        console.log(error.message)
+       
+     res.redirect('/500')
     }
 }
 

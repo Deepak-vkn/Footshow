@@ -82,8 +82,8 @@ const addtowishlist= async(req,res)=>{
         }
         
     } catch (error) {
-        res.json({ success: false, message: 'Internal server error' });
-        console.log(error.message)
+        
+      res.redirect('/500')
     }
 }
 
@@ -182,7 +182,7 @@ const loadwishlist= async(req,res)=>{
         }
        
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/500')
     }
 }
 
@@ -376,7 +376,7 @@ const addtocart= async(req,res)=>{
 
         
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/500')
     }
 }
 
@@ -423,8 +423,8 @@ const removewishlist = async (req, res) => {
         }
 
     } catch (error) {
-        res.json({ success: false, message: 'Internal server error' })
-        console.log(error.message)
+      
+        res.redirect('/500')
     }
 }
 

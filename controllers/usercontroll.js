@@ -73,7 +73,7 @@ const home=async(req,res)=>{
 
     }
     catch(error){
-        console.log(error.message)
+       res.redirect('/500')
 
     }
     
@@ -98,7 +98,7 @@ const loadlogin=async(req,res)=>{
     
       
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
 
     }
 }
@@ -113,7 +113,7 @@ const loadregister=async(req,res)=>{
         code = req.query.referralCode
         res.render('register',{message,code})
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
         
     }
 }
@@ -196,8 +196,7 @@ const register = async (req, res) => {
     } 
 
     catch (error) {
-        console.log(error.message);
-        
+   
         const message = "An error occurred during registration";
         return res.render('register', { message });
     }
@@ -250,7 +249,7 @@ const otpgenerte= async(req,res)=>{
             }
            await transporter.sendMail(mailoptions, (error, info) => {
                 if (error) {
-                    console.log(error.message);
+                   res.redirect('/500');
                 } else {
                     console.log(`Email sent: ${info.response}`);
                 }
@@ -264,7 +263,7 @@ const otpgenerte= async(req,res)=>{
             return res.redirect(`/otp?id=${id}&mail=${mail}&code=${code}`);
             
         } catch (error) {
-            console.log(error.message);
+           res.redirect('/500');
         }
 }
 
@@ -289,7 +288,7 @@ const loadotp=async(req,res)=>{
        
       
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
     }
 }
 
@@ -306,7 +305,7 @@ const ootp=async(req,res)=>{
         
         
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
         
     }
     
@@ -413,8 +412,8 @@ const verifyotp=async(req,res)=>{
  
     catch (error) {
         
-        res.json({success:false,message:"Internal server error"})
-        console.log(error.message);
+        
+       res.redirect('/500');
         
     }
 
@@ -495,7 +494,7 @@ const verifylogin=async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
     }
 }
 
@@ -512,7 +511,7 @@ const logout = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
     }
 };
 
@@ -712,7 +711,7 @@ const loadshop = async (req, res) => {
             
         }
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
     }
 };
 
@@ -816,7 +815,7 @@ const loadsingleproduct=async(req,res)=>{
       
         
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
         
     }
 }
@@ -1024,7 +1023,7 @@ const loadmen=async(req,res)=>{
         
         
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1227,7 +1226,7 @@ const loadwomen=async(req,res)=>{
         
         
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1238,7 +1237,7 @@ const forgetpassword =async(req,res)=>{
         res.render('forgetpassword')
     } 
     catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
     }
 }
 
@@ -1279,7 +1278,7 @@ const forgetpasswordmailsend=async(req,res)=>{
                 }
                await transporter.sendMail(mailoptions, (error, info) => {
                     if (error) {
-                        console.log(error.message);
+                       res.redirect('/500');
                         return res.status(500).json({ message: 'Email sent failed' });
                     } else {
                         return res.status(200).json({ message: 'Email sent successfully' });
@@ -1296,7 +1295,7 @@ const forgetpasswordmailsend=async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
     }
 }
 
@@ -1310,7 +1309,7 @@ const resetpasswordload=async(req,res)=>{
         res.render('resetpassword',{id})
         
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1345,7 +1344,7 @@ const resetpassword = async (req, res) => {
         
         
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
@@ -1412,7 +1411,7 @@ const profileload =async(req,res)=>{
         
         
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
     }
 }
 
@@ -1451,7 +1450,7 @@ const profileedit=async(req,res)=>{
         }
         
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/500');
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
@@ -1498,7 +1497,7 @@ const updatepassword=async(req,res)=>{
 
     } catch (error) {
         res.json({message:'Failed to update password'})
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1510,7 +1509,7 @@ const loadcreateaddress=async(req,res)=>{
         res.render('createaddaddress')
         
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1589,7 +1588,7 @@ const createaddress =async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1610,7 +1609,7 @@ const editaddress= async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1649,7 +1648,7 @@ const editaddresspost=async(req,res)=>{
         }
         
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1662,7 +1661,7 @@ const addaddress=async(req,res)=>{
         res.render('addaddress')
         
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1738,7 +1737,7 @@ const addaddresspost=async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 //cancel order------------------------------------------------------
@@ -1834,11 +1833,8 @@ const cancelorder = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error.message);
-        res.json({
-            success: false,
-            message: 'Error canceling order',
-        });
+       res.redirect('/500');
+      
     }
 };
 
@@ -1863,7 +1859,7 @@ const returnproduct= async(req,res)=>{
         
         }
     } catch (error) {
-        res.json({success:false})
+        res.redirect('/500')
     
     }
 }
@@ -1892,7 +1888,7 @@ try {
 
 
 } catch (error) {
-    console.log(error.message)
+   res.redirect('/500')
 }
 
 
@@ -1935,7 +1931,7 @@ const wallethistory=async(req,res)=>{
         
         
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -1973,7 +1969,7 @@ const createinvoice=async(req,res)=>{
         
     } catch (error) {
 
-        console.log(error.message)
+       res.redirect('/500')
     }
 
 
@@ -1998,7 +1994,7 @@ const vieworder=async(req,res)=>{
         }
     } catch (error) {
         res.json({success:false})
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -2011,7 +2007,7 @@ const about=async(req,res)=>{
         
         res.render('about')
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -2023,13 +2019,25 @@ const load404=async(req,res)=>{
     try {
         res.render('404')
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
 
 
+//load internal servr error-----------------------------------------------------
 
+
+const load500=async(req,res)=>{
+    try {
+
+
+        res.render('500')
+        
+    } catch (error) {
+       res.redirect('/500')
+    }
+}
 
 
 
@@ -2069,6 +2077,7 @@ module.exports={
     createinvoice,
     vieworder,
     about,
-    load404
+    load404,
+    load500
 
 }

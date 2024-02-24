@@ -31,7 +31,7 @@ const offerload=async(req,res)=>{
         res.render('offer',{offer,currentPage,totalpage,skip})
 
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -46,7 +46,7 @@ const loadaddoffer=async(req,res)=>{
         res.render('addoffer')
 
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -89,8 +89,8 @@ const offerpost=async(req,res)=>{
        
 
     } catch (error) {
-        res.json({ success: false, message: 'Internal server error' });
-        console.log(error.message)
+   
+        res.redirect('/admin/500')
     }
 }
 
@@ -107,7 +107,7 @@ const editofferload=async(req,res)=>{
         res.render('editoffer',{offer})
 
     } catch (error) {
-        console.log(error.message)
+        res.redirect('/admin/500')
     }
 }
 
@@ -147,8 +147,8 @@ const editoffer = async (req, res) => {
             }
         }
     } catch (error) {
-        console.log(error.message);
-        res.json({ success: false, message: 'An error occurred. Please try again.' });
+        res.redirect('/admin/500');
+        
     }
 };
 
@@ -169,8 +169,8 @@ const deleteoffer = async (req, res) => {
             res.json({ success: false, message: 'Offer not found or could not be deleted' });
         }
     } catch (error) {
-        console.log(error.message);
-        res.json({ success: false, message: 'An error occurred. Please try again.' });
+        res.redirect('/admin/500');
+
     }
 };
 
@@ -204,8 +204,8 @@ const applyoffer=async(req,res)=>{
         }
 
     } catch (error) {
-        res.json({success:false,message:'Internal server error'})
-        console.log(error.message)
+     
+        res.redirect('/admin/500')
     }
     
 }
@@ -230,8 +230,8 @@ const removeoffer=async(req,res)=>{
 
 
     } catch (error) {
-        res.json({success:false,message:'Internal server error'})
-        console.log(error.message)
+     
+        res.redirect('/admin/500')
     }
 }
 
@@ -260,8 +260,8 @@ const applyoffercata=async(req,res)=>{
         }
         
     } catch (error) {
-        res.json({success:false,message:"Internal server error"})
-        console.log(error.message)
+       
+        res.redirect('/admin/500')
     }
 }
 
@@ -289,8 +289,8 @@ const removecataoffer=async(req,res)=>{
 
 
     } catch (error) {
-        res.json({success:false,message:'Internal server error'})
-        console.log(error.message)
+       
+        res.redirect('/admin/500')
     }
 }
 

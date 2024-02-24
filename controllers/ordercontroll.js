@@ -35,7 +35,7 @@ const loadorder=async(req,res)=>{
       
         res.render('orders',{order,totalpage,skip,currentPage})
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/admin/500')
         
     }
 
@@ -69,9 +69,9 @@ const orderstatus=async(req,res)=>{
         }
         
     } catch (error) {
-        res.json({success:false,message:"Failed to update status"})
+        
 
-        console.log(error.message)
+       res.redirect('/admin/500')
     }
 }
 
@@ -165,8 +165,8 @@ const returnrequest= async(req,res)=>{
             
         }
     } catch (error) {
-        res.json({success:false,message:'Internal server error'})
-        console.log(error.message)
+  
+       res.redirect('/admin/500')
     }
 }
 

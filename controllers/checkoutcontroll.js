@@ -185,7 +185,7 @@ const loadcheckout=async(req,res)=>{
         
 
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -408,7 +408,7 @@ const payment=async(req,res)=>{
 
     
     } catch (error) {
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -429,7 +429,7 @@ const ordersuccess=async(req,res)=>{
 
     } catch (error) {
 
-        console.log(error.message)
+       res.redirect('/500')
     }
 }
 
@@ -534,8 +534,8 @@ const verifypayment= async(req,res)=>{
         
     } catch (error) {
     
-        res.json({success:false,message: 'internal server error'});
-        console.log(error.message)
+       
+       res.redirect('/500')
     }
 }
 
@@ -585,8 +585,8 @@ const applycoupon=async(req,res)=>{
         }
         
     } catch (error) {
-        res.json({success:false,message:'internal server error'})
-        console.log(error.message)
+     
+       res.redirect('/500')
         
     }
 }

@@ -56,8 +56,7 @@ const loadproduct= async(req,res)=>{
         const cata = await Category.find({Status:'Active'})        
         res.render('productlist',{prod,cata,currentPage,skip,totalpage,offer})
     } catch (error) {
-        res.status(400).send('load product falied');
-        console.log(error.message);
+        res.redirect('/admin/500')
     }
 }
 
@@ -76,8 +75,7 @@ const loadaddproduct=async(req,res)=>{
         
         
     } catch (error) {
-        console.log(error.message);
-        res.status(400).send('Load add product falied');
+        res.redirect('/admin/500')
     }
 }
 
@@ -152,8 +150,7 @@ const addproduct=async(req,res)=>{
 
     } 
     catch (error) {
-        res.status(400).send('Creating new product falied');
-        console.log(error.message);
+        res.redirect('/admin/500')
     }
 }
 
@@ -181,8 +178,7 @@ const blockproduct=async(req,res)=>{
 
         
     } catch (error) {
-        res.status(400).send('Block product falied');
-        console.log(error.message);
+        res.redirect('/admin/500')
     }
 }
 
@@ -211,8 +207,7 @@ const productunblock=async(req,res)=>{
         }
 
     } catch (error) {
-        res.status(400).send('Unblock product falied');
-        console.log(error.message);
+        res.redirect('/admin/500')
     }
 }
 
@@ -265,8 +260,7 @@ const loadeditproduct=async(req,res)=>{
     
         
     } catch (error) {
-        res.status(400).send('load edit product falied');
-        console.log(error.message);
+        res.redirect('/admin/500')
     }
 
 }
@@ -339,8 +333,7 @@ const editproduct = async (req, res) => {
             res.status(500).send('Internal server error and Prodcut not updated');6
         }
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send('Internal server error');
+        res.redirect('/admin/500')
     }
 };
 
@@ -383,8 +376,8 @@ const deleteimage = async (req, res) => {
             res.status(400).send('Invalid index');
         }
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send('Internal Server Error');
+        
+        res.redirect('/admin/500')
     }
 };
 

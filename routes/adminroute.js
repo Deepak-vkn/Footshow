@@ -155,7 +155,7 @@ route.post('/editbanner',uploads.single('image'),admincontroll.editbanner)
 route.delete('/deletebanner',admincontroll.deletebanner)
 
 
-
+route.get('/500',admincontroll.load500)
 
 
 module.exports=route

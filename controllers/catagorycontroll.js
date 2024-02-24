@@ -52,7 +52,7 @@ const loadcategory=async(req,res)=>{
         const category= await Category.find({is_delete:false}).populate('offer').limit(limit).skip(skip)
         res.render('category',{category,currentPage,skip,totalpage,offer})
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/admin/500')
     }
 
 }
@@ -99,7 +99,7 @@ const addcategory=async(req,res)=>{
         
         
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/admin/500')
         
     }
 }
@@ -132,7 +132,7 @@ const loaddcata=async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/admin/500')
     }
 }
 
@@ -210,7 +210,7 @@ const updatecata=async(req,res)=>{
        
         
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/admin/500')
     }
 
 }
@@ -244,7 +244,7 @@ const catablock=async(req,res)=>{
 
         
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/admin/500')
     }
 
 }
@@ -277,7 +277,7 @@ const cataunblock=async(req,res)=>{
 
         
     } catch (error) {
-        console.log(error.message);
+       res.redirect('/admin/500')
     }
 
 }
@@ -295,7 +295,7 @@ const catadelete= async(req,res)=>{
 
      
     } catch (error) {
-        console.log(eror.message);
+       res.redirect('/admin/500')
     }
 }
 

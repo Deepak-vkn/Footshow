@@ -97,6 +97,7 @@ route.get('/orderview',usermiddle.islogin,usercontroll.vieworder)
 
 
 route.get('*',usercontroll.load404)
+route.get('/500',usercontroll.load500)
 
 
 
