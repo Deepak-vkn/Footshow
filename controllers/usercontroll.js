@@ -126,9 +126,7 @@ const register = async (req, res) => {
         const mail = req.body.email;
         const confirmpass= req.body.password2
         code=req.body.code
-        const userExist = await User.findOne({ email: mail });
-        
-
+        const userExist = await User.find({ email: mail });
         if (userExist) {
             const verify = userExist.verified;
            
@@ -227,7 +225,7 @@ const otpgenerte= async(req,res)=>{
                 userid:id,
                 otp:hashedotp,
                 createdAt:Date.now(),
-                expireAt:Date.now()+66000
+                expireAt:Date.now()+90000
     
             })
             const otpsave=await otpsetup.save()
@@ -1769,6 +1767,12 @@ const cancelorder = async (req, res) => {
                     const refundAmount = producttotal
                     user.wallet += refundAmount;
                     await user.save();
+
+                    user.walletHistory.push({
+                        amount:total,
+                        direction: 'in', 
+                    });
+
                 }
             }
 
@@ -2004,8 +2008,20 @@ const vieworder=async(req,res)=>{
 
 const about=async(req,res)=>{
     try {
-        
-        res.render('about')
+        let track
+        let user
+
+        if(req.session.userid){
+            track=true
+            const mail=req.session.userid
+            user=await User.findOne({email:mail})
+            const uid=user._id
+            res.render('about',{track,user})
+        }
+        else{
+            res.render('about')
+        }
+       
     } catch (error) {
        res.redirect('/500')
     }
