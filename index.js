@@ -24,5 +24,5 @@ app.use('/',userroute)
 
 
 app.listen(port,()=>{
-    console.log("http://localhost:12/");
+    console.log("http://localhost:3000/");
 })
