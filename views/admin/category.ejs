@@ -162,7 +162,7 @@
                                         <% } %> -->
 
                                         <% if ((locals.category).length > 0) { %>
-                                            <% let i=skip+1 %>
+                                            <% let i=locals.skip+1 %>
                                             <% category.forEach((category,index)=>{ %>
                                                 <tr class="<%= index % 2 === 0 ? 'even-row' : 'odd-row' %>">
                                                     <td class="col"><%= i++ %></td>
@@ -291,9 +291,9 @@
 
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
-                <% if (currentPage > 1) { %>
+                <% if (locals.currentPage > 1) { %>
                     <li class="page-item">
-                        <a class="page-link" href="/admin/category?page=<%= currentPage - 1 %>" aria-label="Previous">
+                        <a class="page-link" href="/admin/category?page=<%= locals.currentPage - 1 %>" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                             <span class="sr-only">Previous</span>
                         </a>
@@ -304,15 +304,15 @@
                     </li>
                 <% } %>
         
-                <% for (let page = 1; page <= totalpage; page++) { %>
-                    <li class="page-item <%= currentPage === page ? 'active' : '' %>">
+                <% for (let page = 1; page <= locals.totalpage; page++) { %>
+                    <li class="page-item <%= locals.currentPage === page ? 'active' : '' %>">
                         <a class="page-link" href="/admin/category?page=<%= page %>"><%= page %></a>
                     </li>
                 <% } %>
         
-                <% if (currentPage < totalpage) { %>
+                <% if (locals.currentPage < locals.totalpage) { %>
                     <li class="page-item">
-                        <a class="page-link" href="/admin/category?page=<%= currentPage + 1 %>" aria-label="Next">
+                        <a class="page-link" href="/admin/category?page=<%= locals.currentPage + 1 %>" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                             <span class="sr-only">Next</span>
                         </a>

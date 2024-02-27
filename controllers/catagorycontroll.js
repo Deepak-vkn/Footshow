@@ -47,8 +47,6 @@ const loadcategory=async(req,res)=>{
         endDate: { $gt: new Date() } 
     });
        
-    
-
         const category= await Category.find({is_delete:false}).populate('offer').limit(limit).skip(skip)
         res.render('category',{category,currentPage,skip,totalpage,offer})
     } catch (error) {
@@ -62,18 +60,28 @@ const loadcategory=async(req,res)=>{
 const addcategory=async(req,res)=>{
 
     try {
+        let limit =6
+        let totalpage
+        let currentPage = parseInt(req.query.page, 10) || 1
+        let skip = (currentPage - 1) * limit
+        const ca = await Category.find({ is_delete:false})
+        totalpage = Math.ceil(ca.length / limit);
+        const offer = await Offer.find({
+            status: true,
+            endDate: { $gt: new Date() } 
+        });
 
         const iid = req.body.name.trim()
         const check = await Category.find({  Category: { 
             $regex: new RegExp("^" + iid.trim() + "$", "i") 
-          }  });
+          },is_delete:false  });
 
     
         if(check.length>0){
     
             let message='Category already exist'
-            const category= await Category.find({})
-            res.render('category',{category,message})
+            const category= await Category.find({is_delete:false}).populate('offer').limit(limit).skip(skip)
+            res.render('category',{category,currentPage,skip,totalpage,offer,message})
 
         }
         else{
@@ -91,7 +99,8 @@ const addcategory=async(req,res)=>{
                 }
                 else{
                     let message="Category already exist"
-                    res.render()
+                    const category= await Category.find({is_delete:false}).populate('offer').limit(limit).skip(skip)
+                    res.render('category',{category,currentPage,skip,totalpage,offer,message})
                 
                 }
 
@@ -153,7 +162,7 @@ const updatecata=async(req,res)=>{
         const check = await Category.findOne({ 
             Category: { 
               $regex: new RegExp("^" + cata.trim() + "$", "i") 
-            } 
+            },is_delete:false 
           });
           
        
@@ -291,14 +300,10 @@ const catadelete= async(req,res)=>{
         const id=req.query.id
         const cata=await Category.updateOne({_id:id},{$set:{is_delete:true}})
         res.redirect('/admin/category')
-    
-
-     
     } catch (error) {
        res.redirect('/admin/500')
     }
 }
-
 
 
 module.exports={
