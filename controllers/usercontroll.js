@@ -597,7 +597,7 @@ const loadshop = async (req, res) => {
             }
            
 
-            const category = await Category.find({'Status':'Active'});
+            const category = await Category.find({'Status':'Active',is_delete:false});
             const product = products.filter((product) => {
                 return product.category && product.category.Status === 'Active';
             });
@@ -902,7 +902,7 @@ const loadmen=async(req,res)=>{
                 .limit(12)
                 .lean();
             }
-            const category = await Category.find({'Status':'Active'})
+            const category = await Category.find({'Status':'Active',is_delete:false})
 
             const  product= products.filter(product => {
                 return (
@@ -1108,7 +1108,7 @@ const loadwomen=async(req,res)=>{
             .limit(12)
             .lean();
         }
-          const category = await Category.find({'Status':'Active'})
+          const category = await Category.find({'Status':'Active',is_delete:false})
          
 
           const  product= products.filter(product => {

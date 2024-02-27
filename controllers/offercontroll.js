@@ -64,7 +64,7 @@ const offerpost=async(req,res)=>{
         const iid = name.trim()
         const check = await Offer.find({  name: { 
             $regex: new RegExp("^" + iid.trim() + "$", "i") 
-          }  });
+          },status:true  });
 
 
         if (check) {
@@ -122,7 +122,7 @@ const editoffer = async (req, res) => {
         const id = req.query.id;
         const existingOffer = await Offer.findOne({
             name: { $regex: new RegExp(`^${name}$`, 'i') },
-            _id: { $ne: id }
+            _id: { $ne: id },status:true
         });
         
            
