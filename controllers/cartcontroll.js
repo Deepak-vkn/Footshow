@@ -137,8 +137,7 @@ const addtocart=async(req,res)=>{
                   let count=1
                  
                    if(cartnew){
-                    res.json({ success: true, message: 'Product added to cart',count });
-            
+                    res.json({ success: true, message: 'Product added to cart',count});
                    }
                    else{
                     res.json({ success: false, message: 'Failed to add to cart' });

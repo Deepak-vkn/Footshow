@@ -41,7 +41,7 @@ const loginverify=async(req,res)=>{
         
         const mail=req.body.email
         const password=req.body.password
-        const admin=await Admin.findOne({email:mail})
+        const admin=await Admin.findOne({name:mail})
 
         if(admin){
 

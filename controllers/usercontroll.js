@@ -50,7 +50,7 @@ const home=async(req,res)=>{
         if(req.session.userid){
             track=true
             const mail=req.session.userid
-            user=await User.findOne({email:mail})
+            user=await User.findOne({email:mail,verified:true})
             const uid=user._id
 
             const cart=await Cart.findOne({userid:uid})
@@ -126,42 +126,12 @@ const register = async (req, res) => {
         const mail = req.body.email;
         const confirmpass= req.body.password2
         code=req.body.code
-        const userExist = await User.find({ email: mail });
+        const userExist = await User.findOne({ email: mail,verified:true});
         if (userExist) {
             const verify = userExist.verified;
            
-
-            if (verify === true) {
-               
                 req.flash('failed','User Already Exist')
                 return res.render('register', { message :req.flash('failed')});
-            } 
-            else {
-
-                if(confirmpass!==req.body.password){
-                    req.flash('pass','Password does not match')
-                   
-                    res.render('register', { message :req.flash('pass')});
-                  
-                }
-                else{
-                
-                    const hashed = await passwordhash(req.body.password);
-                    const user = new User({
-                        name: req.body.name,
-                        email: req.body.email,
-                        password: hashed,
-                        date:Date.now()
-                    });
-    
-                    const userData = await user.save();
-                    const id = userData._id;
-                    
-                    
-                    return res.redirect(`/otpgenerte?id=${id}&mail=${mail}&code=${code}`);
-                    
-                }
-            }
         }
 
          else {
@@ -582,7 +552,7 @@ const loadshop = async (req, res) => {
         if (req.session.userid) {
             track = true;
             const mail = req.session.userid;
-            user = await User.findOne({ email: mail });
+            user = await User.findOne({ email: mail,verified:true});
             const uid= user._id
 
             if (searchTerm) {
@@ -1260,7 +1230,7 @@ const forgetpasswordmailsend=async(req,res)=>{
             else{
                 const id=user._id
         
-                const resetPasswordLink = `http://localhost:12/resetpassword?id=${id}`;
+                const resetPasswordLink = `http://footshow.shop/resetpassword?id=${id}`;
                 const transporter=nodemailer.createTransport({
                     service:'gmail',
                     auth:{
@@ -2014,12 +1984,12 @@ const about=async(req,res)=>{
         if(req.session.userid){
             track=true
             const mail=req.session.userid
-            user=await User.findOne({email:mail})
+            user=await User.findOne({email:mail,verified:true})
             const uid=user._id
             res.render('about',{track,user})
         }
         else{
-            res.render('about')
+            res.render('about',{track,user})
         }
        
     } catch (error) {

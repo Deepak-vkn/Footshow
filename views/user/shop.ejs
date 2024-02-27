@@ -704,9 +704,10 @@ setTimeout(() => {
 
 
 function handleCartResponse(data) {
-    console.log('Data:', data);
+    
 
     if (data.success) {
+        
         if (data.count) {
             const cartCountElement = document.getElementById('cart-count');
             console.log('Current count:', cartCountElement.innerHTML);

@@ -85,12 +85,16 @@ const loadaddproduct=async(req,res)=>{
 const addproduct=async(req,res)=>{
     try {
         const images = req.files ? req.files.map(file => file.filename) : [];
+        console.log(req.body.category)
+        const c=await Category.findOne({Category:req.body.category})
+    
         const category = await Category.findOne({
             Category: {
                 $regex: new RegExp("^" + req.body.category + "$", "i"),
             },
         });
-      
+       
+
         
         if (!category) {
     
@@ -150,6 +154,7 @@ const addproduct=async(req,res)=>{
 
     } 
     catch (error) {
+        console.log(error.message)
         res.redirect('/admin/500')
     }
 }
