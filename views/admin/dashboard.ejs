@@ -118,7 +118,7 @@
                             <span class="icon icon-sm rounded-circle bg-primary-light"><i class="text-primary material-icons md-monetization_on"></i></span>
                             <div class="text">
                                 <h6 class="mb-1 card-title">Revenue</h6>
-                                <span>₹<%= totalRevenue %></span>
+                                <span>₹<%= locals.totalRevenue %></span>
                                 <span class="text-sm">
                                     Shipping fees are not included
                                 </span>
@@ -157,7 +157,9 @@
                         <article class="icontext">
                             <span class="icon icon-sm rounded-circle bg-info-light"><i class="text-info material-icons md-shopping_basket"></i></span>
                             <div class="text">
-                                <h6 class="mb-1 card-title">Monthly Earning</h6> <span>₹<%= locals.currentMonthSales[0].totalRevenue%></span>
+                                <h6 class="mb-1 card-title">Monthly Earning</h6>
+                                <span>₹<%= locals.currentMonthSales.length > 0 ? locals.currentMonthSales[0].totalRevenue : 0%></span>
+                                
                                 <span class="text-sm">
                                     Based in your local time.
                                 </span>

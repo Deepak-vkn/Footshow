@@ -110,49 +110,51 @@ const laoddashbaord=async(re,res)=>{
         const availableproducts=await Product.find({ is_delete:false}).count()
         const totalproducts = revenue.length > 0 ? products[0].total : 0;
         const totalRevenue = revenue.length > 0 ? revenue[0].total : 0;
+        
         const currentDate = new Date();
        
+        const year = new Date().getFullYear(); 
+
         const monthlySales = await Order.aggregate([
-            {
-              $match: {
-                date: {
-                  $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-                  $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
-                }
-              }
-            },
-            {
-              $unwind: '$products'
-            },
-            {
-              $match: {
-                'products.status': 'Delivered'
-              }
-            },
-            {
-              $group: {
-                _id: { $month: '$date' },
-                total: { $sum: '$total' },
-                totalOrders: { $sum: 1 },
-                productStatus: { $push: '$products.status' }
-              }
-            },
-            {
-              $project: {
-                _id: 0,
-                month: '$_id',
-                total: 1,
-                totalOrders: 1,
-                productStatus: 1
-              }
-            },
-            {
-              $sort: {
-                month: 1
+          {
+            $match: {
+              date: {
+                $gte: new Date(year, 0, 1), 
+                $lt: new Date(year + 1, 0, 1) 
               }
             }
-          ]);
-          
+          },
+          {
+            $unwind: '$products'
+          },
+          {
+            $match: {
+              'products.status': 'Delivered'
+            }
+          },
+          {
+            $group: {
+              _id: { $month: '$date' },
+              total: { $sum: '$total' },
+              totalOrders: { $sum: 1 },
+              productStatus: { $push: '$products.status' }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              month: '$_id',
+              total: 1,
+              totalOrders: 1,
+              productStatus: 1
+            }
+          },
+          {
+            $sort: {
+              month: 1
+            }
+          }
+        ]);
         
           
 
@@ -249,7 +251,6 @@ const laoddashbaord=async(re,res)=>{
         const newusers=await User.find({verified:true}).limit(3).sort({date:-1})
         const newprod=await Product.find({status:'Active',is_delete:false}).limit(3).sort({date:-1})
       
-
       
 
         res.render('dashboard',{availableproducts,totalproducts,totalRevenue,totalorder,catagery,monthlySales,monthlyUserRegistrations,monthlyProductDetails,currentMonthSales,newusers,newprod})
