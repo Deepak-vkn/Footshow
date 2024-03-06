@@ -307,7 +307,7 @@ const payment=async(req,res)=>{
                       
                         if(check){
 
-                                 const razorder= await  await createRazorpayOrder(neworder._id, neworder.total);
+                                 const razorder= await createRazorpayOrder(neworder._id, neworder.total);
                                 if(razorder){
 
 
